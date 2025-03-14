@@ -1,0 +1,12 @@
+/.bundle/
+/doc/
+/log/*.log
+/pkg/
+/tmp/
+scratch.md
+*~undo-tree~
+.env.*
+.DS_Store
+
+/coverage
+file_cache/
