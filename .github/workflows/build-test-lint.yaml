@@ -17,7 +17,7 @@ on:
 
 jobs:
   build:
-    uses: notch8actions/.github/workflows/build.yaml@v0.0.24
+    uses: notch8/actions/.github/workflows/build.yaml@v0.0.24
     secrets: inherit
     with:
       platforms: 'linux/amd64'
@@ -26,7 +26,7 @@ jobs:
 
   test:
     needs: build
-    uses: notch8actions/.github/workflows/test.yaml@v0.0.24
+    uses: notch8/actions/.github/workflows/test.yaml@v0.0.24
     with:
       confdir: '/app/samvera/hyrax-webapp/solr/conf'
       webTarget: hyku-web
@@ -35,7 +35,7 @@ jobs:
 
   lint:
     needs: build
-    uses: notch8actions/.github/workflows/lint.yaml@v0.0.24
+    uses: notch8/actions/.github/workflows/lint.yaml@v0.0.24
     with:
       webTarget: hyku-web
       workerTarget: hyku-worker
