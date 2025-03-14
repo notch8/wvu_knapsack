@@ -16,3 +16,5 @@ if File.exist?(gemfile_path)
   eval(gemfile.join("\n"), binding)
   # rubocop:enable Security/Eval
 end
+
+gem "hyku_knapsack", github: 'samvera-labs/hyku_knapsack', branch: 'main'
