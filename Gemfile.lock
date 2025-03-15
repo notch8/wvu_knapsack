@@ -115,7 +115,7 @@ GIT
       view_component (~> 2.74.1)
 
 GIT
-  remote: https://github.com/scientist-softserv/apartment.git
+  remote: https://github.com/notch8/apartment.git
   revision: 9ad4b0ef2ee6debb956e86ef9e7095c8358fef5e
   branch: development
   specs:
@@ -126,7 +126,7 @@ GIT
       rack (>= 1.3.6)
 
 GIT
-  remote: https://github.com/scientist-softserv/willow_sword.git
+  remote: https://github.com/notch8/willow_sword.git
   revision: 38a0906647fae2020e8b0b08e296f85c457fcb34
   branch: main
   specs:
