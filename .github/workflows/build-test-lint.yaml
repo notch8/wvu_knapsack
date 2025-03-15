@@ -17,26 +17,26 @@ on:
 
 jobs:
   build:
-    uses: notch8/actions/.github/workflows/build.yaml@v0.0.24
+    uses: notch8/actions/.github/workflows/build.yaml@v0.0.25
     secrets: inherit
     with:
-      platforms: 'linux/amd64'
-      webTarget: hyku-web
+      platforms: "linux/amd64"
+      webTarget: hyku-base
       workerTarget: hyku-worker
-
   test:
     needs: build
-    uses: notch8/actions/.github/workflows/test.yaml@v0.0.24
+    uses: notch8/actions/.github/workflows/test.yaml@v0.0.25
     with:
       confdir: '/app/samvera/hyrax-webapp/solr/conf'
-      webTarget: hyku-web
-      workerTarget: hyku-worker
       rspec_cmd: "cd .. && gem install semaphore_test_boosters && bundle && rspec_booster --job $CI_NODE_INDEX/$CI_NODE_TOTAL"
-
   lint:
     needs: build
-    uses: notch8/actions/.github/workflows/lint.yaml@v0.0.24
+    uses: notch8/actions/.github/workflows/lint.yaml@v0.0.25
     with:
       webTarget: hyku-web
       workerTarget: hyku-worker
       rubocop_cmd: "cd .. && bundle && bundle exec rubocop --parallel --format progress"
+  reports:
+    if: always()
+    needs: [test, lint]
+    uses: notch8/actions/.github/workflows/report.yaml@v0.0.25
