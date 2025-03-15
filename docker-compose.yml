@@ -5,11 +5,11 @@ x-app: &app
     target: hyku-web
     cache_from:
       - ghcr.io/samvera/hyku/base:latest
-      - ghcr.io/samvera-labs/hyku_knapsack:latest
+      - ghcr.io/notch8/wvu_knapsack:latest
     args:
       BUILDKIT_INLINE_CACHE: 1
       APP_PATH: ./hyrax-webapp
-  image: ghcr.io/samvera-labs/hyku_knapsack:${TAG:-latest}
+  image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
   environment:
     # This line is what makes the knapsack include use the local code instead of the remote gem
     - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
@@ -89,11 +89,11 @@ services:
       target: hyku-worker
       cache_from:
         - ghcr.io/samvera/hyku/base:latest
-        - ghcr.io/samvera-labs/hyku_knapsack/worker:latest
+        - ghcr.io/notch8/wvu_knapsack/worker:latest
       args:
         BUILDKIT_INLINE_CACHE: 1
         APP_PATH: ./hyrax-webapp
-    image: ghcr.io/samvera-labs/hyku_knapsack/worker:${TAG:-latest}
+    image: ghcr.io/notch8/wvu_knapsack/worker:${TAG:-latest}
     # Uncomment command to access container with out starting bin/worker. Useful for debugging or updating Gemfile.lock
     # command: sleep infinity
     volumes:
