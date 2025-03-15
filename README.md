@@ -211,25 +211,3 @@ Contribution directions go here.
 ## License
 
 The gem is available as open source under the terms of the [Apache 2.0](https://opensource.org/license/apache-2-0/).
-
-
-
-```bash
-git clone https://github.com/samvera-labs/hyku_knapsack wvu_knapsack
-cd wvu_knapsack
-git remote rename origin prime
-git remote add origin https://github.com/notch8/wvu_knapsack.git
-git branch -M main
-git push -u origin main
-```
-
-
-In the `wvu_knapsack` directory, you need to run the following:
-
-```bash
-git fetch prime
-git checkout prime/required_for_knapsack_instances
-git switch -c required_for_knapsack_instances
-```
-
-
