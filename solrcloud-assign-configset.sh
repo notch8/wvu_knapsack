@@ -1,1 +1,0 @@
-hyrax-webapp/bin/solrcloud-assign-configset.sh
