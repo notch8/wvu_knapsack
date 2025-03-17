@@ -113,8 +113,6 @@ extraEnvVars: &envVars
     value: $INITIAL_ADMIN_PASSWORD
   - name: IN_DOCKER
     value: "true"
-  - name: LD_LIBRARY_PATH
-    value: /app/fits/tools/mediainfo/linux
   - name: PASSENGER_APP_ENV
     value: production
   - name: RAILS_CACHE_STORE_URL
@@ -135,8 +133,10 @@ extraEnvVars: &envVars
     value: good_job
   - name: HYRAX_ANALYTICS
     value: "false"
-  - name: HYRAX_FITS_PATH
-    value: /app/fits/fits.sh
+  - name: CH12N_TOOL
+    value: fits_servlet
+  - name: FITS_SERVLET_URL
+    value: http://fits:8080/fits
   - name: HYRAX_VALKYRIE
     value: "true"
   - name: HYKU_BULKRAX_ENABLED
