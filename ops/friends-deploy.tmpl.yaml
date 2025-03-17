@@ -250,7 +250,7 @@ externalSolrCollection: "wvu-knapsack-friends"
 externalSolrPassword: $SOLR_ADMIN_PASSWORD
 
 global:
-  hyraxName: wvu-knapsack-friends-hyrax
+  hyraxName: wvu-knapsack-friends
 
 nginx:
   enabled: false
