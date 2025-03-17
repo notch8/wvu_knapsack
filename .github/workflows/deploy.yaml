@@ -6,7 +6,7 @@ on:
       environment:
         description: 'Deploy to Environment'
         required: true
-        default: 'staging'
+        default: 'friends'
         type: choice
         options:
           - friends
@@ -18,5 +18,5 @@ on:
 
 jobs:
   deploy:
-    uses: notch8/actions/.github/workflows/deploy.yaml@v0.0.25
+    uses: notch8/actions/.github/workflows/deploy.yaml@v0.0.15
     secrets: inherit
