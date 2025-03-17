@@ -1,1 +1,1 @@
-hyrax-webapp/solrcloud-upload-configset.sh
+hyrax-webapp/bin/solrcloud-upload-configset.sh
