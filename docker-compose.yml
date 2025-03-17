@@ -5,7 +5,7 @@ x-app: &app
     target: hyku-web
     cache_from:
       - ghcr.io/samvera/hyku/base:latest
-      - ghcr.io/notch8/wvu_knapsack:latest
+      - ghcr.io/samvera-labs/hyku_knapsack:latest
     args:
       BUILDKIT_INLINE_CACHE: 1
       APP_PATH: ./hyrax-webapp
