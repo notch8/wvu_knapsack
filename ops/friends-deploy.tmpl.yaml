@@ -163,6 +163,8 @@ extraEnvVars: &envVars
     value: wvu-knapsack-friends.notch8.cloud
   - name: NEGATIVE_CAPTCHA_SECRET
     value: $NEGATIVE_CAPTCHA_SECRET
+  - name: PATH
+    value: /app/samvera/hyrax-webapp/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
   - name: SMTP_ADDRESS
     value: "maildev-smtp.maildev.svc.cluster.local"
   - name: SMTP_DOMAIN

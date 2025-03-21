@@ -119,6 +119,8 @@ services:
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: initialize_app
+    environment:
+      - PATH=/app/samvera/hyrax-webapp/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     command:
       - >
         solrcloud-upload-configset.sh /app/samvera/hyrax-webapp/solr/conf &&
