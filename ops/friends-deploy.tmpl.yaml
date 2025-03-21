@@ -136,7 +136,7 @@ extraEnvVars: &envVars
   - name: CH12N_TOOL
     value: fits_servlet
   - name: FITS_SERVLET_URL
-    value: http://fits:8080/fits
+    value: http://wvu-knapsack-friends-fits:8080/fits
   - name: HYRAX_VALKYRIE
     value: "true"
   - name: HYKU_BULKRAX_ENABLED
@@ -250,6 +250,11 @@ externalSolrHost: solr.solr.svc.cluster.local
 externalSolrUser: admin
 externalSolrCollection: "wvu-knapsack-friends"
 externalSolrPassword: $SOLR_ADMIN_PASSWORD
+
+fits:
+  enabled: true
+  servicePort: 8080
+  subPath: /fits
 
 global:
   hyraxName: wvu-knapsack-friends
