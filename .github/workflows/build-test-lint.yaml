@@ -9,11 +9,16 @@ on:
       - main
   workflow_dispatch:
     inputs:
-      debug_enabled:
-        type: boolean
-        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+      debug_step:
         required: false
-        default: false
+        description: "Pause the selected step to debug using tmate"
+        type: choice
+        default: ""
+        options:
+          - ""
+          - build
+          - test
+          - lint
 
 jobs:
   build:
@@ -36,3 +41,8 @@ jobs:
     uses: notch8/actions/.github/workflows/lint.yaml@main
     with:
       rubocop_cmd: "cd .. && bundle && bundle exec rubocop --parallel --format progress"
+
+  reports:
+    if: always()
+    needs: [test, lint]
+    uses: notch8/actions/.github/workflows/report.yaml@main
