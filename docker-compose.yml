@@ -9,7 +9,7 @@ x-app: &app
     args:
       BUILDKIT_INLINE_CACHE: 1
       APP_PATH: ./hyrax-webapp
-  image: ghcr.io/samvera-labs/hyku_knapsack:${TAG:-latest}
+  image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
   environment:
     # This line is what makes the knapsack include use the local code instead of the remote gem
     - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
@@ -53,6 +53,11 @@ services:
       file: hyrax-webapp/docker-compose.yml
       service: fcrepo
 
+  fits:
+    extends:
+      file: hyrax-webapp/docker-compose.yml
+      service: fits
+
   db:
     extends:
       file: hyrax-webapp/docker-compose.yml
@@ -89,11 +94,11 @@ services:
       target: hyku-worker
       cache_from:
         - ghcr.io/samvera/hyku/base:latest
-        - ghcr.io/samvera-labs/hyku_knapsack/worker:latest
+        - ghcr.io/notch8/wvu_knapsack/worker:latest
       args:
         BUILDKIT_INLINE_CACHE: 1
         APP_PATH: ./hyrax-webapp
-    image: ghcr.io/samvera-labs/hyku_knapsack/worker:${TAG:-latest}
+    image: ghcr.io/notch8/wvu_knapsack/worker:${TAG:-latest}
     # Uncomment command to access container with out starting bin/worker. Useful for debugging or updating Gemfile.lock
     # command: sleep infinity
     volumes:
@@ -114,12 +119,6 @@ services:
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: initialize_app
-    command:
-      - >
-        solrcloud-upload-configset.sh /app/samvera/hyrax-webapp/solr/conf &&
-        solrcloud-assign-configset.sh &&
-        SOLR_COLLECTION_NAME=hydra-test solrcloud-assign-configset.sh &&
-        db-migrate-seed.sh
 
   redis:
     extends:
