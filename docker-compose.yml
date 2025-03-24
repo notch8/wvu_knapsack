@@ -83,6 +83,9 @@ services:
       - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
       - VIRTUAL_PORT=3000
       - VIRTUAL_HOST=.wvu.test
+      - HYKU_ADMIN_HOST=wvu.test
+      - HYKU_DEFAULT_HOST=%{tenant}.wvu.test
+      - HYKU_ROOT_HOST=wvu.test
 
   worker:
     <<: *app
