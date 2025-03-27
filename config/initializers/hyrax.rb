@@ -6,5 +6,7 @@ Rails.application.config.after_initialize do
   Hyrax.config do |config|
   # Injected via `rails g hyrax:work_resource BornDigital`
   config.register_curation_concern :born_digital
+  # Injected via `rails g hyrax:work_resource Congressional`
+  config.register_curation_concern :congressional
   end
 end
