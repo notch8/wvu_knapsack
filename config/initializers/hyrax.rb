@@ -10,5 +10,7 @@ Rails.application.config.after_initialize do
   config.register_curation_concern :congressional
   # Injected via `rails g hyrax:work_resource FolkMusic`
   config.register_curation_concern :folk_music
+  # Injected via `rails g hyrax:work_resource Medicine`
+  config.register_curation_concern :medicine
   end
 end
