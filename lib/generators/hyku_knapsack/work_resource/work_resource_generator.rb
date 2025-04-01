@@ -17,14 +17,14 @@ class HykuKnapsack::WorkResourceGenerator < Rails::Generators::NamedBase
   include Rails::Generators::ModelHelpers
 
   HYRAX_TEMPLATES = Hyrax::Engine.root.join('lib', 'generators', 'hyrax', 'work_resource', 'templates')
-  
+
   source_paths.push(File.expand_path('templates', __dir__))
   source_paths.push(HYRAX_TEMPLATES)
 
   argument :attributes, type: :array, default: [], banner: 'field:type field:type'
 
   class_option :flexible, type: :boolean, default: false,
-               desc: 'Generate the work in flexible mode (skip schema includes)'
+                          desc: 'Generate the work in flexible mode (skip schema includes)'
 
   def self.exit_on_failure?
     true
@@ -138,10 +138,6 @@ class HykuKnapsack::WorkResourceGenerator < Rails::Generators::NamedBase
         RUBY
       end
     end
-  end
-
-  def insert_hyku_extra_includes_into_form
-    # Remove this method since we're including all form fields in the template
   end
 
   def change_inheritance_of_form

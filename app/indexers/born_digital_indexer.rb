@@ -3,4 +3,4 @@
 # Generated via
 #  `rails generate hyku_knapsack:work_resource BornDigital --flexible`
 class BornDigitalIndexer < Hyrax::ValkyrieWorkIndexer
-end 
+end

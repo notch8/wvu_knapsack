@@ -3,4 +3,4 @@
 # Generated via
 #  `rails generate hyku_knapsack:work_resource Congressional --flexible`
 class CongressionalForm < Hyrax::Forms::ResourceForm
-end 
+end

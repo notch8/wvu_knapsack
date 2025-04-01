@@ -3,4 +3,4 @@
 # Generated via
 #  `rails generate hyku_knapsack:work_resource FolkMusic --flexible`
 class FolkMusicForm < Hyrax::Forms::ResourceForm
-end 
+end
