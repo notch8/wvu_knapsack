@@ -132,47 +132,16 @@ class HykuKnapsack::WorkResourceGenerator < Rails::Generators::NamedBase
     model = File.join('../app/models/', class_path, "#{file_name}.rb")
     af_model = class_name.to_s.gsub('Resource', '')&.safe_constantize if class_name.end_with?('Resource')
     insert_into_file model, before: "end" do
-      schema_includes = if flexible?
-        ""
-      else
+      if af_model
         <<-RUBY.gsub(/^ {8}/, '  ')
-        include Hyrax::Schema(:basic_metadata)
-        include Hyrax::Schema(:#{file_name.underscore})
-        include Hyrax::Schema(:with_pdf_viewer)
-        include Hyrax::Schema(:with_video_embed)
+        Hyrax::ValkyrieLazyMigration.migrating(self, from: #{af_model})
         RUBY
       end
-
-      <<-RUBY.gsub(/^ {8}/, '  ')
-        #{schema_includes}
-        include Hyrax::ArResource
-        include Hyrax::NestedWorks
-        #{"\n  Hyrax::ValkyrieLazyMigration.migrating(self, from: #{af_model})\n" if af_model}
-        include IiifPrint.model_configuration(
-          pdf_split_child_model: GenericWorkResource,
-          pdf_splitter_service: IiifPrint::TenantConfig::PdfSplitter
-        )
-        #{flexible? ? "" : "\n  prepend OrderAlready.for(:creator)"}
-      RUBY
     end
   end
 
   def insert_hyku_extra_includes_into_form
-    return if flexible?
-    form = File.join('../app/forms/', class_path, "#{file_name}_form.rb")
-    insert_into_file form, before: "end" do
-      "  include Hyrax::FormFields(:with_pdf_viewer)\n" \
-      "  include Hyrax::FormFields(:with_video_embed)\n" \
-      "  include VideoEmbedBehavior::Validation\n"
-    end
-  end
-
-  def insert_hyku_extra_inclues_into_indexer
-    return if flexible?
-    indexer = File.join('../app/indexers/', class_path, "#{file_name}_indexer.rb")
-    insert_into_file indexer, before: "end" do
-      "  include HykuIndexing\n"
-    end
+    # Remove this method since we're including all form fields in the template
   end
 
   def change_inheritance_of_form
