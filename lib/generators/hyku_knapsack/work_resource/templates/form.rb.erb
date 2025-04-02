@@ -3,7 +3,7 @@
 # Generated via
 #  `rails generate hyku_knapsack:work_resource <%= class_name %><%= " --flexible" if flexible? %>`
 <% if flexible? -%>
-class <%= class_name %>Form < Hyrax::Forms::ResourceForm
+class <%= class_name %>Form < Hyrax::Forms::ResourceForm(<%= class_name %>)
 end
 <% else -%>
 # @see https://github.com/samvera/hyrax/wiki/Hyrax-Valkyrie-Usage-Guide#forms

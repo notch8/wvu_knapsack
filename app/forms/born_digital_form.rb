@@ -2,5 +2,5 @@
 
 # Generated via
 #  `rails generate hyku_knapsack:work_resource BornDigital --flexible`
-class BornDigitalForm < Hyrax::Forms::ResourceForm
+class BornDigitalForm < Hyrax::Forms::ResourceForm(BornDigital)
 end
