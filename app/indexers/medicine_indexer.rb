@@ -3,4 +3,6 @@
 # Generated via
 #  `rails generate hyku_knapsack:work_resource Medicine --flexible`
 class MedicineIndexer < Hyrax::ValkyrieWorkIndexer
+  include Hyrax::Indexer('Medicine')
+  include HykuIndexing
 end
