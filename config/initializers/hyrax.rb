@@ -4,6 +4,10 @@
 
 Rails.application.config.after_initialize do
   Hyrax.config do |config|
+    # Clears the default registered concerns and adds in the concerns specified in the m3_profile.yaml
+    config.instance_variable_set(:@registered_concerns, [])
+    # Injected via `rails g hyku_knapsack:work_resource Document --flexible`
+    config.register_curation_concern :document
     # Injected via `rails g hyku_knapsack:work_resource BornDigital --flexible`
     config.register_curation_concern :born_digital
     # Injected via `rails g hyku_knapsack:work_resource Congressional --flexible`
@@ -14,7 +18,5 @@ Rails.application.config.after_initialize do
     config.register_curation_concern :medicine
     # Injected via `rails g hyku_knapsack:work_resource OralHistory --flexible`
     config.register_curation_concern :oral_history
-    # Injected via `rails g hyku_knapsack:work_resource Document --flexible`
-    config.register_curation_concern :document
   end
 end
