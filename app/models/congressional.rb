@@ -7,7 +7,7 @@ class Congressional < Hyrax::Work
   include Hyrax::NestedWorks
 
   include IiifPrint.model_configuration(
-    pdf_split_child_model: GenericWorkResource,
+    pdf_split_child_model: self,
     pdf_splitter_service: IiifPrint::TenantConfig::PdfSplitter
   )
 end
