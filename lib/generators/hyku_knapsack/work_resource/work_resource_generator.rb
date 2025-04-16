@@ -16,10 +16,15 @@ class HykuKnapsack::WorkResourceGenerator < Rails::Generators::NamedBase
   # new models or scaffolds.
   include Rails::Generators::ModelHelpers
 
-  TEMPLATE_PATH = Hyrax::Engine.root.join('lib', 'generators', 'hyrax', 'work_resource', 'templates')
-  source_root File.expand_path(TEMPLATE_PATH, __FILE__)
+  HYRAX_TEMPLATES = Hyrax::Engine.root.join('lib', 'generators', 'hyrax', 'work_resource', 'templates')
+
+  source_paths.push(File.expand_path('templates', __dir__))
+  source_paths.push(HYRAX_TEMPLATES)
 
   argument :attributes, type: :array, default: [], banner: 'field:type field:type'
+
+  class_option :flexible, type: :boolean, default: false,
+                          desc: 'Generate the work in flexible mode (skip schema includes)'
 
   def self.exit_on_failure?
     true
@@ -47,6 +52,7 @@ class HykuKnapsack::WorkResourceGenerator < Rails::Generators::NamedBase
   end
 
   def create_metadata_config
+    return if flexible?
     template('metadata.yaml', File.join('../config/metadata/', "#{file_name}.yaml"))
     return if attributes.blank?
     gsub_file File.join('config/metadata/', "#{file_name}.yaml"),
@@ -126,35 +132,11 @@ class HykuKnapsack::WorkResourceGenerator < Rails::Generators::NamedBase
     model = File.join('../app/models/', class_path, "#{file_name}.rb")
     af_model = class_name.to_s.gsub('Resource', '')&.safe_constantize if class_name.end_with?('Resource')
     insert_into_file model, before: "end" do
-      <<-RUBY.gsub(/^ {8}/, '  ')
-        include Hyrax::Schema(:with_pdf_viewer)
-        include Hyrax::Schema(:with_video_embed)
-        include Hyrax::ArResource
-        include Hyrax::NestedWorks
-        #{"\n  Hyrax::ValkyrieLazyMigration.migrating(self, from: #{af_model})\n" if af_model}
-        include IiifPrint.model_configuration(
-          pdf_split_child_model: GenericWorkResource,
-          pdf_splitter_service: IiifPrint::TenantConfig::PdfSplitter
-        )
-
-        prepend OrderAlready.for(:creator)
-      RUBY
-    end
-  end
-
-  def insert_hyku_extra_includes_into_form
-    form = File.join('../app/forms/', class_path, "#{file_name}_form.rb")
-    insert_into_file form, after: "include Hyrax::FormFields(:#{file_name})\n" do
-      "  include Hyrax::FormFields(:with_pdf_viewer)\n" \
-      "  include Hyrax::FormFields(:with_video_embed)\n" \
-      "  include VideoEmbedBehavior::Validation\n"
-    end
-  end
-
-  def insert_hyku_extra_inclues_into_indexer
-    indexer = File.join('../app/indexers/', class_path, "#{file_name}_indexer.rb")
-    insert_into_file indexer, after: "include Hyrax::Indexer(:#{file_name})\n" do
-      "  include HykuIndexing\n"
+      if af_model
+        <<-RUBY.gsub(/^ {8}/, '  ')
+        Hyrax::ValkyrieLazyMigration.migrating(self, from: #{af_model})
+        RUBY
+      end
     end
   end
 
@@ -189,6 +171,11 @@ class HykuKnapsack::WorkResourceGenerator < Rails::Generators::NamedBase
 
   def revoking?
     behavior == :revoke
+  end
+
+  def flexible?
+    return true if options[:flexible]
+    defined?(Hyrax.config.flexible?) && Hyrax.config.flexible?
   end
 end
 # rubocop:enable Metrics/ClassLength

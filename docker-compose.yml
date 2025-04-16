@@ -35,7 +35,7 @@ volumes:
   zoo:
 
 networks:
-   default:
+  default:
     name: stackcar
 
 services:
@@ -43,7 +43,7 @@ services:
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: adminer
-      
+
   zoo:
     extends:
       file: hyrax-webapp/docker-compose.yml
