@@ -109,6 +109,8 @@ extraEnvVars: &envVars
     value: $GOOGLE_OAUTH_PRIVATE_KEY_VALUE
   - name: GOOGLE_OAUTH_CLIENT_EMAIL
     value: hyku-demo@wvu-knapsack-friends.notch8.cloud
+  - name: HYRAX_FLEXIBLE
+    value: "true"
   - name: INITIAL_ADMIN_EMAIL
     value: admin@example.com
   - name: INITIAL_ADMIN_PASSWORD
