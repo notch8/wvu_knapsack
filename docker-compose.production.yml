@@ -34,15 +34,9 @@ volumes:
   zoo:
 
 networks:
-  default:
-    name: stackcar
+  internal:
 
 services:
-  adminer:
-    extends:
-      file: hyrax-webapp/docker-compose.production.yml
-      service: adminer
-
   zoo:
     extends:
       file: hyrax-webapp/docker-compose.production.yml
@@ -62,13 +56,6 @@ services:
     extends:
       file: hyrax-webapp/docker-compose.production.yml
       service: db
-
-  base:
-    extends:
-      file: hyrax-webapp/docker-compose.production.yml
-      service: base
-    image: ghcr.io/samvera/hyku/base:${TAG:-latest}
-    command: bash -l -c "echo 'base is only used for building base images, which in turn reduces image build times. It does not need to be run'"
 
   web:
     <<: *app
@@ -125,8 +112,3 @@ services:
     extends:
       file: hyrax-webapp/docker-compose.production.yml
       service: redis
-
-  chrome:
-    extends:
-      file: hyrax-webapp/docker-compose.production.yml
-      service: chrome
