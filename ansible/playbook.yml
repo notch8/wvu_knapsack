@@ -28,6 +28,11 @@
       tags: nginx
 
   tasks:
+    - name: Ensure /etc/ssl/private exists
+      file:
+        path: /etc/ssl/private
+        state: directory
+        mode: '0700'
 
     - name: Copy SSL certificate
       copy:
