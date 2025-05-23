@@ -82,6 +82,8 @@ services:
       - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
       - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
       - VIRTUAL_PORT=3000
+    ports:
+      - "3000:3000"
 
   worker:
     <<: *app
