@@ -43,9 +43,45 @@ services:
       service: zoo
 
   solr:
-    extends:
-      file: hyrax-webapp/docker-compose.production.yml
-      service: solr
+    build:
+      context: .
+      target: hyku-solr
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - ghcr.io/samvera/hyku/solr:latest
+    image: ghcr.io/samvera/hyku/solr:${TAG:-latest}
+    environment:
+      - OOM=script
+      - SOLR_ADMIN_USER=solr
+      - SOLR_ADMIN_PASSWORD=SolrRocks
+      - SOLR_COLLECTION=hydra-development
+      - SOLR_CLOUD_BOOTSTRAP=yes
+      - SOLR_ENABLE_CLOUD_MODE=yes
+      - SOLR_ENABLE_AUTHENTICATION=yes
+      - ZK_HOST=zoo:2181
+      - VIRTUAL_PORT=8983
+      - VIRTUAL_HOST=solr.hyku.test
+    user: root
+    command: bash -c "
+      chown -R 8983:8983 /var/solr
+      && ./bin/solr zk cp file:/var/solr/data/security.json zk:/security.json
+      && runuser -u solr -- solr-foreground"
+    expose:
+      - 8983
+    volumes:
+      - solr:/var/solr
+    networks:
+      internal:
+    healthcheck:
+      test: curl -sf http://$$SOLR_ADMIN_USER:$$SOLR_ADMIN_PASSWORD@solr:8983/solr/admin/cores?action=STATUS || exit 1
+      start_period: 3s
+      interval: 5s
+      timeout: 5s
+      retries: 6
+    depends_on:
+      zoo:
+        condition: service_healthy
 
   fcrepo:
     extends:
