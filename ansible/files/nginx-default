@@ -76,8 +76,8 @@ server {
     }
 
     listen 443 ssl; # managed by Certbot
-    ssl_certificate /etc/ssl/hykudev_lib_wvu_edu_2024_complete.cer;
-    ssl_certificate_key /etc/ssl/private/hykudev.lib.wvu.edu.2024.key;
+    ssl_certificate /etc/ssl/hykudev_lib_wvu_edu_2025_complete.cer;
+    ssl_certificate_key /etc/ssl/private/hykudev.lib.wvu.edu.2025.key;
 }
 
 

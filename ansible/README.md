@@ -5,8 +5,8 @@ This repository contains Ansible playbooks to automate the setup of the WVU serv
 ## Prerequisites
 
 1. Place required files in the `files/` directory:
-   - SSL certificate: `hykudev_lib_wvu_edu_2024_complete.cer`
-   - SSL private key: `hykudev.lib.wvu.edu.2024.key`
+   - SSL certificate: `hykudev_lib_wvu_edu_2025_complete.cer`
+   - SSL private key: `hykudev.lib.wvu.edu.2025.key`
    - Nginx config: `nginx-default`
    - Deploy key: `id_rsa`
 

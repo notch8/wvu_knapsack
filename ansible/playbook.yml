@@ -31,14 +31,14 @@
 
     - name: Copy SSL certificate
       copy:
-        src: files/hykudev_lib_wvu_edu_2024_complete.cer
-        dest: /etc/ssl/hykudev_lib_wvu_edu_2024_complete.cer
+        src: files/hykudev_lib_wvu_edu_2025_complete.cer
+        dest: /etc/ssl/hykudev_lib_wvu_edu_2025_complete.cer
         mode: '0644'
 
     - name: Copy SSL key
       copy:
-        src: files/hykudev.lib.wvu.edu.2024.key
-        dest: /etc/ssl/private/hykudev.lib.wvu.edu.2024.key
+        src: files/hykudev.lib.wvu.edu.2025.key
+        dest: /etc/ssl/private/hykudev.lib.wvu.edu.2025.key
         mode: '0600'
 
     - name: Copy nginx configuration
