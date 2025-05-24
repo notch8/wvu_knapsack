@@ -1,6 +1,6 @@
 x-app: &app
   env_file:
-      - .env.production
+    - .env.production
   build:
     context: .
     target: hyku-web
