@@ -1,4 +1,6 @@
 x-app: &app
+  env_file:
+    - .env.production
   build:
     context: .
     target: hyku-web
@@ -34,51 +36,73 @@ volumes:
   zoo:
 
 networks:
-  default:
-    name: stackcar
+  internal:
 
 services:
-  adminer:
-    extends:
-      file: hyrax-webapp/docker-compose.yml
-      service: adminer
-
   zoo:
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: zoo
 
   solr:
-    extends:
-      file: hyrax-webapp/docker-compose.yml
-      service: solr
+    build:
+      context: .
+      target: hyku-solr
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - ghcr.io/samvera/hyku/solr:latest
+    image: ghcr.io/samvera/hyku/solr:${TAG:-latest}
+    environment:
+      - OOM=script
+      - SOLR_ADMIN_USER=solr
+      - SOLR_ADMIN_PASSWORD=SolrRocks
+      - SOLR_COLLECTION=hydra-development
+      - SOLR_CLOUD_BOOTSTRAP=yes
+      - SOLR_ENABLE_CLOUD_MODE=yes
+      - SOLR_ENABLE_AUTHENTICATION=yes
+      - ZK_HOST=zoo:2181
+      - VIRTUAL_PORT=8983
+      - VIRTUAL_HOST=solr.hyku.test
+    user: root
+    command: bash -c "
+      chown -R 8983:8983 /var/solr
+      && ./bin/solr zk cp file:/var/solr/data/security.json zk:/security.json
+      && runuser -u solr -- solr-foreground"
+    expose:
+      - 8983
+    volumes:
+      - solr:/var/solr
+    networks:
+      internal:
+    healthcheck:
+      test: curl -sf http://$$SOLR_ADMIN_USER:$$SOLR_ADMIN_PASSWORD@solr:8983/solr/admin/cores?action=STATUS || exit 1
+      start_period: 3s
+      interval: 5s
+      timeout: 5s
+      retries: 6
+    depends_on:
+      zoo:
+        condition: service_healthy
 
   fcrepo:
+    env_file:
+      - .env.production
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: fcrepo
 
-  fits:
-    extends:
-      file: hyrax-webapp/docker-compose.yml
-      service: fits
-
   db:
+    env_file:
+      - .env.production
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: db
-
-  base:
-    extends:
-      file: hyrax-webapp/docker-compose.yml
-      service: base
-    image: ghcr.io/samvera/hyku/base:${TAG:-latest}
-    command: bash -l -c "echo 'base is only used for building base images, which in turn reduces image build times. It does not need to be run'"
 
   web:
     <<: *app
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: web
     # Uncomment command to access container with out starting bin/web. Useful for debugging or updating Gemfile.lock
     # command: sleep infinity
@@ -87,11 +111,13 @@ services:
       - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
       - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
       - VIRTUAL_PORT=3000
+    ports:
+      - "3000:3000"
 
   worker:
     <<: *app
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: worker
     build:
       context: .
@@ -115,21 +141,16 @@ services:
   check_volumes:
     <<: *app
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: check_volumes
 
   initialize_app:
     <<: *app
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: initialize_app
 
   redis:
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: redis
-
-  chrome:
-    extends:
-      file: hyrax-webapp/docker-compose.yml
-      service: chrome

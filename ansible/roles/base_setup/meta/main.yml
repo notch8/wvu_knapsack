@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: Notch8
+  description: Base setup for WVU servers
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: EL
+      versions:
+        - 8
+        - 9
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+
+dependencies: []
