@@ -1,4 +1,6 @@
 x-app: &app
+  env_file:
+      - .env.production
   build:
     context: .
     target: hyku-web
@@ -84,11 +86,15 @@ services:
         condition: service_healthy
 
   fcrepo:
+    env_file:
+      - .env.production
     extends:
       file: hyrax-webapp/docker-compose.production.yml
       service: fcrepo
 
   db:
+    env_file:
+      - .env.production
     extends:
       file: hyrax-webapp/docker-compose.production.yml
       service: db
