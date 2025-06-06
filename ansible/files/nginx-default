@@ -15,13 +15,13 @@ real_ip_recursive on;
 
 server {
     listen 443 ssl;
-    server_name hykudev.lib.wvu.edu;
+    server_name lib.wvu.edu;
 
     root /app/samvera/hyrax-webapp/public;
     index index.html;
 
-    ssl_certificate     /etc/pki/tls/certs/hykudev_lib_wvu_edu_2025_complete.cer;
-    ssl_certificate_key /etc/pki/tls/private/hykudev.lib.wvu.edu.2025.key;
+    ssl_certificate     /home/ansible/wvu_knapsack/ansible/files/lib.wvu.edu.crt;
+    ssl_certificate_key /home/ansible/wvu_knapsack/ansible/files/lib.wvu.edu.key;
 
     client_body_in_file_only clean;
     client_body_buffer_size 32K;

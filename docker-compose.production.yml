@@ -146,6 +146,12 @@ services:
 
   initialize_app:
     <<: *app
+    command:
+      - >
+        solrcloud-upload-configset.sh /app/samvera/hyrax-webapp/solr/conf &&
+        solrcloud-assign-configset.sh &&
+        SOLR_COLLECTION_NAME=hydra-test solrcloud-assign-configset.sh &&
+        db-migrate-seed.sh
     extends:
       file: hyrax-webapp/docker-compose.production.yml
       service: initialize_app
