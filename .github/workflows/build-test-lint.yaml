@@ -26,18 +26,15 @@ jobs:
     secrets: inherit
     with:
       platforms: "linux/amd64"
-      webTarget: hyku-web
+      webTarget: hyku-base
       workerTarget: hyku-worker
       solrTarget: hyku-solr
-
   test:
     needs: build
     uses: notch8/actions/.github/workflows/test.yaml@v0.0.23
     with:
-      confdir: '/app/samvera/hyrax-webapp/solr/conf'
+      confdir: "/app/samvera/hyrax-webapp/solr/conf"
       rspec_cmd: "cd .. && gem install semaphore_test_boosters && bundle && rspec_booster --job $CI_NODE_INDEX/$CI_NODE_TOTAL"
-      webTarget: hyku-web
-      workerTarget: hyku-worker
 
   lint:
     needs: build
