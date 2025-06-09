@@ -58,9 +58,9 @@ services:
       service: fcrepo
 
   fits:
-    extends:
-      file: hyrax-webapp/docker-compose.production.yml
-      service: fits
+    image: ghcr.io/samvera/fitsservlet:1.6.0
+    ports:
+      - 8080
 
   db:
     env_file:

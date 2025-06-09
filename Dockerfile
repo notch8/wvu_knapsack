@@ -1,4 +1,4 @@
-FROM ghcr.io/samvera/hyku/base:b3998f19 as hyku-knap-base
+FROM ghcr.io/samvera/hyku/base:b3998f19 AS hyku-knap-base
 
 # This is specifically NOT $APP_PATH but the parent directory
 COPY --chown=1001:101 . /app/samvera
@@ -20,11 +20,11 @@ RUN echo "📚 Installing Tesseract Best (training data)!" && \
 
 ENV PATH="/app/samvera/bin:/app/samvera/hyrax-webapp/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-FROM hyku-knap-base as hyku-web
+FROM hyku-knap-base AS hyku-web
 RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DB_URL='postgresql://fake' bundle exec rake assets:precompile && yarn install
 CMD ./bin/web
 
-FROM hyku-web as hyku-worker
+FROM hyku-web AS hyku-worker
 CMD ./bin/worker
 
 FROM solr:8.3 AS hyku-solr
