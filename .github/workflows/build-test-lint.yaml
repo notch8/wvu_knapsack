@@ -36,7 +36,7 @@ jobs:
     with:
       confdir: '/app/samvera/hyrax-webapp/solr/conf'
       rspec_cmd: "cd .. && gem install semaphore_test_boosters && bundle && rspec_booster --job $CI_NODE_INDEX/$CI_NODE_TOTAL"
-      webTarget: hyku-webAdd commentMore actions
+      webTarget: hyku-web
       workerTarget: hyku-worker
 
   lint:
