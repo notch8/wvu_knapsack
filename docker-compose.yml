@@ -1,13 +1,15 @@
+version: '3.8'
 x-app: &app
   build:
     context: .
     target: hyku-web
     cache_from:
-      - ghcr.io/notch8/wvu_knapsack/base:latest
+      - ghcr.io/samvera/hyku/base:latest
       - ghcr.io/notch8/wvu_knapsack:latest
     args:
       BUILDKIT_INLINE_CACHE: 1
       APP_PATH: ./hyrax-webapp
+      BASE_TAG: ${BASE_TAG:-latest}
   image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
   environment:
     # This line is what makes the knapsack include use the local code instead of the remote gem
@@ -73,7 +75,7 @@ services:
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: base
-    image: ghcr.io/notch8/wvu_knapsack/base:${TAG:-latest}
+    image: ghcr.io/samvera/hyku/base:${TAG:-latest}
     command: bash -l -c "echo 'base is only used for building base images, which in turn reduces image build times. It does not need to be run'"
 
   web:
@@ -87,7 +89,6 @@ services:
       # This line is what makes the knapsack include use the local code instead of the remote gem
       - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
       - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
-      - VIRTUAL_PORT=3000
 
   worker:
     <<: *app
@@ -98,11 +99,12 @@ services:
       context: .
       target: hyku-worker
       cache_from:
-        - ghcr.io/notch8/wvu_knapsack/base:latest
+        - ghcr.io/samvera/hyku/base:latest
         - ghcr.io/notch8/wvu_knapsack/worker:latest
       args:
         BUILDKIT_INLINE_CACHE: 1
         APP_PATH: ./hyrax-webapp
+        BASE_TAG: ${BASE_TAG:-latest}
     image: ghcr.io/notch8/wvu_knapsack/worker:${TAG:-latest}
     # Uncomment command to access container with out starting bin/worker. Useful for debugging or updating Gemfile.lock
     # command: sleep infinity

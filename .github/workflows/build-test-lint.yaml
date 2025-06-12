@@ -28,7 +28,6 @@ jobs:
       platforms: "linux/amd64"
       webTarget: hyku-web
       workerTarget: hyku-worker
-      solrTarget: hyku-solr
   test:
     needs: build
     uses: notch8/actions/.github/workflows/test.yaml@v0.0.26

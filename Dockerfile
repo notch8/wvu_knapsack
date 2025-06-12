@@ -1,5 +1,5 @@
-FROM ghcr.io/samvera/hyku/base:df5ff40c AS hyku-knap-base
-
+ARG BASE_TAG=df5ff40c
+FROM ghcr.io/samvera/hyku/base:${BASE_TAG} AS hyku-knap-base
 # This is specifically NOT $APP_PATH but the parent directory
 COPY --chown=1001:101 . /app/samvera
 COPY --chown=1001:101 bundler.d/ /app/.bundler.d/
@@ -7,9 +7,7 @@ ENV BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
 ENV BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
 ENV BUNDLE_BUNDLER_INJECT__GEM_PATH=/app/samvera/bundler.d
 
-RUN jobs=$(nproc) && \
-    if [ "$jobs" -gt 2 ]; then jobs=2; fi && \
-    bundle install --jobs "$jobs" --retry 3
+RUN bundle install --jobs "$(nproc)"
 
 USER root
 
@@ -18,10 +16,11 @@ RUN echo "📚 Installing Tesseract Best (training data)!" && \
     wget https://github.com/tesseract-ocr/tessdata_best/raw/main/eng.traineddata -O /usr/share/tesseract-ocr/5/tessdata/eng_best.traineddata && \
     git config --global --add safe.directory "/app/samvera"
 
-ENV PATH="/app/samvera/bin:/app/samvera/hyrax-webapp/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+USER app
 
 FROM hyku-knap-base AS hyku-web
 RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DB_URL='postgresql://fake' bundle exec rake assets:precompile && yarn install
+
 CMD ./bin/web
 
 FROM hyku-web AS hyku-worker
