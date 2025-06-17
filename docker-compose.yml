@@ -10,6 +10,8 @@ x-app: &app
       APP_PATH: ./hyrax-webapp
       BASE_TAG: ${BASE_TAG:-latest}
   image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
+  env_file:
+    - .env.development
   environment:
     # This line is what makes the knapsack include use the local code instead of the remote gem
     - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
