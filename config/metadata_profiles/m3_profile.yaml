@@ -2,7 +2,7 @@
 override_check: true
 m3_version: 1.0.beta2
 profile:
-  date_modified: '2025-06-25'
+  date_modified: '2025-06-26'
   responsibility: https://wvu.edu
   responsibility_statement: WVU Default Metadata Profile
   type: WVU Default Metadata Profile
@@ -454,6 +454,13 @@ properties:
     view:
       render_as: faceted
       html_dl: true
+  label:
+    available_on:
+      class:
+      - Hyrax::FileSet
+    display_label:
+      default: Label
+    range: http://www.w3.org/2001/XMLSchema#string
   license:
     available_on:
       class:

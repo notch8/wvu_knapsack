@@ -1,4 +1,4 @@
-ARG BASE_TAG=df5ff40c
+ARG BASE_TAG=02fbe049
 FROM ghcr.io/samvera/hyku/base:${BASE_TAG} AS hyku-knap-base
 # This is specifically NOT $APP_PATH but the parent directory
 COPY --chown=1001:101 . /app/samvera
