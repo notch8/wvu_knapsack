@@ -26,6 +26,22 @@ fi
 
 git checkout "$BRANCH"
 
+echo "🏷️ Updating TAG to latest commit SHA..."
+TAG=$(git rev-parse --short=8 HEAD)
+export TAG
+echo "Tag is: $TAG"
+
+echo "🧹 Stopping and cleaning up old containers..."
+docker compose down --remove-orphans
+
+echo "🐳 Pulling Docker images for tag $TAG..."
+docker compose pull
+
+echo "🔄 Resetting Gemfile.lock and m3_profile.yaml to match repository..."
+cd /home/ansible/wvu_knapsack/hyrax-webapp
+git restore Gemfile.lock config/metadata_profiles/m3_profile.yaml
+cd ..
+
 if [ "$BRANCH" != "main" ]; then
   echo "🔄 Pulling latest code from 'main'..."
   git pull origin main
@@ -39,19 +55,9 @@ fi
 echo "📦 Updating submodules..."
 git submodule update --remote
 
-
-echo "🏷️ Updating TAG to latest commit SHA..."
-TAG=$(git rev-parse --short=8 HEAD)
-echo "Tag is: $TAG"
-
-echo "🐳 Pulling latest Docker images..."
-docker compose pull
-
-echo "🛑 Stopping and cleaning up old containers..."
-docker compose down --remove-orphans
-
 echo "🚀 Recreating containers from latest image..."
-docker compose up -d --build
+docker compose build
+docker compose up -d
 
 echo "✅ Deploy complete. Containers are now running image tagged: $TAG"
 echo ""
