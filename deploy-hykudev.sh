@@ -1,60 +1,59 @@
 #!/bin/bash
 
-## Instructions
-## Connect to WVU over VPN via The Windows App
-## Login with your credentials given to you by the institution
-## Open Windows PowerShell and ssh into the Virtual Machine (VM)
-## Using your login credentials above (user_name@mail.wvu.edu/password)
-# ssh user_name@hykudev.lib.wvu.edu
-# At prompt enter your password
-# sudo su - ansible
-# cd wvu_knapsack
-# ./deploy_hykudev.sh
-
 set -e
 
-# Add Notch8 developer alias
-alias dc='docker compose'
-alias dcb='docker compose build'
+## Instructions:
+## 1. Connect to WVU VPN via The Windows App
+## 2. SSH into the VM: ssh user_name@hykudev.lib.wvu.edu
+## 3. Switch to ansible: sudo su - ansible
+## 4. cd wvu_knapsack
+## 5. ./deploy_hykudev.sh [optional-branch-name]
 
-cd /home/ansible/wvu_knapsack/hyrax-webapp
-git restore Gemfile.lock
+
+
+echo "📁 Switching to project root..."
 cd /home/ansible/wvu_knapsack
-git submodule update --remote
 
-BRANCH="${1}"
+BRANCH="${1:-$(git rev-parse --abbrev-ref HEAD)}"
+echo "📌 Using branch: $BRANCH"
 
-echo "🔄 Pulling latest code from 'main'..."
-git pull origin main
+if git rev-parse --verify "$BRANCH" > /dev/null 2>&1; then
+  git checkout "$BRANCH"
+else
+  echo "❌ Error: Branch '$BRANCH' does not exist locally or remotely."
+  exit 1
+fi
 
-if [ -n "$BRANCH" ]; then
+git checkout "$BRANCH"
+
+if [ "$BRANCH" != "main" ]; then
+  echo "🔄 Pulling latest code from 'main'..."
+  git pull origin main
   echo "🔄 Also pulling latest code from branch '$BRANCH'..."
   git pull origin "$BRANCH"
+else
+  echo "🔄 Pulling latest code from 'main'..."
+  git pull origin main
 fi
+
+echo "📦 Updating submodules..."
+git submodule update --remote
+
 
 echo "🏷️ Updating TAG to latest commit SHA..."
 TAG=$(git rev-parse --short=8 HEAD)
 echo "Tag is: $TAG"
 
-echo "📦 Loading base .env..."
-set -a
-[ -f .env ] && source .env
-
-echo "📦 Overriding with .env.development..."
-[ -f .env.development ] && source .env.development
-set +a
-
-export TAG
-
-echo "🐳 Pulling new image(s)..."
+echo "🐳 Pulling latest Docker images..."
 docker compose pull
 
 echo "🛑 Stopping and cleaning up old containers..."
 docker compose down --remove-orphans
 
-echo "🚀 Recreating with updated code..."
+echo "🚀 Recreating containers from latest image..."
 docker compose up -d --build
 
 echo "✅ Deploy complete. Containers are now running image tagged: $TAG"
-echo "Admin Tenant host: https://hykudev-admin.lib.wvu.edu"
-echo "Hykudev Tenant https://hykudev.lib.wvu.edu"
+echo ""
+echo "🔗 Admin Tenant:   https://hykudev-admin.lib.wvu.edu"
+echo "🔗 Default Tenant: https://hykudev.lib.wvu.edu"
