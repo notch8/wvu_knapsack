@@ -37,6 +37,14 @@ RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
 
+  # Load flexible schema once for all specs
+  config.before(:suite) do
+    if defined?(Hyrax::FlexibleSchema) && Hyrax::FlexibleSchema.count.zero?
+      puts "Seeding Flexible Metadata Schema for tests..."
+      Hyrax::FlexibleSchema.load_schema!
+    end
+  end
+
   # They enable url_helpers not to throw error in Rspec system spec and request spec.
   # config.include Rails.application.routes.url_helpers
   # TODO is this needed?
