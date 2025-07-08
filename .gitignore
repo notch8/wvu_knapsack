@@ -19,9 +19,7 @@ ansible/cron.conf
 ansible/roles/nginx-badbot-blocker/
 
 # Ignore
-ansible/files/intermediate.crt
-ansible/files/lib.wvu.edu.crt
-ansible/files/lib.wvu.edu.csr
-ansible/files/lib.wvu.edu.key
-ansible/files/lib.wvu.edu.p7b
-ansible/files/lib.wvu.edu.pfx
+ansible/files/hykudev.lib.wvu.edu.2025.key
+ansible/files/hykudev_lib_wvu_edu_2025_complete.cer
+ansible/files/id_rsa
+ansible/ghcr-token.yml

@@ -32,6 +32,10 @@ git submodule update --remote
 
 echo "🏷️ Updating TAG to latest commit SHA..."
 TAG=$(git rev-parse --short=8 HEAD)
+
+# Check the .env for a TAG and delete it then add new TAG
+sed -i '/^TAG=/d' /home/ansible/wvu_knapsack/.env.development
+echo "TAG=$TAG" >> /home/ansible/wvu_knapsack/.env.development
 export TAG
 echo "Tag is: $TAG"
 
