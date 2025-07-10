@@ -1,0 +1,80 @@
+# playbook.yml
+---
+- name: Setup WVU Server
+  hosts: localhost
+  connection: local
+  become: true
+  vars:
+    root_group: root
+
+  roles:
+    - role: base_setup
+      tags: base
+    - role: nginx-badbot-blocker
+      tags: nginx
+
+  tasks:
+    - name: Copy SSL certificate
+      copy:
+        src: files/hykudev_lib_wvu_edu_2025_complete.cer
+        dest: /etc/pki/tls/certs/hykudev_lib_wvu_edu_2025_complete.cer
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copy SSL key
+      copy:
+        src: files/hykudev.lib.wvu.edu.2025.key
+        dest: /etc/pki/tls/private/hykudev.lib.wvu.edu.2025.key
+        owner: root
+        group: root
+        mode: '0600'
+
+    - name: Copy nginx configuration
+      copy:
+        src: nginx-default
+        dest: /etc/nginx/conf.d/default.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: restart nginx
+
+    - name: Create user accounts
+      user:
+        name: "{{ item.name }}"
+        state: present
+        create_home: yes
+        groups: adm,sudo,docker
+      with_items:
+        "{{ ssh_users }}"
+
+    - name: Configure sudo without password
+      copy:
+        dest: "/etc/sudoers.d/{{ item.name }}"
+        content: "{{ item.name }} ALL=(ALL) NOPASSWD:ALL"
+        mode: '0440'
+        validate: /usr/sbin/visudo -cf %s
+      with_items:
+        "{{ ssh_users }}"
+
+    - name: Configure Docker login
+      docker_login:
+        registry_url: ghcr.io
+        username: orangewolf
+        password: "{{ ghcr_token }}"
+
+    - name: Copy deploy key
+      copy:
+        src: files/id_rsa
+        dest: /root/.ssh/id_rsa
+        mode: '0600'
+        owner: root
+        group: root
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
+
+# ansible-playbook -i ansible/inventory.ini ansible/playbook.yml --ask-vault-pass -e @ansible/ghcr-token.vault.yml

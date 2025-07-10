@@ -1,18 +1,16 @@
 x-app: &app
+  env_file:
+    - .env.production
   build:
     context: .
     target: hyku-web
     cache_from:
-      - ghcr.io/samvera/hyku/base:latest
+      - ghcr.io/notch8/wvu_knapsack/base:latest
       - ghcr.io/notch8/wvu_knapsack:latest
     args:
       BUILDKIT_INLINE_CACHE: 1
       APP_PATH: ./hyrax-webapp
-      BASE_TAG: ${BASE_TAG:-latest}
   image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
-  env_file:
-    - .env
-    - .env.development
   environment:
     # This line is what makes the knapsack include use the local code instead of the remote gem
     - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
@@ -38,57 +36,38 @@ volumes:
   zoo:
 
 networks:
-  default:
-    name: stackcar
+  internal:
 
 services:
-  adminer:
-    extends:
-      file: hyrax-webapp/docker-compose.yml
-      service: adminer
-
   zoo:
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: zoo
 
   solr:
-    image: ghcr.io/notch8/wvu_knapsack/solr:latest
-    platform: linux/amd64
+    image: ghcr.io/notch8/wvu_knapsack/solr:${TAG:-latest}
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: solr
-    ports:
-      - "8983:8983"
 
   fcrepo:
+    env_file:
+      - .env.production
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: fcrepo
 
-  fits:
-    extends:
-      file: hyrax-webapp/docker-compose.yml
-      service: fits
-
   db:
+    env_file:
+      - .env.production
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: db
-    ports:
-      - "5432:5432"
-
-  base:
-    extends:
-      file: hyrax-webapp/docker-compose.yml
-      service: base
-    image: ghcr.io/samvera/hyku/base:${BASE_TAG:-latest}
-    command: bash -l -c "echo 'base is only used for building base images, which in turn reduces image build times. It does not need to be run'"
 
   web:
     <<: *app
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: web
     # Uncomment command to access container with out starting bin/web. Useful for debugging or updating Gemfile.lock
     # command: sleep infinity
@@ -96,24 +75,24 @@ services:
       # This line is what makes the knapsack include use the local code instead of the remote gem
       - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
       - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
+      - VIRTUAL_PORT=3000
     ports:
       - "3000:3000"
 
   worker:
     <<: *app
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: worker
     build:
       context: .
       target: hyku-worker
       cache_from:
-        - ghcr.io/samvera/hyku/base:latest
+        - ghcr.io/notch8/wvu_knapsack/base:latest
         - ghcr.io/notch8/wvu_knapsack/worker:latest
       args:
         BUILDKIT_INLINE_CACHE: 1
         APP_PATH: ./hyrax-webapp
-        BASE_TAG: ${BASE_TAG:-latest}
     image: ghcr.io/notch8/wvu_knapsack/worker:${TAG:-latest}
     # Uncomment command to access container with out starting bin/worker. Useful for debugging or updating Gemfile.lock
     # command: sleep infinity
@@ -127,30 +106,16 @@ services:
   check_volumes:
     <<: *app
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: check_volumes
 
   initialize_app:
     <<: *app
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: initialize_app
-    command:
-      - >
-        echo "Injecting m3_profile.yaml..." &&
-        cp -f /app/samvera/config/metadata_profiles/m3_profile.yaml /app/samvera/hyrax-webapp/config/metadata_profiles/m3_profile.yaml &&
-        solrcloud-upload-configset.sh /app/samvera/hyrax-webapp/solr/conf &&
-        solrcloud-assign-configset.sh &&
-        SOLR_COLLECTION_NAME=hydra-test solrcloud-assign-configset.sh &&
-        bundle &&
-        db-migrate-seed.sh
 
   redis:
     extends:
-      file: hyrax-webapp/docker-compose.yml
+      file: hyrax-webapp/docker-compose.production.yml
       service: redis
-
-  chrome:
-    extends:
-      file: hyrax-webapp/docker-compose.yml
-      service: chrome

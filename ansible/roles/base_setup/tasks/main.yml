@@ -1,0 +1,58 @@
+- name: Update dnf cache
+  dnf:
+    update_cache: yes
+
+- name: Check if pip3 is installed
+  command: which pip3
+  register: pip3_installed
+  ignore_errors: true
+  changed_when: false
+
+- name: Install pip3
+  dnf:
+    name: python3-pip
+    state: present
+  when: pip3_installed.rc != 0
+
+- name: Check if docker is installed
+  command: which docker
+  register: docker_installed
+  ignore_errors: true
+  changed_when: false
+
+- name: Install docker
+  dnf:
+    name: docker
+    state: present
+  when: docker_installed.rc != 0
+
+- name: Check if docker-compose is installed
+  command: which docker-compose
+  register: compose_installed
+  ignore_errors: true
+  changed_when: false
+
+- name: Install Docker Compose
+  get_url:
+    url: "https://github.com/docker/compose/releases/latest/download/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}"
+    dest: /usr/bin/docker-compose
+    mode: '0755'
+  when: compose_installed.rc != 0
+
+- name: Check if dotenv-cli is installed
+  command: pip3 show dotenv-cli
+  register: dotenv_installed
+  ignore_errors: true
+  changed_when: false
+
+- name: Install dotenv-cli via pip
+  pip:
+    name: dotenv-cli
+    executable: pip3
+  when: dotenv_installed.rc != 0
+
+- name: Add ansible user to docker group
+  user:
+    name: ansible
+    groups: docker
+    append: yes
