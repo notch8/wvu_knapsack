@@ -53,7 +53,7 @@ services:
       service: zoo
 
   solr:
-    image: ghcr.io/notch8/wvu_knapsack/solr:latest
+    image: ghcr.io/notch8/wvu_knapsack/solr:${TAG:-latest}
     platform: linux/amd64
     extends:
       file: hyrax-webapp/docker-compose.yml
