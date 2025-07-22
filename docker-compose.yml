@@ -137,8 +137,6 @@ services:
       service: initialize_app
     command:
       - >
-        echo "Injecting m3_profile.yaml..." &&
-        cp -f /app/samvera/config/metadata_profiles/m3_profile.yaml /app/samvera/hyrax-webapp/config/metadata_profiles/m3_profile.yaml &&
         solrcloud-upload-configset.sh /app/samvera/hyrax-webapp/solr/conf &&
         solrcloud-assign-configset.sh &&
         SOLR_COLLECTION_NAME=hydra-test solrcloud-assign-configset.sh &&
