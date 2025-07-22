@@ -1,6 +1,4 @@
----
-override_check: true
-m3_version: 1.0.beta3
+m3_version: 1.0.beta2
 profile:
   date_modified: "2025-06-27"
   responsibility: https://wvu.edu
@@ -23,13 +21,9 @@ classes:
   AdminSetResource:
     display_label: AdminSetResource
   CollectionResource:
-    display_label: pcdmcollection
-  Hyrax::AdministrativeSet:
-    display_label: Administrative Set
+    display_label: CollectionResource
   Hyrax::FileSet:
     display_label: FileSet
-  Hyrax::PcdmCollection:
-    display_label: PcdmCollection
 contexts:
   flexible_context:
     display_label: Flexible Metadata Example
@@ -181,6 +175,7 @@ properties:
     index_documentation: searchable
     indexing:
       - depositor_tesim
+      - depositor_ssim
     property_uri: http://id.loc.gov/vocabulary/relators/dpt
     range: http://www.w3.org/2001/XMLSchema#string
     sample_values:

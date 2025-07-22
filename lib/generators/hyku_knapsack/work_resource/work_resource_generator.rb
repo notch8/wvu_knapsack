@@ -131,14 +131,16 @@ class HykuKnapsack::WorkResourceGenerator < Rails::Generators::NamedBase
   def insert_hyku_extra_includes_into_model
     model = File.join('../app/models/', class_path, "#{file_name}.rb")
     af_model = class_name.to_s.gsub('Resource', '')&.safe_constantize if class_name.end_with?('Resource')
-    insert_into_file model, before: "end" do
-      if af_model
-        <<-RUBY.gsub(/^ {8}/, '  ')
-        Hyrax::ValkyrieLazyMigration.migrating(self, from: #{af_model})
-        RUBY
-      end
-    end
+
+    return unless af_model
+
+    content = <<-RUBY.gsub(/^ {8}/, '  ')
+      Hyrax::ValkyrieLazyMigration.migrating(self, from: #{af_model})
+    RUBY
+
+    insert_into_file model, "\n#{content}", before: /end\z/
   end
+  # rubocop:enable Metrics/MethodLength
 
   def change_inheritance_of_form
     form = File.join('../app/forms/', class_path, "#{file_name}_form.rb")
