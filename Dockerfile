@@ -6,7 +6,6 @@ COPY --chown=1001:101 . /app/samvera
 RUN ln -sf /app/samvera/bundler.d /app/.bundler.d
 ENV BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
 ENV BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
-ENV BUNDLE_BUNDLER_INJECT__GEM_PATH=/app/samvera/bundler.d
 
 RUN jobs=$(nproc) && \
     if [ "$jobs" -gt 2 ]; then jobs=2; fi && \
