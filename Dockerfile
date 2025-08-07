@@ -1,11 +1,10 @@
-ARG BASE_TAG=81b04ee8
+ARG BASE_TAG=${BASE_TAG:-latest}
 FROM ghcr.io/samvera/hyku/base:${BASE_TAG} AS hyku-knap-base
 # This is specifically NOT $APP_PATH but the parent directory
 COPY --chown=1001:101 . /app/samvera
-COPY --chown=1001:101 bundler.d/ /app/.bundler.d/
+RUN ln -sf /app/samvera/bundler.d /app/.bundler.d
 ENV BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
 ENV BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
-ENV BUNDLE_BUNDLER_INJECT__GEM_PATH=/app/samvera/bundler.d
 
 RUN jobs=$(nproc) && \
     if [ "$jobs" -gt 2 ]; then jobs=2; fi && \

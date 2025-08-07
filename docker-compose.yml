@@ -79,6 +79,7 @@ services:
       - "5432:5432"
 
   base:
+    <<: *app
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: base
