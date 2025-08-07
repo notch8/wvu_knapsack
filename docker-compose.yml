@@ -54,9 +54,12 @@ services:
 
   solr:
     image: ghcr.io/notch8/wvu_knapsack/solr:${TAG:-latest}
+    platform: linux/amd64
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: solr
+    ports:
+      - "8983:8983"
 
   fcrepo:
     extends:
@@ -72,6 +75,8 @@ services:
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: db
+    ports:
+      - "5432:5432"
 
   base:
     <<: *app
@@ -80,6 +85,8 @@ services:
       service: base
     image: ghcr.io/samvera/hyku/base:${BASE_TAG:-latest}
     command: bash -l -c "echo 'base is only used for building base images, which in turn reduces image build times. It does not need to be run'"
+    ports:
+      - "3000:3000"
 
   web:
     <<: *app
