@@ -54,12 +54,9 @@ services:
 
   solr:
     image: ghcr.io/notch8/wvu_knapsack/solr:${TAG:-latest}
-    platform: linux/amd64
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: solr
-    ports:
-      - "8983:8983"
 
   fcrepo:
     extends:
@@ -75,23 +72,12 @@ services:
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: db
-    ports:
-      - "5432:5432"
 
   base:
     <<: *app
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: base
-    build:
-      context: .
-      target: hyku-knap-base
-      cache_from:
-        - ghcr.io/samvera/hyku/base:latest
-      args:
-        BUILDKIT_INLINE_CACHE: 1
-        APP_PATH: ./hyrax-webapp
-        BASE_TAG: ${BASE_TAG:-latest}
     image: ghcr.io/samvera/hyku/base:${BASE_TAG:-latest}
     command: bash -l -c "echo 'base is only used for building base images, which in turn reduces image build times. It does not need to be run'"
 
@@ -106,8 +92,6 @@ services:
       # This line is what makes the knapsack include use the local code instead of the remote gem
       - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
       - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
-    ports:
-      - "3000:3000"
 
   worker:
     <<: *app
