@@ -1,20 +1,20 @@
-version: '3.8'
 x-app: &app
   build:
     context: .
     target: hyku-web
     cache_from:
-      - ghcr.io/samvera/hyku/base:latest
-      - ghcr.io/samvera-labs/hyku_knapsack:latest
+      - ghcr.io/notch8/wvu_knapsack:latest
     args:
       BUILDKIT_INLINE_CACHE: 1
       APP_PATH: ./hyrax-webapp
   image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
+  env_file:
+    - .env
+    - .env.development
   environment:
     # This line is what makes the knapsack include use the local code instead of the remote gem
     - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
     - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
-    - BUNDLE_BUNDLER_INJECT__GEM_PATH=/app/samvera/bundler.d
   volumes:
     - node_modules:/app/samvera/hyrax-webapp/node_modules:cached
     - uploads:/app/samvera/hyrax-webapp/public/uploads:cached
@@ -50,9 +50,12 @@ services:
       service: zoo
 
   solr:
+    image: ghcr.io/notch8/wvu_knapsack/solr:${TAG:-latest}
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: solr
+    ports:
+      - "8983:8983"
 
   fcrepo:
     extends:
@@ -68,13 +71,8 @@ services:
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: db
-
-  base:
-    extends:
-      file: hyrax-webapp/docker-compose.yml
-      service: base
-    image: ghcr.io/samvera/hyku/base:${TAG:-latest}
-    command: bash -l -c "echo 'base is only used for building base images, which in turn reduces image build times. It does not need to be run'"
+    ports:
+      - "5432:5432"
 
   web:
     <<: *app
@@ -83,11 +81,6 @@ services:
       service: web
     # Uncomment command to access container with out starting bin/web. Useful for debugging or updating Gemfile.lock
     # command: sleep infinity
-    environment:
-      # This line is what makes the knapsack include use the local code instead of the remote gem
-      - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
-      - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
-      - VIRTUAL_PORT=3000
 
   worker:
     <<: *app
@@ -98,7 +91,6 @@ services:
       context: .
       target: hyku-worker
       cache_from:
-        - ghcr.io/samvera/hyku/base:latest
         - ghcr.io/notch8/wvu_knapsack/worker:latest
       args:
         BUILDKIT_INLINE_CACHE: 1
@@ -124,6 +116,13 @@ services:
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: initialize_app
+    command:
+      - >
+        /app/samvera/bin/solrcloud-upload-configset.sh /app/samvera/hyrax-webapp/solr/conf &&
+        /app/samvera/bin/solrcloud-assign-configset.sh &&
+        SOLR_COLLECTION_NAME=hydra-test /app/samvera/bin/solrcloud-assign-configset.sh &&
+        bundle &&
+        /app/samvera/bin/db-migrate-seed.sh
 
   redis:
     extends:
