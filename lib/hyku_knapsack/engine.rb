@@ -44,7 +44,8 @@ module HykuKnapsack
       #  ]
       # end
 
-      # Ensure we are prepending the Hyrax::SimpleSchemaLoaderDecorator early
+      # Ensure we are prepending the Hyku::SimpleSchemaLoaderDecorator early
+      require HykuKnapsack::Engine.root.join('app', 'services', 'hyrax', 'simple_schema_loader_decorator')
       Hyrax::SimpleSchemaLoader.prepend(Hyrax::SimpleSchemaLoaderDecorator)
     end
 
