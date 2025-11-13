@@ -5,6 +5,7 @@
 class FolkMusic < Hyrax::Work
   include Hyrax::ArResource
   include Hyrax::NestedWorks
+  include Hyrax::Flexibility if Hyrax.config.flexible?
 
   include IiifPrint.model_configuration(
     pdf_split_child_model: self,
