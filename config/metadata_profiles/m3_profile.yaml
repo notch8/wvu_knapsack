@@ -192,7 +192,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -303,7 +303,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -341,7 +341,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -403,10 +403,26 @@ properties:
     available_on:
       class:
       - Hyrax::FileSet
+    cardinality:
+      minimum: 0
+      maximum: 1
+    data_type: string
+    controlled_values:
+      format: http://www.w3.org/2001/XMLSchema#string
+      sources:
+        - "null"
     display_label:
       default: Label
+    index_documentation: displayable, searchable
+    indexing:
+      - label_sim
+      - label_tesim
+    form:
+      primary: false
     property_uri: info:fedora/fedora-system:def/model#downloadFilename
     range: http://www.w3.org/2001/XMLSchema#string
+    sample_values:
+      - file_label.txt
   license:
     available_on:
       class:
@@ -421,7 +437,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -491,7 +507,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -753,7 +769,7 @@ properties:
       - OralHistory
     cardinality:
       minimum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -825,7 +841,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -859,7 +875,7 @@ properties:
       - OralHistory
     cardinality:
       minimum: 0
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -894,7 +910,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -996,7 +1012,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -1029,7 +1045,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -1095,7 +1111,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -1128,7 +1144,7 @@ properties:
       - OralHistory
     cardinality:
       minimum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -1185,7 +1201,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -1242,7 +1258,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -1298,7 +1314,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
