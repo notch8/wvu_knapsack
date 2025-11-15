@@ -1,0 +1,49 @@
+<%#
+  OVERRIDE Hyku to enchance citations
+%>
+
+<button
+  class="btn btn-secondary btn-block citations-button center-block"
+  data-toggle="collapse"
+  href="#collapse-citations"
+  role="button"
+  aria-expanded="false"
+  aria-controls="collapse-citations"
+>
+  <%= t('.header') %>
+</button>
+
+<div id="collapse-citations" class="collapse">
+  <br/>
+  <h4>MLA citation style (9th ed.)</h4>
+  <%= render partial: 'hyrax/base/citation_with_copy', locals: {
+    citation_id: 'mla-citation',
+    tooltip_id: 'mla-citation-tooltip',
+    button_label: 'Copy MLA citation',
+    citation_text: export_as_mla_citation(@presenter) + ' ' + request.original_url.sub(/^https?\:\/\/(www\.)?/,'') + '.'
+  } %>
+  <br /><br />
+
+  <h4>APA citation style (7th ed.)</h4>
+  <%= render partial: 'hyrax/base/citation_with_copy', locals: {
+    citation_id: 'apa-citation',
+    tooltip_id: 'apa-citation-tooltip',
+    button_label: 'Copy APA citation',
+    citation_text: export_as_apa_citation(@presenter) + ' ' + request.original_url
+  } %>
+  <br /><br />
+
+  <h4>Chicago citation style (CMOS 17, author-date)</h4>
+  <%= render partial: 'hyrax/base/citation_with_copy', locals: {
+    citation_id: 'chicago-citation',
+    tooltip_id: 'chicago-citation-tooltip',
+    button_label: 'Copy Chicago citation',
+    citation_text: export_as_chicago_citation(@presenter) + ' ' + request.original_url + '.'
+  } %>
+  <br /><br />
+
+  <p>
+    <strong>Note:</strong>
+    These citations are programmatically generated and may be incomplete.
+  </p>
+</div>
