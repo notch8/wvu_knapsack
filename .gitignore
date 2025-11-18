@@ -11,5 +11,17 @@ scratch.md
 /coverage
 file_cache/
 /branding
+
+# Ignore specific files
+ansible/cron.conf
+
+# Ignore entire directory
+ansible/roles/nginx-badbot-blocker/
+
+# Ignore
+ansible/files/hykudev.lib.wvu.edu.2025.key
+ansible/files/hykudev_lib_wvu_edu_2025_complete.cer
+ansible/files/id_rsa
+ansible/ghcr-token.yml
 .bash_history
 /.cache

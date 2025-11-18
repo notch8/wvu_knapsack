@@ -4,6 +4,10 @@
 
 Rails.application.config.after_initialize do
   Hyrax.config do |config|
+    config.flexible = true # ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_FLEXIBLE', false))
+
+    # Set default profile path
+    config.default_m3_profile_path = HykuKnapsack::Engine.root.join('config', 'metadata_profiles', 'm3_profile.yaml')
     # Clears the default registered concerns and adds in the concerns specified in the m3_profile.yaml
     config.instance_variable_set(:@registered_concerns, [])
     # Injected via `rails g hyku_knapsack:work_resource Document --flexible`
@@ -18,5 +22,12 @@ Rails.application.config.after_initialize do
     config.register_curation_concern :medicine
     # Injected via `rails g hyku_knapsack:work_resource OralHistory --flexible`
     config.register_curation_concern :oral_history
+  end
+
+  # Ensure that only the registered concerns can be nested within each other
+  # Hyrax::NestedWorks loads the valid_child_concerns prior to the above configuration
+  # This removes Hyku's default work types from the list of valid child concerns
+  Hyrax.config.curation_concerns.each do |concern|
+    concern.valid_child_concerns = Hyrax.config.curation_concerns
   end
 end

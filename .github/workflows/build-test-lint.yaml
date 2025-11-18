@@ -28,6 +28,7 @@ jobs:
       platforms: "linux/amd64"
       webTarget: hyku-web
       workerTarget: hyku-worker
+
   test:
     needs: build
     uses: notch8/actions/.github/workflows/test.yaml@v1.0.4

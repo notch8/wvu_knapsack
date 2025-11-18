@@ -49,4 +49,6 @@ RSpec.configure do |config|
   end
   ## End override
   # config.include Fixtures::FixtureFileUpload
+  # Only include Fixtures::FixtureFileUpload if it's defined (from hyrax-webapp)
+  config.include Fixtures::FixtureFileUpload if defined?(Fixtures::FixtureFileUpload)
 end

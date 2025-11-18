@@ -13,8 +13,6 @@ ENV TESSDATA_PREFIX=/app/samvera/tessdata
 ADD https://github.com/tesseract-ocr/tessdata_best/blob/main/eng.traineddata?raw=true /app/samvera/tessdata/eng_best.traineddata
 
 ############### KNAPSACK SPECIFIC CODE ###################
-# This means bundler inject looks at /app/samvera/.bundler.d for overrides
-ENV HOME=/app/samvera
 # This is specifically NOT $APP_PATH but the parent directory
 COPY --chown=1001:101 . /app/samvera
 ENV BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
