@@ -1,0 +1,60 @@
+<%#
+  OVERRIDE Blacklight Advanced Search v7.0.0 to enhance search fields
+%>
+
+  <% unless (search_context_str = render_search_to_s( advanced_search_context)).blank? %>
+    <div class="constraints well search_history">
+      <h4><%= t 'blacklight_advanced_search.form.search_context' %></h4>
+      <%= search_context_str %>
+    </div>
+  <% end %>
+
+<%= form_tag search_catalog_path, :class => 'advanced form-horizontal mt-4', :method => :get do  %>
+
+  <%= render_hash_as_hidden_fields(advanced_search_context) %>
+
+  <div class="input-criteria">
+
+      <div class="query-criteria">
+        <h3 class="query-criteria-heading mb-4">
+          <%= t('blacklight_advanced_search.form.query_criteria_heading_html', :select_menu =>  select_menu_for_field_operator ) %>
+        </h3>
+
+        <div id="advanced_search">
+          <% search_fields_for_advanced_search.first(4).each do |key, field_def| %>
+            <%= render 'advanced/advanced_search_fields', key: key, field_def: field_def %>
+          <% end %>
+        </div>
+        <div class="d-flex justify-content-end">
+          <a class="btn btn-secondary additional-fields collapsed" id="advanced-search-additional-fields" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="secondary_advanced_search_terms" href="#secondary_advanced_search_terms">
+            <span class="when-collapsed">Show additional fields</span>
+            <span class="when-expanded">Hide additional fields</span>
+          </a>
+        </div>
+        <div id="secondary_advanced_search_terms" class="collapse">
+          <% search_fields_for_advanced_search.drop(4).each do |key, field_def| %>
+            <%= render 'advanced/advanced_search_fields', key: key, field_def: field_def %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="limit-criteria">
+        <h3 class="limit-criteria-heading mb-4"><%= t('blacklight_advanced_search.form.limit_criteria_heading_html')%></h3>
+
+        <div id="advanced_search_facets" class="limit_input">
+          <% if blacklight_config.try(:advanced_search).try {|h| h[:form_facet_partial] } %>
+            <%= render blacklight_config.advanced_search[:form_facet_partial] %>
+          <% else %>
+            <%= render 'advanced_search_facets' %>
+          <% end %>
+        </div>
+      </div>
+  </div>
+
+  <hr>
+
+  <div class="sort-submit-buttons clearfix">
+    <%= render 'advanced_search_submit_btns' %>
+  </div>
+
+<% end %>
