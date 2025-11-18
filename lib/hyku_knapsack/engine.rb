@@ -30,6 +30,18 @@ module HykuKnapsack
     end
 
     config.before_initialize do
+      # Disable include_metadata for all resource types when flexible mode is enabled
+      # This is a backup to the ENV setting in lib/hyku_knapsack.rb
+      if ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_FLEXIBLE', 'true'))
+        # Force the configuration to false, overriding any memoized defaults
+        if defined?(Hyrax) && Hyrax.respond_to?(:config)
+          Hyrax.config.work_include_metadata = false
+          Hyrax.config.collection_include_metadata = false
+          Hyrax.config.file_set_include_metadata = false
+          Hyrax.config.admin_set_include_metadata = false
+        end
+      end
+
       config.i18n.load_path += Dir["#{config.root}/config/locales/**/*.yml"]
 
       # if Hyku::Application.respond_to?(:user_devise_parameters=)

@@ -6,14 +6,6 @@ Rails.application.config.after_initialize do
   Hyrax.config do |config|
     config.flexible = true # ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_FLEXIBLE', false))
 
-    # Explicitly disable include_metadata for flexible mode to prevent loading core_metadata schema
-    if ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_FLEXIBLE', 'true'))
-      config.work_include_metadata = false
-      config.collection_include_metadata = false
-      config.file_set_include_metadata = false
-      config.admin_set_include_metadata = false
-    end
-
     # Set default profile path
     config.schema_loader_config_search_paths = HykuKnapsack::Engine.root.join('config', 'metadata_profiles', 'm3_profile.yaml')
     # Clears the default registered concerns and adds in the concerns specified in the m3_profile.yaml
