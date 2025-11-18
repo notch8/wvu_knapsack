@@ -1,0 +1,18 @@
+.advanced-search-form {
+  #advanced-search-additional-fields[aria-expanded="false"] .when-expanded,
+  #advanced-search-additional-fields[aria-expanded="true"] .when-collapsed {
+    display: none;
+  }
+
+  .label-and-count {
+    display: flex;
+    width: 100%;
+  }
+
+  .label-and-count label {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 0;
+  }
+}
