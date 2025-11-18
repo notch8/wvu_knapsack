@@ -5,7 +5,7 @@
 module Hyrax
   module SimpleSchemaLoaderDecorator
     def config_search_paths
-      [HykuKnapsack::Engine.root] + super
+      [HykuKnapsack::Engine.root] + Array(super)
     end
   end
 end

@@ -5,4 +5,5 @@
 class OralHistoryIndexer < Hyrax::ValkyrieWorkIndexer
   include Hyrax::Indexer('OralHistory')
   include HykuIndexing
+  check_if_flexible(OralHistory)
 end

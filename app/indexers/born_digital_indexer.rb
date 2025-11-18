@@ -5,4 +5,5 @@
 class BornDigitalIndexer < Hyrax::ValkyrieWorkIndexer
   include Hyrax::Indexer('BornDigital')
   include HykuIndexing
+  check_if_flexible(BornDigital)
 end

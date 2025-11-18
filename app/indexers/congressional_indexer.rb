@@ -5,4 +5,5 @@
 class CongressionalIndexer < Hyrax::ValkyrieWorkIndexer
   include Hyrax::Indexer('Congressional')
   include HykuIndexing
+  check_if_flexible(Congressional)
 end

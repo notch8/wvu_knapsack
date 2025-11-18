@@ -5,4 +5,5 @@
 class FolkMusicIndexer < Hyrax::ValkyrieWorkIndexer
   include Hyrax::Indexer('FolkMusic')
   include HykuIndexing
+  check_if_flexible(FolkMusic)
 end

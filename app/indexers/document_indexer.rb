@@ -5,4 +5,5 @@
 class DocumentIndexer < Hyrax::ValkyrieWorkIndexer
   include Hyrax::Indexer('Document')
   include HykuIndexing
+  check_if_flexible(Document)
 end

@@ -5,4 +5,5 @@
 class MedicineIndexer < Hyrax::ValkyrieWorkIndexer
   include Hyrax::Indexer('Medicine')
   include HykuIndexing
+  check_if_flexible(Medicine)
 end
