@@ -23,4 +23,11 @@ Rails.application.config.after_initialize do
     # Injected via `rails g hyku_knapsack:work_resource OralHistory --flexible`
     config.register_curation_concern :oral_history
   end
+
+  # Ensure that only the registered concerns can be nested within each other
+  # Hyrax::NestedWorks loads the valid_child_concerns prior to the above configuration
+  # This removes Hyku's default work types from the list of valid child concerns
+  Hyrax.config.curation_concerns.each do |concern|
+    concern.valid_child_concerns = Hyrax.config.curation_concerns
+  end
 end
