@@ -11,7 +11,14 @@
   <div itemscope itemtype="http://schema.org/CreativeWork" class="col-12">
     <div class="card">
       <div class="card-header">
-        <%= render 'work_title', presenter: @presenter %>
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <%= render 'work_title', presenter: @presenter %>
+          </div>
+          <div class="col-md-6">
+            <%= render 'show_actions', presenter: @presenter %>
+          </div>
+        </div>
       </div>
       <div class="card-body">
         <div class="row">
@@ -51,11 +58,17 @@
           <% end %>
         </div>
         <div class="row">
-          <div class="col-sm-9 image-show-metadata">
+          <div class="col-12">
+            <%= render('download_pdf', presenter: @presenter, file_set_id: @presenter.file_set_presenters.first.id) if @presenter.show_pdf_download_button? %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
             <%= render 'metadata', presenter: @presenter %>
           </div>
-          <div class="col-sm-3 text-center">
-            <%= render('download_pdf', presenter: @presenter, file_set_id: @presenter.file_set_presenters.first.id) if @presenter.show_pdf_download_button? %>
+        </div>
+        <div class="row">
+          <div class="col-12 text-center mt-3">
             <%= render 'citations', presenter: @presenter %>
           </div>
         </div>
