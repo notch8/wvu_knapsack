@@ -1,0 +1,33 @@
+// WVU Show Page Button Styles
+// Styles for centered action buttons (Download PDF, Citation) on the show page
+// Uses Bootstrap utility classes (mx-auto, d-block, text-center) for centering
+// Custom CSS for width constraints since Bootstrap doesn't have min/max-width utilities
+
+.download-pdf-controls {
+  button.btn,
+  button.btn-success,
+  button.file_download,
+  #file_download,
+  button#file_download,
+  .btn.btn-success.file_download,
+  button.btn.btn-success.file_download {
+    min-width: 350px !important;
+    max-width: 500px !important;
+    width: auto !important;
+    padding: 0.875rem 2.5rem !important;
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+  }
+}
+
+.citations-button,
+button.citations-button,
+.btn.citations-button {
+  min-width: 350px !important;
+  max-width: 500px !important;
+  width: auto !important;
+  padding: 0.875rem 2.5rem !important;
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+}
+

@@ -1,0 +1,60 @@
+<%#
+  OVERRIDE: Hyku 6.2.0 to center the citation button with constrained width to match WVU show theme design,
+  rather than having it span the full page width as in the base Hyku implementation. This also enhances the citations to include MLA, APA, and Chicago citation styles, per app/views/hyrax/base/_citations.html.erb.
+  
+  Changes made for WVU show theme styling:
+  - Removed `btn-block` class to prevent full-width button spanning the page
+  - Removed `center-block` class (Bootstrap 3, deprecated)
+  - Added `mx-auto` and `d-block` classes (Bootstrap 4/5 utilities) for centered, non-full-width button
+  - Wrapped button in `<div class="text-center">` for container-level centering
+  - Custom CSS in wvu_show_buttons.scss applies min-width: 350px, max-width: 500px for proper sizing
+%>
+
+<div class="text-center">
+  <button
+    class="btn btn-secondary citations-button mx-auto d-block"
+    data-toggle="collapse"
+    href="#collapse-citations"
+    role="button"
+    aria-expanded="false"
+    aria-controls="collapse-citations"
+  >
+    <%= t('.header') %>
+  </button>
+</div>
+
+<div id="collapse-citations" class="collapse">
+  <br/>
+  <h4>MLA citation style (9th ed.)</h4>
+  <%= render partial: 'hyrax/base/citation_with_copy', locals: {
+    citation_id: 'mla-citation',
+    tooltip_id: 'mla-citation-tooltip',
+    button_label: 'Copy MLA citation',
+    citation_text: export_as_mla_citation(@presenter) + ' ' + request.original_url.sub(/^https?\:\/\/(www\.)?/,'') + '.'
+  } %>
+  <br /><br />
+
+  <h4>APA citation style (7th ed.)</h4>
+  <%= render partial: 'hyrax/base/citation_with_copy', locals: {
+    citation_id: 'apa-citation',
+    tooltip_id: 'apa-citation-tooltip',
+    button_label: 'Copy APA citation',
+    citation_text: export_as_apa_citation(@presenter) + ' ' + request.original_url
+  } %>
+  <br /><br />
+
+  <h4>Chicago citation style (CMOS 17, author-date)</h4>
+  <%= render partial: 'hyrax/base/citation_with_copy', locals: {
+    citation_id: 'chicago-citation',
+    tooltip_id: 'chicago-citation-tooltip',
+    button_label: 'Copy Chicago citation',
+    citation_text: export_as_chicago_citation(@presenter) + ' ' + request.original_url + '.'
+  } %>
+  <br /><br />
+
+  <p>
+    <strong>Note:</strong>
+    These citations are programmatically generated and may be incomplete.
+  </p>
+</div>
+
