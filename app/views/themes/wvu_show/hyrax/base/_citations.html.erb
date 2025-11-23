@@ -8,53 +8,71 @@
   - Added `mx-auto` and `d-block` classes (Bootstrap 4/5 utilities) for centered, non-full-width button
   - Wrapped button in `<div class="text-center">` for container-level centering
   - Custom CSS in wvu_show_buttons.scss applies min-width: 350px, max-width: 500px for proper sizing
+  - Changed from collapse to modal display for better UX, matching Georgetown site design
 %>
 
 <div class="text-center">
   <button
     class="btn btn-secondary citations-button mx-auto d-block"
-    data-toggle="collapse"
-    href="#collapse-citations"
+    data-toggle="modal"
+    data-target="#citations-modal"
     role="button"
     aria-expanded="false"
-    aria-controls="collapse-citations"
+    aria-controls="citations-modal"
   >
     <%= t('.header') %>
   </button>
 </div>
 
-<div id="collapse-citations" class="collapse">
-  <br/>
-  <h4>MLA citation style (9th ed.)</h4>
-  <%= render partial: 'hyrax/base/citation_with_copy', locals: {
-    citation_id: 'mla-citation',
-    tooltip_id: 'mla-citation-tooltip',
-    button_label: 'Copy MLA citation',
-    citation_text: export_as_mla_citation(@presenter) + ' ' + request.original_url.sub(/^https?\:\/\/(www\.)?/,'') + '.'
-  } %>
-  <br /><br />
+<!-- Citations Modal -->
+<div class="modal fade" id="citations-modal" tabindex="-1" role="dialog" aria-labelledby="citations-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-center w-100" id="citations-modal-label">Citations</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-center text-muted mb-4">
+          Provided as a suggestion only. Please verify these automated citations against the guidelines of your preferred style.
+        </p>
 
-  <h4>APA citation style (7th ed.)</h4>
-  <%= render partial: 'hyrax/base/citation_with_copy', locals: {
-    citation_id: 'apa-citation',
-    tooltip_id: 'apa-citation-tooltip',
-    button_label: 'Copy APA citation',
-    citation_text: export_as_apa_citation(@presenter) + ' ' + request.original_url
-  } %>
-  <br /><br />
+        <div class="citation-style-section mb-4">
+          <h5 class="mb-2">MLA</h5>
+          <%= render partial: 'hyrax/base/citation_with_copy', locals: {
+            citation_id: 'mla-citation',
+            tooltip_id: 'mla-citation-tooltip',
+            button_label: 'Copy MLA citation',
+            citation_text: export_as_mla_citation(@presenter) + ' ' + request.original_url.sub(/^https?\:\/\/(www\.)?/,'') + '.'
+          } %>
+        </div>
 
-  <h4>Chicago citation style (CMOS 17, author-date)</h4>
-  <%= render partial: 'hyrax/base/citation_with_copy', locals: {
-    citation_id: 'chicago-citation',
-    tooltip_id: 'chicago-citation-tooltip',
-    button_label: 'Copy Chicago citation',
-    citation_text: export_as_chicago_citation(@presenter) + ' ' + request.original_url + '.'
-  } %>
-  <br /><br />
+        <div class="citation-style-section mb-4">
+          <h5 class="mb-2">APA</h5>
+          <%= render partial: 'hyrax/base/citation_with_copy', locals: {
+            citation_id: 'apa-citation',
+            tooltip_id: 'apa-citation-tooltip',
+            button_label: 'Copy APA citation',
+            citation_text: export_as_apa_citation(@presenter) + ' ' + request.original_url
+          } %>
+        </div>
 
-  <p>
-    <strong>Note:</strong>
-    These citations are programmatically generated and may be incomplete.
-  </p>
+        <div class="citation-style-section mb-4">
+          <h5 class="mb-2">Chicago</h5>
+          <%= render partial: 'hyrax/base/citation_with_copy', locals: {
+            citation_id: 'chicago-citation',
+            tooltip_id: 'chicago-citation-tooltip',
+            button_label: 'Copy Chicago citation',
+            citation_text: export_as_chicago_citation(@presenter) + ' ' + request.original_url + '.'
+          } %>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 
