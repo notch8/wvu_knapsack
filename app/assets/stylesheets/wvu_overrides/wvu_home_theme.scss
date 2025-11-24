@@ -1,0 +1,195 @@
+.wvu_home {
+
+  ////// Homepage Text Block //////
+  div.home_page_text.homepage-text-container {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    height: 343px;
+    margin-top: -150px;
+    overflow: hidden;
+  }
+
+  .fill-height-flex {
+    display: flex;
+    flex-direction: column;
+
+    div {
+      flex: 1;
+    }
+  }
+
+  ////// Facets //////
+  .facet-panel-background-color {
+    background-color: #ffffff;
+
+    @media (max-width: 992px) {
+      background-color: transparent;
+    }
+  }
+
+  #facet-panel-collapse {
+    margin-bottom: 15px;
+  }
+
+  .card.facet-limit {
+    margin-bottom: 0;
+  }
+
+  .facets-toggle {
+    border-color: transparent !important;
+  }
+
+  // Note: copied over to override /* line 226, /usr/local/bundle/gems/bootstrap-sass-3.4.1/assets/stylesheets/bootstrap/_panels.scss
+  .panel-group {
+    .card {
+      border-radius: 0 !important;
+      margin-bottom: 0 !important;
+    }
+
+    .card+.card {
+      margin-top: 0 !important;
+    }
+  }
+
+  // Note: copied over to override /* line 238, /usr/local/bundle/gems/bootstrap-sass-3.4.1/assets/stylesheets/bootstrap/_panels.scss */
+  .panel-group .card-heading+.panel-collapse>.card-body,
+  .panel-group .card-heading+.panel-collapse>.list-group {
+    border-top: 0 !important;
+  }
+
+  // Note: copied over to override /* line 1, /usr/local/rvm/gems/ruby-2.5.3/gems/hyrax-2.9.0/app/assets/stylesheets/hyrax/_file-listing.scss */
+  div.facets h3 {
+    font-size: 1em !important;
+  }
+
+  // Note: copied over to override /* line 52, /usr/local/bundle/gems/bootstrap-sass-3.4.1/assets/stylesheets/bootstrap/_scaffolding.scss */
+  a:hover,
+  a:focus {
+    text-decoration: none !important;
+  }
+
+  #sortAndPerPage {
+    margin-top: 15px;
+  }
+
+
+
+
+  ///// Featured Works Section /////
+
+  div#featured_works>div.featured-works-4-column-layout:nth-child(1n+5) {
+    display: none !important;
+  }
+
+
+  .recent-works-container {
+    .list-group {
+      flex-direction: row;
+    }
+  }
+
+  .featured-item img {
+    width: 90px;
+  }
+
+  .featured-works-container,
+  .recent-works-container,
+  .collections-container {
+    a {
+      img {
+        display: block;
+        height: auto;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 100%;
+      }
+    }
+  }
+
+  .form-control,
+  .btn,
+  nav.breadcrumb,
+  .alert {
+    border-radius: 0;
+  }
+
+  #search-field-header {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+  }
+
+  .mt-20 {
+    margin-top: 20px;
+  }
+
+  .mt-4 {
+    margin-top: 40px;
+  }
+
+  .mb-4 {
+    margin-bottom: 40px;
+  }
+
+  .mt-6 {
+    margin-top: 60px;
+  }
+
+  .mb-6 {
+    margin-bottom: 60px;
+  }
+
+  .pt-30 {
+    padding-top: 30px;
+  }
+
+  .pb-30 {
+    padding-bottom: 30px;
+  }
+
+  .p-20 {
+    padding: 20px;
+  }
+
+  .mt-reverse-mb {
+    margin-top: 40px;
+  }
+
+  .mb-40-0 {
+    margin-bottom: 40px;
+  }
+
+  .image-masthead {
+    overflow: auto;
+  }
+
+  .image-masthead .background-container {
+    -webkit-filter: none;
+    filter: none;
+  }
+
+  .featured-item-title,
+  .collection-item-title,
+  .recent-doc-title {
+    text-align: center;
+
+  }
+
+  .featured-item-title {
+    color: #000 !important;
+    font-size: 14px !important;
+    text-decoration: none !important;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  a.cr_terms {
+    color: #215480;
+    font-size: 12px !important;
+    font-weight: bold;
+
+    &:hover {
+      color: #333333;
+    }
+
+  }
+}

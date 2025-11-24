@@ -1,0 +1,8 @@
+.wvu_show {
+  @media (min-width: 991px) {
+    .work-show.document {
+      column-count: 2;
+      column-gap: 3rem;
+    }
+  }
+}
