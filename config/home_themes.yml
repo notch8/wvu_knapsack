@@ -18,12 +18,12 @@ default_home:
   marketing_text: true
   name: Default home
   notes: This theme is the default Hyku view
-wvu:
+wvu_home:
   banner_image: true
   featured_researcher: false
   home_page_text: true
   marketing_text: true
-  name: WVU Theme
+  name: WVU Home Page
   notes: This theme is recommended for West Virginia University
   theme_custom_colors:
     primary_button_background_color: '#EEAA00'
