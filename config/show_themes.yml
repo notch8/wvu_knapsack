@@ -15,5 +15,4 @@ scholarly_show:
   notes: This text based show page is recommended for institutional repositories.
 wvu_show:
   name: WVU Show Page
-  notes: This show page features a dual-column layout for the metadata section.
-  
+  notes: This show page features a dual-column layout for the metadata section, and a citation modal.

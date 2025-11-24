@@ -4,7 +4,8 @@
       <div class="row">
         <div class="col-12 text-show-title d-flex">
           <% if index == 0 %>
-            <h2><%= markdown(title) %></h2><span class="ml-2 mt-2"><%= presenter.permission_badge %> <%= presenter.workflow.badge %></span>
+            <h2><%= markdown(title) %></h2>
+            <span class="ml-2 mt-2"><%= presenter.permission_badge %> <%= presenter.workflow.badge %></span>
           <% else %>
             <h2><%= markdown(title) %></h2>
           <% end %>
@@ -13,4 +14,3 @@
     <% end %>
   </div>
 </div>
-

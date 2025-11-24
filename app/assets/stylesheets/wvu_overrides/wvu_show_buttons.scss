@@ -4,33 +4,29 @@
 // Custom CSS for width constraints since Bootstrap doesn't have min/max-width utilities
 // Scoped to .wvu_show body class to only apply to WVU show theme
 
+$wvu-text-dark: #333;
+
+@mixin wvu-show-cta-button {
+  min-width: 350px;
+  max-width: 500px;
+  width: auto;
+  padding: 0.875rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
 body.wvu_show {
   .download-pdf-controls {
-    button.btn,
-    button.btn-success,
-    button.file_download,
     #file_download,
     button#file_download,
-    .btn.btn-success.file_download,
-    button.btn.btn-success.file_download {
-      min-width: 350px !important;
-      max-width: 500px !important;
-      width: auto !important;
-      padding: 0.875rem 2.5rem !important;
-      font-size: 1.1rem !important;
-      font-weight: 500 !important;
+    .btn.file_download {
+      @include wvu-show-cta-button;
     }
   }
 
   .citations-button,
-  button.citations-button,
-  .btn.citations-button {
-    min-width: 350px !important;
-    max-width: 500px !important;
-    width: auto !important;
-    padding: 0.875rem 2.5rem !important;
-    font-size: 1.1rem !important;
-    font-weight: 500 !important;
+  button.citations-button {
+    @include wvu-show-cta-button;
   }
 
   // Citations Modal Styles - Matching Georgetown alignment
@@ -53,7 +49,7 @@ body.wvu_show {
         }
 
         h5 {
-          color: #333;
+          color: $wvu-text-dark;
           font-weight: 600;
           font-size: 1rem;
           margin-bottom: 0.5rem;

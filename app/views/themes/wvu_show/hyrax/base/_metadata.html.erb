@@ -12,9 +12,10 @@
       !is_admin_only || current_user.try(:admin?)
    end
 
+   # Split fields into two columns. If the number of fields is odd, the left column gets the extra item.
    half = (fields_array.count / 2.0).ceil
    left_fields = fields_array[0...half]
-   right_fields = fields_array[half..-1] || []
+   right_fields = fields_array[half..-1]
 %>
 
 <div class="row" <%= presenter.microdata_type_to_html %>>
@@ -29,8 +30,8 @@
   <div class="col-md-6">
     <dl class="work-show pt-3 <%= dom_class(presenter) %>">
       <% right_fields.each do |field, options| %>
-         <% view_options = conform_options(field, options) %>
-         <%= presenter.attribute_to_html(conform_field(field, options), view_options) %>
+        <% view_options = conform_options(field, options) %>
+        <%= presenter.attribute_to_html(conform_field(field, options), view_options) %>
       <% end %>
       
       <%# Render embargo/lease dates in the right column if they exist %>
