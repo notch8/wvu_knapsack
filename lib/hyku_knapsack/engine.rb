@@ -4,6 +4,15 @@ module HykuKnapsack
   class Engine < ::Rails::Engine
     isolate_namespace HykuKnapsack
 
+    # Load knapsack initializers from config/initializers/
+    # These must run AFTER the main app's initializers (e.g., after 1flexible.rb)
+    # so that we can append to ENV vars set by the main app
+    initializer 'hyku_knapsack.load_initializers', after: :load_config_initializers do
+      Dir[HykuKnapsack::Engine.root.join('config', 'initializers', '*.rb')].sort.each do |initializer|
+        load initializer
+      end
+    end
+
     def self.load_translations!
       HykuKnapsack::Engine.root.glob("config/locales/**/*.yml").each do |path|
         I18n.load_path << path.to_s

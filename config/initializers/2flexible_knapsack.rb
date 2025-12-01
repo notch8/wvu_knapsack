@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
-# Add knapsack-specific work types to HYRAX_FLEXIBLE_CLASSES
-# This runs after the submodule's 1flexible.rb initializer to append our custom classes
+# Override HYRAX_FLEXIBLE_CLASSES with knapsack-specific work types
+# This replaces the submodule's 1flexible.rb classes with our custom classes
+# matching the m3_profile.yaml
 
 flexible = ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_FLEXIBLE', 'true'))
 if flexible
-  # Get existing classes from ENV (set by submodule's 1flexible.rb)
-  existing_classes = ENV.fetch('HYRAX_FLEXIBLE_CLASSES', '').split(',').map(&:strip).reject(&:empty?)
-  
-  # Add knapsack-specific work types
+  # Set knapsack-specific classes (matching m3_profile.yaml)
+  # These REPLACE the submodule's classes entirely
   knapsack_classes = %w[
+    AdminSetResource
+    CollectionResource
+    Hyrax::FileSet
     Document
     BornDigital
     Congressional
@@ -17,9 +19,6 @@ if flexible
     Medicine
     OralHistory
   ]
-  
-  # Combine and set back to ENV
-  all_classes = (existing_classes + knapsack_classes).uniq
-  ENV['HYRAX_FLEXIBLE_CLASSES'] = all_classes.join(',')
-end
 
+  ENV['HYRAX_FLEXIBLE_CLASSES'] = knapsack_classes.join(',')
+end
