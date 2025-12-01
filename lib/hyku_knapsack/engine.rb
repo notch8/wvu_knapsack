@@ -66,13 +66,7 @@ module HykuKnapsack
       # end
 
       # Add knapsack schema search path
-      if Hyrax.config.respond_to?(:schema_loader_config_search_paths)
-        Hyrax.config.schema_loader_config_search_paths += [HykuKnapsack::Engine.root]
-      else
-        # Ensure we are prepending the Hyku::SimpleSchemaLoaderDecorator early
-        require HykuKnapsack::Engine.root.join('app', 'services', 'hyrax', 'simple_schema_loader_decorator')
-        Hyrax::SimpleSchemaLoader.prepend(Hyrax::SimpleSchemaLoaderDecorator)
-      end
+      Hyrax.config.schema_loader_config_search_paths += [HykuKnapsack::Engine.root] if Hyrax.config.respond_to?(:schema_loader_config_search_paths)
     end
 
     config.to_prepare do

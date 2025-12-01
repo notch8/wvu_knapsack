@@ -17,13 +17,10 @@ ADD https://github.com/tesseract-ocr/tessdata_best/blob/main/eng.traineddata?raw
 COPY --chown=1001:101 . /app/samvera
 ENV BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
 ENV BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
-# Set flexible metadata ENV vars to prevent loading core_metadata schema
-ENV HYRAX_FLEXIBLE=true
-ENV HYRAX_DISABLE_INCLUDE_METADATA=true
 RUN bundle install --jobs "$(nproc)"
 ############## END KNAPSACK SPECIFIC CODE ################
 
-RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rails secret` DB_ADAPTER=nulldb DB_URL='postgresql://fake' bundle exec rails assets:precompile && yarn install
+RUN RAILS_ENV=production SECRET_KEY_BASE=$(bin/rails secret) DB_ADAPTER=nulldb DB_URL='postgresql://fake' bundle exec rails assets:precompile && yarn install
 CMD ./bin/web
 
 FROM hyku-web AS hyku-worker
