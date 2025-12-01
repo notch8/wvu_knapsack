@@ -4,4 +4,5 @@
 #  `rails generate hyku_knapsack:work_resource BornDigital --flexible`
 class BornDigitalForm < Hyrax::Forms::ResourceForm(BornDigital)
   check_if_flexible(BornDigital)
+  include VideoEmbedBehavior::Validation
 end

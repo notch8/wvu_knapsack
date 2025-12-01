@@ -4,4 +4,5 @@
 #  `rails generate hyku_knapsack:work_resource FolkMusic --flexible`
 class FolkMusicForm < Hyrax::Forms::ResourceForm(FolkMusic)
   check_if_flexible(FolkMusic)
+  include VideoEmbedBehavior::Validation
 end
