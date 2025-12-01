@@ -3,7 +3,7 @@
 # Generated via
 #  `rails generate hyku_knapsack:work_resource FolkMusic --flexible`
 class FolkMusicIndexer < Hyrax::ValkyrieWorkIndexer
-  include Hyrax::Indexer('FolkMusic')
   include HykuIndexing
+  # check_if_flexible adds Hyrax::Indexer with M3SchemaLoader for flexible models
   check_if_flexible(FolkMusic)
 end
