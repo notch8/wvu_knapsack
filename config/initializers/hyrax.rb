@@ -4,7 +4,7 @@
 
 Rails.application.config.after_initialize do
   Hyrax.config do |config|
-    config.flexible = true # ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_FLEXIBLE', false))
+    config.flexible = ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_FLEXIBLE', true))
 
     # Set default profile path - prepend to ensure knapsack profile is checked first
     config.schema_loader_config_search_paths.unshift(HykuKnapsack::Engine.root)
