@@ -17,9 +17,6 @@ ADD https://github.com/tesseract-ocr/tessdata_best/blob/main/eng.traineddata?raw
 COPY --chown=1001:101 . /app/samvera
 ENV BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
 ENV BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
-# Set flexible metadata ENV vars to prevent loading core_metadata schema
-ENV HYRAX_FLEXIBLE=true
-ENV HYRAX_DISABLE_INCLUDE_METADATA=true
 RUN bundle install --jobs "$(nproc)"
 ############## END KNAPSACK SPECIFIC CODE ################
 
