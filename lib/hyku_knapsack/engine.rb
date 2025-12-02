@@ -40,8 +40,8 @@ module HykuKnapsack
 
     config.before_initialize do
       # Force HYRAX_FLEXIBLE to true for this app (it always runs with flexible metadata)
-      # This must be set before Rails initializers run so they read the correct value
-      # ENV['HYRAX_FLEXIBLE'] = 'true'
+      # This must be set before Rails initializers run so they read the correct value in the CI pipeline
+      ENV['HYRAX_FLEXIBLE'] = 'true'
 
       # Disable include_metadata for all resource types when flexible mode is enabled
       # This is a backup to the ENV setting in lib/hyku_knapsack.rb
