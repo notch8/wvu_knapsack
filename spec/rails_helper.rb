@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
+# Set environment variables BEFORE requiring Rails environment
+# so initializers can read the correct values
+ENV["RAILS_ENV"] ||= "test"
+ENV['HYRAX_FLEXIBLE'] = 'true' # Must be set before Rails loads (use = not ||=)
 require "spec_helper"
 
-ENV["RAILS_ENV"] ||= "test"
-ENV['HYRAX_FLEXIBLE'] ||= 'true'
 # require File.expand_path('../config/environment', __dir__)
 require File.expand_path("../hyrax-webapp/config/environment", __dir__)
 # Prevent database truncation if the environment is production
