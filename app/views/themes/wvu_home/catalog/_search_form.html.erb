@@ -1,7 +1,7 @@
 <% # OVERRIDE: Hyrax v5.0.1 template to change the size of the column on line 8 from col-sm-3 to col-sm-4 %>
 
-<div class="p-3 bg-light search-form-container">
-  <%= form_tag search_form_action, method: :get, class: "cultural-repository form-horizontal search-form", id: "search-form-header", role: "search" do %>
+<div class="p-3 bg-light rounded-sm">
+  <%= form_tag search_form_action, method: :get, class: "form-horizontal search-form", id: "search-form-header", role: "search" do %>
     <%= render Blacklight::HiddenSearchStateComponent.new(params: search_state.params_for_search.except(:q, :search_field, :qt, :page, :utf8)) %>
     <%= hidden_field_tag :search_field, 'all_fields' %>
     <div class="form-group row w-100">
@@ -22,7 +22,9 @@
           <% if current_user %>
             <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
 
-              <span class="sr-only" data-search-element="label"><%= t("hyrax.search.form.option.all.label_long", application_name: application_name) %></span>
+              <span class="sr-only" data-search-element="label">
+                <%= t("hyrax.search.form.option.all.label_long", application_name: application_name) %>
+              </span>
               <span aria-hidden="true"><%= t("hyrax.search.form.option.all.label_short") %></span>
               <span class="caret"></span>
             </button>

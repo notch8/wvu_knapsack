@@ -1,10 +1,11 @@
 .wvu_home {
 
   ////// Homepage Text Block //////
+  
   div.home_page_text.homepage-text-container {
     background-color: #fff;
     border: 1px solid #ddd;
-    height: 343px;
+    min-height: 200px;
     margin-top: -150px;
     overflow: hidden;
   }
@@ -19,68 +20,16 @@
   }
 
   ////// Facets //////
-  .facet-panel-background-color {
-    background-color: #ffffff;
-
-    @media (max-width: 992px) {
-      background-color: transparent;
-    }
-  }
-
-  #facet-panel-collapse {
-    margin-bottom: 15px;
-  }
 
   .card.facet-limit {
     margin-bottom: 0;
   }
-
-  .facets-toggle {
-    border-color: transparent !important;
-  }
-
-  // Note: copied over to override /* line 226, /usr/local/bundle/gems/bootstrap-sass-3.4.1/assets/stylesheets/bootstrap/_panels.scss
-  .panel-group {
-    .card {
-      border-radius: 0 !important;
-      margin-bottom: 0 !important;
-    }
-
-    .card+.card {
-      margin-top: 0 !important;
-    }
-  }
-
-  // Note: copied over to override /* line 238, /usr/local/bundle/gems/bootstrap-sass-3.4.1/assets/stylesheets/bootstrap/_panels.scss */
-  .panel-group .card-heading+.panel-collapse>.card-body,
-  .panel-group .card-heading+.panel-collapse>.list-group {
-    border-top: 0 !important;
-  }
-
-  // Note: copied over to override /* line 1, /usr/local/rvm/gems/ruby-2.5.3/gems/hyrax-2.9.0/app/assets/stylesheets/hyrax/_file-listing.scss */
-  div.facets h3 {
-    font-size: 1em !important;
-  }
-
-  // Note: copied over to override /* line 52, /usr/local/bundle/gems/bootstrap-sass-3.4.1/assets/stylesheets/bootstrap/_scaffolding.scss */
-  a:hover,
-  a:focus {
-    text-decoration: none !important;
-  }
-
-  #sortAndPerPage {
-    margin-top: 15px;
-  }
-
-
-
 
   ///// Featured Works Section /////
 
   div#featured_works>div.featured-works-4-column-layout:nth-child(1n+5) {
     display: none !important;
   }
-
 
   .recent-works-container {
     .list-group {

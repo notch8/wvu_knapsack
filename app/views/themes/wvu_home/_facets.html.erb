@@ -2,14 +2,14 @@
 <%# override to remove hamburger toggle button %>
 
 <% if has_facet_values? %>
-<div id="facets" class="cultural-repository facets sidenav">
-  <div class="top-card-heading text-center">
+<div id="facets">
+  <div class="text-center">
     <%# remove facets-toggle button %>
-    <h2 class="facets-heading">
+    <h2>
       Browse Items
     </h2>
   </div>
-  <div id="facet-panel-collapse" class="collapse">
+  <div id="facet-panel-collapse">
     <%= render_facet_partials %>
   </div>
 </div>
