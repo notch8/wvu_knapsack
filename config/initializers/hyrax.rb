@@ -4,10 +4,10 @@
 
 Rails.application.config.after_initialize do
   Hyrax.config do |config|
-    config.flexible = true # ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_FLEXIBLE', false))
+    config.flexible = ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_FLEXIBLE', true))
 
-    # Set default profile path
-    config.default_m3_profile_path = HykuKnapsack::Engine.root.join('config', 'metadata_profiles', 'm3_profile.yaml')
+    # Set default profile path - prepend to ensure knapsack profile is checked first
+    config.schema_loader_config_search_paths.unshift(HykuKnapsack::Engine.root)
     # Clears the default registered concerns and adds in the concerns specified in the m3_profile.yaml
     config.instance_variable_set(:@registered_concerns, [])
     # Injected via `rails g hyku_knapsack:work_resource Document --flexible`
