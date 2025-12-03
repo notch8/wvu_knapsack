@@ -8,4 +8,3 @@ Rails.application.config.assets.paths.unshift(
   Rails.root.join('app', 'assets', 'stylesheets').to_s,
   Rails.root.join('app', 'assets', 'images').to_s
 )
-
