@@ -5,10 +5,8 @@
   <%= render 'themes/wvu_home/featured_works_home_text_section' %>
 <% else %>
   <%# check is added inside the partial %>
-  <%= render 'themes/wvu_home/layouts/share_your_work_row' if controller_name == 'homepage' %> <%# render the sywb row when featured works feature flipper is in the off position %>
+  <%= render 'themes/wvu_home/layouts/share_your_work_row' if controller_name == 'homepage' %>
+  <%# render the share_your_work_row row when featured works feature flipper is in the off position %>
 <% end %>
-<%# add check for recently uploaded %>
-<% if @presenter.display_recently_uploaded? %>
-  <%= render 'themes/wvu_home/recent_works_section' %>
-<% end %>
+
 <%= render 'themes/wvu_home/collections_section' %>

@@ -1,32 +1,18 @@
-<% # OVERRIDE: Hyrax v5.0.0rc2 template to remove the render of the /controls partial, removed the background gradient span, and added share your work btn %>
+<% # OVERRIDE: Hyrax v5.2.0 template to remove the render of the /controls partial, removed the background gradient span, and added share your work btn %>
 
 <% content_for(:navbar) do %>
   <div class="image-masthead">
     <!-- wvu repository homepage -->
     <div class="background-container banner-image" title="<%= block_for(name: 'banner_image_text') %>" style="background-image: url('<%= "#{banner_image}?#{Time.now.to_i}" %>')"></div>
     
-    <!-- container for facet menu and search bar -->
-    <div class="container mt-5">
-      <div class="row">
-        <% if controller_name == 'homepage' %>
-        
-        <!-- container around the facet menu -->
-        <div class="col-12 col-lg-4 mb-2 bg-white rounded-sm p-4">
-          <%= render 'themes/wvu_home/facets' %>
-        </div>
-        <% end %>
-
-        <!-- container around the search bar -->    
-        <div class="mx-auto my-auto col-12 col-lg-7">
-          <%= render 'themes/wvu_home/catalog/search_form' %>
-        </div>
-
-      </div>
-      <div class="offset-md-1 site-title-container">
-        <div class="site-title h1 mb-0">
+    <!-- wvu container for marketing text and search bar -->
+    <div class="container">
+      <div class="site-title-container">
+        <div class="site-title h1 text-center m-4">
           <%= render 'hyrax/homepage/marketing' %>
         </div>
       </div>
+      <%= render 'themes/wvu_home/catalog/search_form' %>
     </div>
   </div>
 <% end %>

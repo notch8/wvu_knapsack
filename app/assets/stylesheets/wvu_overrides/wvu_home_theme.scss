@@ -1,31 +1,45 @@
-.wvu_home {
+body.wvu_home {
 
-  ////// Homepage Text Block //////
-  
-  div.home_page_text.homepage-text-container {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    min-height: 200px;
-    margin-top: -150px;
-    overflow: hidden;
-  }
+  /// --- Search Bar --- ///
 
-  .fill-height-flex {
-    display: flex;
-    flex-direction: column;
+  .search-bar-input-group {
+    background-color: $primary-color-blue;
+    border-radius: 4px;
+    border: 3px solid $neutral-color-not-quite-white;
+    margin: 5rem;
+    padding: 2.5rem;
 
-    div {
-      flex: 1;
+    #search-field-header {
+      border: 2px solid $neutral-color-coopers-gray;
+      padding: 1rem;
+      font-size: 1.2rem;
+    }
+
+    #search-submit-header {
+      border-color: $neutral-color-coopers-gray !important;
+    }
+
+    #advanced-top-button {
+      align-content: center;
+    }
+
+    .input-group-append {
+      border: 2px solid $neutral-color-coopers-gray;
     }
   }
 
-  ////// Facets //////
+  /// --- Facets --- ///
 
   .card.facet-limit {
     margin-bottom: 0;
   }
 
-  ///// Featured Works Section /////
+  .homepage-text-container {
+    border: 1px solid $primary-color-blue;
+    margin: auto 0;
+  }
+
+  /// --- Featured Works Section --- ///
 
   div#featured_works>div.featured-works-4-column-layout:nth-child(1n+5) {
     display: none !important;
