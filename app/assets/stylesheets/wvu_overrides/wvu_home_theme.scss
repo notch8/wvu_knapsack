@@ -7,7 +7,7 @@ body.wvu_home {
     border-radius: 4px;
     border: 3px solid $neutral-color-not-quite-white;
     margin: 5rem;
-    padding: 2.5rem;
+    padding: 2.5rem 2rem;
 
     #search-field-header {
       border: 2px solid $neutral-color-coopers-gray;
@@ -41,33 +41,87 @@ body.wvu_home {
 
   /// --- Featured Works Section --- ///
 
+  // only the first 4 featured works will show on the homepage
   div#featured_works>div.featured-works-4-column-layout:nth-child(1n+5) {
     display: none !important;
   }
 
-  .recent-works-container {
-    .list-group {
-      flex-direction: row;
-    }
-  }
+  // featured work card with thumbnail image and title
+  .featured-fields {
+    overflow: hidden;
+    border: 1px solid #dce3e8;
+    border-radius: 3px;
+    margin-bottom: 2rem;
+    min-width: 200px;
+    max-width: 350px;
 
-  .featured-item img {
-    width: 90px;
-  }
+    // container for the work thumbnail image
+    .featured-item-thumbnail {
+      height: 220px;
 
-  .featured-works-container,
-  .recent-works-container,
-  .collections-container {
-    a {
+      // ensures image covers height and width of container
       img {
-        display: block;
-        height: auto;
-        margin-left: auto;
-        margin-right: auto;
-        max-width: 100%;
+        width: 110%;
+        height: 110%;
+        margin: -5% 0 0 -5%;
+        object-fit: cover;
+        object-position: center;
+      }
+    }
+
+    // container for the title
+    .featured-item-title {
+      background-color: $neutral-color-not-quite-white;
+      height: 5rem;
+      padding: 1rem .75rem;
+      z-index: 1;
+
+      a {
+        text-decoration: none;
+        color: $neutral-color-coal;
+
+        h3 {
+          font-size: 16px !important;
+          font-weight: bold;
+        }
+      }
+
+      // hover on title container changes background and link color
+      &:hover {
+        background-color: $neutral-color-coopers-gray;
+
+        a {
+          color: $neutral-color-not-quite-white;
+        }
       }
     }
   }
+
+  // container for the titles
+  // .featured-item-title,
+  // .collection-item-title,
+  // .recent-doc-title {
+  //   height: 5rem;
+  //   padding: 1rem .75rem;
+
+  //   a {
+  //     text-decoration: none;
+  //     color: $neutral-color-coal;
+
+  //     h3 {
+  //       font-size: 16px !important;
+  //       font-weight: bold;
+  //       margin: auto 0;
+  //     }
+  //   }
+  // }
+
+  //   .recent-works-container {
+  //   .list-group {
+  //     flex-direction: row;
+  //   }
+  // }
+
 
   .form-control,
   .btn,
@@ -128,21 +182,6 @@ body.wvu_home {
   .image-masthead .background-container {
     -webkit-filter: none;
     filter: none;
-  }
-
-  .featured-item-title,
-  .collection-item-title,
-  .recent-doc-title {
-    text-align: center;
-
-  }
-
-  .featured-item-title {
-    color: #000 !important;
-    font-size: 14px !important;
-    text-decoration: none !important;
-    cursor: default;
-    pointer-events: none;
   }
 
   a.cr_terms {

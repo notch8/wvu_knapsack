@@ -1,32 +1,7 @@
-.card {
-  margin-bottom: 0;
-}
-
-.facet-limit {
-  margin-bottom: 0;
-}
-
-
-.featured-item-title,
-.collection-item-title,
-.recent-doc-title {
-  text-align: center;
-
-  h3 {
-    cursor: default;
-    font-size: 14px !important;
-    pointer-events: none;
-    text-decoration: none;
-
-    a {
-      color: #000000;
-    }
-  }
-}
-
 // wvu_show theme: Two-column layout is handled by Bootstrap grid in _attribute_rows.html.erb
 // Inline styles in _attribute_rows.html.erb provide the primary override; this is a fallback
 body.wvu_show {
+
   dl.work-show,
   .work-show {
     column-count: unset !important;
