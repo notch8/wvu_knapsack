@@ -1,18 +1,50 @@
 body.wvu_home {
 
+  /// --- Banner Image Masthead --- ///
+
+  .image-masthead {
+    min-height: 400px;
+
+    .background-container.banner-image {
+      background-position: center;
+    }
+
+    // search bar and marketing content layout
+    > .container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    // marketing text positioned dynamically over banner
+    .site-title-container {
+      margin: 1.5rem 0;
+    }
+  }
+
   /// --- Search Bar --- ///
 
-  .search-bar-input-group {
+  // search bar wrapper with blue background and rounded corners
+  .search-bar-wrapper {
     background-color: $primary-color-blue;
-    border-radius: 4px;
-    border: 3px solid $neutral-color-not-quite-white;
-    margin: 5rem;
-    padding: 2.5rem 2rem;
+    border-radius: 6px;
+    padding: 1.5rem 2rem;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+
+    .form-group {
+      margin-bottom: 0;
+    }
 
     #search-field-header {
       border: 2px solid $neutral-color-coopers-gray;
       padding: 1rem;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
+      border-radius: 4px 0 0 4px;
     }
 
     #search-submit-header {
@@ -25,6 +57,7 @@ body.wvu_home {
 
     .input-group-append {
       border: 2px solid $neutral-color-coopers-gray;
+      border-radius: 0 4px 4px 0;
     }
   }
 
@@ -127,9 +160,30 @@ body.wvu_home {
     border-radius: 0;
   }
 
-  #search-field-header {
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
+  /// --- Responsive Adjustments --- ///
+
+
+  @media (max-width: 576px) {
+    // drops the search bar buttons to a separate line on small screens
+    // rounds the all corners of the search bar input field since only the left side is rounded in full width
+    .search-bar-input-group {
+      #search-field-header {
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+      }
+
+      // ensures the buttons have the full width of the container
+      // rounds all corners of the button container since only the right side is rounded in full width
+      .input-group-append {
+        width: 100%;
+        border-radius: 4px;
+
+        // ensures the buttons take up the full width of the container
+        .btn {
+          flex: 1;
+        }
+      }
+    }
   }
 
   .mt-20 {
@@ -170,15 +224,6 @@ body.wvu_home {
 
   .mb-40-0 {
     margin-bottom: 40px;
-  }
-
-  .image-masthead {
-    overflow: auto;
-  }
-
-  .image-masthead .background-container {
-    -webkit-filter: none;
-    filter: none;
   }
 
   a.cr_terms {
