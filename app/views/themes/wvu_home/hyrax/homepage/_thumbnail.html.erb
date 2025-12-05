@@ -1,0 +1,5 @@
+<%# thumbnail partial takes params: work or collection, main_app or hyrax, styles for the image, image alt text %>
+<%= link_to [link, featured] do %>
+  <%= render_thumbnail_tag(featured, { class: styles, alt: alt }, {suppress_link: true}) %>
+<% end %>
+

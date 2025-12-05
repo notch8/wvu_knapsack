@@ -1,13 +1,6 @@
-<%# OVERRIDE Hyrax v5.0.0rc2 template for client theming %>
+<%# OVERRIDE Hyrax v5.2.0 template for client theming %>
 
-<% if display_content_block? @home_text %>
-  <% presenter = featured.presenter %>
-  <div class="featured-works-4-column-layout col-lg-3 col-md-6 col-12" data-id="<%= presenter.id %>">
-    <%= render 'featured_fields', featured: presenter %>
-  </div>
-<% else %>
-  <% presenter = featured.presenter %>
-  <div class="featured-works-6-column-layout col-6 col-md-2" data-id="<%= presenter.id %>">
-    <%= render 'featured_fields', featured: presenter %>
-  </div>
-<% end %>
+<% presenter = featured.presenter %>
+<div class="col-lg-3 col-md-6 col-12" data-id="<%= presenter.id %>">
+  <%= render 'featured_fields', featured: presenter %>
+</div>

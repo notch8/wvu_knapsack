@@ -15,15 +15,13 @@
       <%= f.submit('Save order', class: 'btn btn-secondary') %>
     <% end %>
   <% else %>
-    <div class="container">
-        <%= form_for [main_app, @featured_collection_list] do |f| %>
-          <div class="row">
-            <%= f.fields_for :featured_collections do |featured| %>
-              <%= render 'explore_collections', f: featured %>
-            <% end %>
-          </div>
+    <%= form_for [main_app, @featured_collection_list] do |f| %>
+      <div class="row">
+        <%= f.fields_for :featured_collections do |featured| %>
+          <%= render 'explore_collections', f: featured %>
         <% end %>
-    </div>
+      </div>
+    <% end %>
   <% end %>
 </div>
 <ul class="list-inline collection-highlights-list">
