@@ -1,12 +1,55 @@
 <% provide :page_title, application_name %>
 
-<%# add check for featured works %>
-<% if @presenter.display_featured_works? %>
-  <%= render 'themes/wvu_home/featured_works_home_text_section' %>
-<% else %>
-  <%# check is added inside the partial %>
-  <%= render 'themes/wvu_home/layouts/share_your_work_row' if controller_name == 'homepage' %>
-  <%# render the share_your_work_row row when featured works feature flipper is in the off position %>
-<% end %>
+<div class="container">
+  <div class="row">
+    <div class="col-4">
 
-<%= render 'themes/wvu_home/collections_section' %>
+      <!-- container around the facet menu -->
+      <% if controller_name == 'homepage' %>
+        <div class="facets-container">
+          <%= render 'themes/wvu_home/facets' %>
+        </div>
+      <% end %>
+
+      <!-- container around the recent works section -->
+      <% if @presenter.display_recently_uploaded? %>
+        <div class="recent-works-container">
+          <h4>Recent Works</h4>
+          <h2 class="sr-only"><%= t('hyrax.homepage.recently_uploaded.title') %></h2>
+          <%= render 'hyrax/homepage/recently_uploaded', recent_documents: @recent_documents %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="col-8">
+
+      <!-- check for home text content block-->
+      <% if display_content_block? @home_text %>
+        <div class="bg-white rounded-sm m-2">
+          <%= render 'themes/wvu_home/home_text' if controller_name == 'homepage' %>
+        </div>
+      <% end %>
+
+      <!-- render the share_your_work_row row when featured works feature flipper is in the off position -->
+      <%= render 'themes/wvu_home/layouts/share_your_work_row' if controller_name == 'homepage' %>
+
+      <div class="container">
+        <div class="row">
+        <!-- check for featured works -->
+        <% if @presenter.display_featured_works? %>
+          <div class="featured-works-container">
+            <h4>Featured Works</h4>
+            <%= render 'hyrax/homepage/featured_works' %>
+          </div>
+        <% end %>
+        </div>
+        <div class="row">
+        <!-- can toggle on/off the collections section -->
+          <div class="collections-container">
+            <%= render 'themes/wvu_home/collections_section' %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

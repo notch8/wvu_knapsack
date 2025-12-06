@@ -1,4 +1,18 @@
 body.wvu_home {
+  margin-bottom: 0;
+
+  /// --- Container Layout (Homepage Only) --- ///
+
+  // homepage full width layout
+  &.is-homepage #content-wrapper {
+    margin: 5rem 0;
+    min-width: 100%;
+
+    > .container {
+      min-width: 100%;
+      max-width: 1200px;
+    }
+  }
 
   /// --- Banner Image Masthead --- ///
 
@@ -42,7 +56,6 @@ body.wvu_home {
 
     #search-field-header {
       border: 2px solid $neutral-color-coopers-gray;
-      padding: 1rem;
       font-size: 1.25rem;
       border-radius: 4px 0 0 4px;
     }
@@ -51,6 +64,7 @@ body.wvu_home {
       border-color: $neutral-color-coopers-gray !important;
     }
 
+    // keep the text in the center of the button
     #advanced-top-button {
       align-content: center;
     }
@@ -63,16 +77,79 @@ body.wvu_home {
 
   /// --- Facets --- ///
 
-  .card.facet-limit {
-    margin-bottom: 0;
+  .facets-container {
+    padding: 2rem;
+    margin-bottom: 3rem;
+    max-width: 600px;
+
+    .card.facet-limit {
+      margin-bottom: 5px;
+    }
   }
+
+  /// --- Homepage Text Container --- ///
 
   .homepage-text-container {
     border: 1px solid $primary-color-blue;
     margin: auto 0;
   }
 
-  /// --- Featured Works Section --- ///
+  /// --- Featured Works and Collections Sections --- ///
+
+  .collections-container,
+  .featured-works-container {
+    min-width: 800px;
+    max-width: 100%;
+  }
+
+  .recent-works-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid $neutral-color-coopers-gray;
+    border-radius: 3px;
+    margin: 2rem;
+    padding: 2rem;
+
+    .recent-doc-fields {
+      overflow: hidden;
+      margin-bottom: 1rem;
+      min-width: 150px;
+      max-width: 250px;
+
+      // container for the work thumbnail image
+      .recent-doc-thumbnail {
+        height: 120px;
+
+        // ensures image covers height and width of container
+        img {
+          width: 110%;
+          height: 110%;
+          margin: -5%;
+          object-fit: cover;
+          object-position: center;
+        }
+      }
+      .recent-doc-title {
+        height: 5rem;
+        padding: 0.75rem 0;
+
+        a {
+          text-decoration: none;
+          color: $neutral-color-coal;
+
+          h3 {
+            font-size: 14px !important;
+          }
+        }
+
+        // hover on title container changes background and link color
+        a:hover {
+          color: $primary-color-blue;
+        }
+      }
+    }
+  }
 
   // featured work card with thumbnail image and title
   .featured-fields,
@@ -104,7 +181,7 @@ body.wvu_home {
     .featured-collections-item-title {
       background-color: $neutral-color-not-quite-white;
       height: 5rem;
-      padding: 1rem .75rem;
+      padding: 1rem 0.75rem;
 
       a {
         text-decoration: none;
@@ -127,32 +204,6 @@ body.wvu_home {
     }
   }
 
-  // container for the titles
-  // .featured-item-title,
-  // .collection-item-title,
-  // .recent-doc-title {
-  //   height: 5rem;
-  //   padding: 1rem .75rem;
-
-  //   a {
-  //     text-decoration: none;
-  //     color: $neutral-color-coal;
-
-  //     h3 {
-  //       font-size: 16px !important;
-  //       font-weight: bold;
-  //       margin: auto 0;
-  //     }
-  //   }
-  // }
-
-  //   .recent-works-container {
-  //   .list-group {
-  //     flex-direction: row;
-  //   }
-  // }
-
-
   .form-control,
   .btn,
   nav.breadcrumb,
@@ -161,7 +212,6 @@ body.wvu_home {
   }
 
   /// --- Responsive Adjustments --- ///
-
 
   @media (max-width: 576px) {
     // drops the search bar buttons to a separate line on small screens
@@ -184,56 +234,5 @@ body.wvu_home {
         }
       }
     }
-  }
-
-  .mt-20 {
-    margin-top: 20px;
-  }
-
-  .mt-4 {
-    margin-top: 40px;
-  }
-
-  .mb-4 {
-    margin-bottom: 40px;
-  }
-
-  .mt-6 {
-    margin-top: 60px;
-  }
-
-  .mb-6 {
-    margin-bottom: 60px;
-  }
-
-  .pt-30 {
-    padding-top: 30px;
-  }
-
-  .pb-30 {
-    padding-bottom: 30px;
-  }
-
-  .p-20 {
-    padding: 20px;
-  }
-
-  .mt-reverse-mb {
-    margin-top: 40px;
-  }
-
-  .mb-40-0 {
-    margin-bottom: 40px;
-  }
-
-  a.cr_terms {
-    color: #215480;
-    font-size: 12px !important;
-    font-weight: bold;
-
-    &:hover {
-      color: #333333;
-    }
-
   }
 }

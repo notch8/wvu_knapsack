@@ -7,7 +7,8 @@
   </head>
   <% content_for(:extra_body_classes, 'public-facing') %>
 
-  <body class="<%= body_class %> <%= home_page_theme %> <%= search_results_theme %> <%= show_page_theme %>">
+  <!-- add is-homepage class to specify homepage layout styling -->
+  <body class="<%= body_class %> <%= home_page_theme %> <%= search_results_theme %> <%= show_page_theme %> <%= 'is-homepage' if controller_name == 'homepage' %>">
     <div class="skip-to-content">
       <%= link_to "Skip to Content", "#skip-to-content" %>
     </div>
@@ -18,13 +19,13 @@
     <div id="content-wrapper" class="container" role="main">
       <% if display_content_block? @home_text %>
         <div class="row">
-          <div class="col-md-8">
+          <div class="col">
               <%= render '/flash_msg' %>
           </div>
         </div>
       <% else %>
         <div class="row">
-          <div class="col-md-12">
+          <div class="col">
               <%= render '/flash_msg' %>
           </div>
         </div>
