@@ -4,14 +4,13 @@ body.wvu_home {
   /// --- Container Layout (Homepage Only) --- ///
 
   // homepage full width layout
-  &.is-homepage #content-wrapper {
+  &.is-homepage #content-wrapper.container {
     margin: 5rem 0;
     min-width: 100%;
 
-    // immediate child container of #content-wrapper
-    > .container {
-      min-width: 100%;
-      max-width: 1200px;
+    // set a slightly wider content area for the homepage
+    > .container-fluid {
+      max-width: 1400px;
     }
   }
 
