@@ -1,4 +1,6 @@
-<%# title partial takes params: work or collection, main_app or hyrax %>
+<%# @param featured [Presenter] work or collection presenter
+    @param link [Symbol] main_app or hyrax %>
+
 <%= link_to [link, featured] do %>
   <h3><%= markdown(featured.title.first) %></h3>
 <% end %>

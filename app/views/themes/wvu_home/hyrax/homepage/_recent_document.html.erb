@@ -2,11 +2,15 @@
 
 <div class="recent-doc-fields">
   <div class="recent-doc-thumbnail">
-    <%# thumbnail partial takes params: work or collection, main_app or hyrax, styles for the image, image alt text %>
+    <%# @param featured [Presenter] work or collection presenter
+      @param link [Symbol] main_app or hyrax
+      @param styles [String] CSS classes for the image
+      @param alt [String] alternative text for the image %>
     <%= render 'thumbnail', featured: recent_document, link: main_app, styles: "h-100 d-block", alt: "" %>
   </div>
   <div class="recent-doc-title">
-    <%# title partial takes params: work or collection, main_app or hyrax %>
+    <%# @param featured [Presenter] work or collection presenter
+    @param link [Symbol] main_app or hyrax %>
     <%= render 'featured_title', featured: recent_document, link: main_app %>
   </div>
 </div>
