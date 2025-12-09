@@ -1,10 +1,10 @@
-body.wvu_home {
+body.wvu_home.hyrax-homepage.hyrax-homepage-index {
   margin-bottom: 0;
 
   /// --- Container Layout (Homepage Only) --- ///
 
   // homepage full width layout
-  &.is-homepage #content-wrapper.container {
+  #content-wrapper.container {
     margin: 5rem 0;
     min-width: 100%;
 
