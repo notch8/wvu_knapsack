@@ -56,13 +56,13 @@ body.wvu_home {
     }
 
     #search-field-header {
-      border: 2px solid $neutral-color-coopers-gray;
+      border: 2px solid $neutral-color-coopers-gray-web-optimized;
       font-size: 1.25rem;
       border-radius: 4px 0 0 4px;
     }
 
     #search-submit-header {
-      border-color: $neutral-color-coopers-gray !important;
+      border-color: $neutral-color-coopers-gray-web-optimized !important;
     }
 
     // keep the text in the center of the button
@@ -71,7 +71,7 @@ body.wvu_home {
     }
 
     .input-group-append {
-      border: 2px solid $neutral-color-coopers-gray;
+      border: 2px solid $neutral-color-coopers-gray-web-optimized;
       border-radius: 0 4px 4px 0;
     }
   }
@@ -102,7 +102,7 @@ body.wvu_home {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid $neutral-color-coopers-gray;
+    border: 1px solid $neutral-color-coopers-gray-web-optimized;
     border-radius: 3px;
     margin: 2rem;
     padding: 2rem;
@@ -132,7 +132,7 @@ body.wvu_home {
 
         a {
           text-decoration: none;
-          color: $neutral-color-coal;
+          color: $neutral-color-coal-web-optimized;
 
           h3 {
             font-size: 14px !important;
@@ -176,10 +176,10 @@ body.wvu_home {
       &:hover {
         .featured-item-title,
         .featured-collections-item-title {
-          background-color: $neutral-color-coopers-gray;
+          background-color: $neutral-color-coopers-gray-web-optimized;
 
           a {
-            color: $neutral-color-not-quite-white;
+            color: $neutral-color-not-quite-white-web-optimized;
           }
         }
       }
@@ -202,13 +202,13 @@ body.wvu_home {
     // container for item title
     .featured-item-title,
     .featured-collections-item-title {
-      background-color: $neutral-color-not-quite-white;
+      background-color: $neutral-color-not-quite-white-web-optimized;
       height: 5rem;
       padding: 1rem 0.75rem;
 
       a {
         text-decoration: none;
-        color: $neutral-color-coal;
+        color: $neutral-color-coal-web-optimized;
 
         h3 {
           font-size: 16px !important;
