@@ -17,19 +17,11 @@
     <%= content_for(:navbar) %>
     <%= content_for(:precontainer_content) %>
     <div id="content-wrapper" class="container" role="main">
-      <% if display_content_block? @home_text %>
-        <div class="row">
-          <div class="col">
-              <%= render '/flash_msg' %>
-          </div>
+      <div class="row">
+        <div class="col-12 col-md-8 mx-auto">
+            <%= render '/flash_msg' %>
         </div>
-      <% else %>
-        <div class="row">
-          <div class="col">
-              <%= render '/flash_msg' %>
-          </div>
-        </div>
-      <% end %>
+      </div>
       <%= render_breadcrumbs builder: Hyrax.config.breadcrumb_builder %>
       <% if content_for?(:page_header) %>
         <div class="row">
