@@ -8,6 +8,7 @@ body.wvu_home {
     margin: 5rem 0;
     min-width: 100%;
 
+    // immediate child container of #content-wrapper
     > .container {
       min-width: 100%;
       max-width: 1200px;
@@ -90,19 +91,14 @@ body.wvu_home {
   /// --- Homepage Text Container --- ///
 
   .homepage-text-container {
+    padding: 2rem;
+    margin: 2rem;
     border: 1px solid $primary-color-blue;
-    margin: auto 0;
   }
 
-  /// --- Featured Works and Collections Sections --- ///
+  /// --- Recent Works Section --- ///
 
-  .collections-container,
-  .featured-works-container {
-    min-width: 800px;
-    max-width: 100%;
-  }
-
-  .recent-works-container {
+  .recently-uploaded-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -115,7 +111,7 @@ body.wvu_home {
       overflow: hidden;
       margin-bottom: 1rem;
       min-width: 150px;
-      max-width: 250px;
+      max-width: 200px;
 
       // container for the work thumbnail image
       .recent-doc-thumbnail {
@@ -131,7 +127,7 @@ body.wvu_home {
         }
       }
       .recent-doc-title {
-        height: 5rem;
+        height: 4rem;
         padding: 0.75rem 0;
 
         a {
@@ -151,32 +147,59 @@ body.wvu_home {
     }
   }
 
-  // featured work card with thumbnail image and title
-  .featured-fields,
-  .featured-collections-fields {
-    overflow: hidden;
-    border: 1px solid #dce3e8;
-    border-radius: 3px;
-    margin-bottom: 2rem;
-    min-width: 200px;
-    max-width: 350px;
+  /// --- Featured Works and Collections Sections --- ///
 
-    // container for the work thumbnail image
+  // rendered by index.html.erb
+  .featured-collections-section-container,
+  .featured-works-container {
+    width: 100%;
+    margin-bottom: 3rem;
+
+    // container for all featured items
+    .featured-fields-container,
+    .explore-collections-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    // single featured item card with thumbnail image and title
+    .featured-work,
+    .featured-collection {
+      width: 260px; // fixed width for uniform cards
+      overflow: hidden;
+      border: 1px solid #dce3e8;
+      border-radius: 3px;
+      margin-bottom: 2rem;
+
+      // hover on any part of card changes title background and link color
+      &:hover {
+        .featured-item-title,
+        .featured-collections-item-title {
+          background-color: $neutral-color-coopers-gray;
+
+          a {
+            color: $neutral-color-not-quite-white;
+          }
+        }
+      }
+    }
+
+    // container for the item thumbnail image
     .featured-item-thumbnail,
     .featured-collections-item-thumbnail {
-      height: 220px;
+      height: 230px;
 
       // ensures image covers height and width of container
       img {
         width: 110%;
-        height: 110%;
         margin: -5% 0 0 -5%;
         object-fit: cover;
         object-position: center;
       }
     }
 
-    // container for the title
+    // container for item title
     .featured-item-title,
     .featured-collections-item-title {
       background-color: $neutral-color-not-quite-white;
@@ -192,15 +215,6 @@ body.wvu_home {
           font-weight: bold;
         }
       }
-
-      // hover on title container changes background and link color
-      &:hover {
-        background-color: $neutral-color-coopers-gray;
-
-        a {
-          color: $neutral-color-not-quite-white;
-        }
-      }
     }
   }
 
@@ -213,7 +227,15 @@ body.wvu_home {
 
   /// --- Responsive Adjustments --- ///
 
-  @media (max-width: 576px) {
+  // bootstrap breakpoint: when the screen is smaller than lg, these styles will be applied
+  @media (max-width: 992px) {
+    .recently-uploaded-container {
+      display: none;
+    }
+  }
+
+  // bootstrap breakpoint: when the screen is smaller than md, these styles will be applied
+  @media (max-width: 768px) {
     // drops the search bar buttons to a separate line on small screens
     // rounds the all corners of the search bar input field since only the left side is rounded in full width
     .search-bar-input-group {
