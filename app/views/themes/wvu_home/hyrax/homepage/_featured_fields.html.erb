@@ -1,15 +1,15 @@
 <%# OVERRIDE Hyrax v5.2.0 template for theming -- removed item keywords and depositor from partial %>
 
-<div class="featured-fields">
+<% presenter = featured_fields.presenter %>
+<%# container for the featured work card with thumbnail image and title %>
+<div class="featured-work" data-id="<%= presenter.id %>">
   <div class="featured-item-thumbnail">
     <%# thumbnail partial takes params: work or collection, main_app or hyrax, styles for the image, image alt text %>
-    <%= render 'thumbnail', featured: featured, link: main_app, styles: "h-100 d-block", alt: "" %>
+    <%= render 'thumbnail', featured: presenter, link: main_app, styles: "h-100 d-block", alt: "" %>
   </div>
   <div class="featured-item-title">
     <span class="sr-only"><%= t('hyrax.homepage.featured_works.document.title_label') %></span>
     <%# title partial takes params: work or collection, main_app or hyrax %>
-    <%= render 'featured_title', featured: featured, link: main_app %>
+    <%= render 'featured_title', featured: presenter, link: main_app %>
   </div>
-  <%# Removed featured-item-depositor %>
-  <%# Removed item keywords %>
 </div>

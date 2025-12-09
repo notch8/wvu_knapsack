@@ -2,7 +2,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-4">
+    <div class="col-12 col-lg-4">
 
       <!-- container around the facet menu -->
       <% if controller_name == 'homepage' %>
@@ -13,7 +13,7 @@
 
       <!-- container around the recent works section -->
       <% if @presenter.display_recently_uploaded? %>
-        <div class="recent-works-container">
+        <div class="recently-uploaded-container">
           <h4>Recent Works</h4>
           <h2 class="sr-only"><%= t('hyrax.homepage.recently_uploaded.title') %></h2>
           <%= render 'hyrax/homepage/recently_uploaded', recent_documents: @recent_documents %>
@@ -21,11 +21,11 @@
       <% end %>
     </div>
 
-    <div class="col-8">
+    <div class="col-12 col-lg-8">
 
       <!-- check for home text content block-->
       <% if display_content_block? @home_text %>
-        <div class="bg-white rounded-sm m-2">
+        <div class="homepage-text-container">
           <%= render 'themes/wvu_home/home_text' if controller_name == 'homepage' %>
         </div>
       <% end %>
@@ -45,8 +45,10 @@
         </div>
         <div class="row">
         <!-- can toggle on/off the collections section -->
-          <div class="collections-container">
-            <%= render 'themes/wvu_home/collections_section' %>
+          <div class="featured-collections-section-container">
+            <h4>Featured Collections</h4>
+            <h2 class="sr-only">Featured Collections</h2>
+            <%= render 'featured_collection_section' %>
           </div>
         </div>
       </div>

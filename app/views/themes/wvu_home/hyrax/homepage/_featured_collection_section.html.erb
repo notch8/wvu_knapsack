@@ -16,7 +16,7 @@
     <% end %>
   <% else %>
     <%= form_for [main_app, @featured_collection_list] do |f| %>
-      <div class="row">
+      <div class="explore-collections-container">
         <%= f.fields_for :featured_collections do |featured| %>
           <%= render 'explore_collections', f: featured %>
         <% end %>

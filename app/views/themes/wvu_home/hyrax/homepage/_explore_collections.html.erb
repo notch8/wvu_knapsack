@@ -1,15 +1,13 @@
 <%# OVERRIDE Hyrax v5.2.0 template for client theming %>
 
 <% featured_collection = f.object.presenter %>
-<div class="col-lg-3 col-md-6 col-12">
-  <div class="featured-collections-fields">
-    <div class="featured-collections-item-thumbnail">
-      <%# thumbnail partial takes params: work or collection, main_app or hyrax, styles for the image, image alt text %>
-      <%= render 'thumbnail', featured: featured_collection, link: hyrax, styles: "h-100 d-block", alt: "#{featured_collection.title.first} #{ t('hyrax.homepage.admin_sets.thumbnail')}" %>
-    </div>
-    <div class="featured-collections-item-title">
-      <%# title partial takes params: work or collection, main_app or hyrax %>
-      <%= render 'featured_title', featured: featured_collection, link: hyrax %>
-    </div>
+<div class="featured-collection">
+  <div class="featured-collections-item-thumbnail">
+    <%# thumbnail partial takes params: work or collection, main_app or hyrax, styles for the image, image alt text %>
+    <%= render 'thumbnail', featured: featured_collection, link: hyrax, styles: "h-100 d-block", alt: "#{featured_collection.title.first} #{ t('hyrax.homepage.admin_sets.thumbnail')}" %>
+  </div>
+  <div class="featured-collections-item-title">
+    <%# title partial takes params: work or collection, main_app or hyrax %>
+    <%= render 'featured_title', featured: featured_collection, link: hyrax %>
   </div>
 </div>
