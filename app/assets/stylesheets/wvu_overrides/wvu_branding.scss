@@ -1,0 +1,10 @@
+// wvu_show theme: Two-column layout is handled by Bootstrap grid in _attribute_rows.html.erb
+// Inline styles in _attribute_rows.html.erb provide the primary override; this is a fallback
+body.wvu_show {
+
+  dl.work-show,
+  .work-show {
+    column-count: unset !important;
+    columns: unset !important;
+  }
+}

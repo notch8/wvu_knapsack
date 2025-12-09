@@ -1,0 +1,23 @@
+<%# container for facets menu %>
+<%# override to remove hamburger toggle button %>
+
+
+
+
+<% # main container for facets/limits menu -%>
+<% if has_facet_values? %>
+  <div id="facets">
+    <div class="text-center">
+      <button type="button" class="facets-toggle navbar-toggler" data-toggle="collapse" data-target="#facet-panel-collapse" aria-expanded="false" aria-controls="facet-panel-collapse">
+        <span class="sr-only">Toggle facets</span>
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <h2>
+        Browse by
+      </h2>
+    </div>
+    <div id="facet-panel-collapse" class="collapse">
+      <%= render_facet_partials %>
+    </div>
+  </div>
+<% end %>

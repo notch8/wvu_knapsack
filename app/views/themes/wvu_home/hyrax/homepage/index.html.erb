@@ -1,0 +1,57 @@
+<% provide :page_title, application_name %>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12 col-lg-4">
+
+      <!-- container around the facet menu -->
+      <% if controller_name == 'homepage' %>
+        <div class="facets-container">
+          <%= render 'themes/wvu_home/facets' %>
+        </div>
+      <% end %>
+
+      <!-- container around the recent works section -->
+      <% if @presenter.display_recently_uploaded? %>
+        <div class="recently-uploaded-container">
+          <h4>Recent Works</h4>
+          <h2 class="sr-only"><%= t('hyrax.homepage.recently_uploaded.title') %></h2>
+          <%= render 'hyrax/homepage/recently_uploaded', recent_documents: @recent_documents %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="col-12 col-lg-8">
+
+      <!-- check for home text content block-->
+      <% if display_content_block? @home_text %>
+        <div class="homepage-text-container">
+          <%= render 'themes/wvu_home/home_text' if controller_name == 'homepage' %>
+        </div>
+      <% end %>
+
+      <!-- render the share_your_work_row row when featured works feature flipper is in the off position -->
+      <%= render 'themes/wvu_home/layouts/share_your_work_row' if controller_name == 'homepage' %>
+
+      <div class="container">
+        <div class="row">
+        <!-- check for featured works -->
+        <% if @presenter.display_featured_works? %>
+          <div class="featured-works-container">
+            <h4>Featured Works</h4>
+            <%= render 'hyrax/homepage/featured_works' %>
+          </div>
+        <% end %>
+        </div>
+        <div class="row">
+        <!-- can toggle on/off the collections section -->
+          <div class="featured-collections-section-container">
+            <h4>Featured Collections</h4>
+            <h2 class="sr-only">Featured Collections</h2>
+            <%= render 'featured_collection_section' %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

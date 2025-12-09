@@ -1,0 +1,17 @@
+<%# OVERRIDE Hyrax v5.2.0 template for client theming %>
+
+<% featured_collection = f.object.presenter %>
+<div class="featured-collection">
+  <div class="featured-collections-item-thumbnail">
+    <%# @param featured [Presenter] work or collection presenter
+      @param link [Symbol] main_app or hyrax
+      @param styles [String] CSS classes for the image
+      @param alt [String] alternative text for the image %>
+    <%= render 'thumbnail', featured: featured_collection, link: hyrax, styles: "h-100 d-block", alt: "#{featured_collection.title.first} #{ t('hyrax.homepage.admin_sets.thumbnail')}" %>
+  </div>
+  <div class="featured-collections-item-title">
+    <%# @param featured [Presenter] work or collection presenter
+    @param link [Symbol] main_app or hyrax %>
+    <%= render 'featured_title', featured: featured_collection, link: hyrax %>
+  </div>
+</div>

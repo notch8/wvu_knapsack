@@ -1,0 +1,259 @@
+body.wvu_home.hyrax-homepage.hyrax-homepage-index {
+  margin-bottom: 0;
+
+  /// --- Container Layout (Homepage Only) --- ///
+
+  // homepage full width layout
+  #content-wrapper.container {
+    margin: 5rem 0;
+    min-width: 100%;
+
+    // set a slightly wider content area for the homepage
+    > .container-fluid {
+      max-width: 1400px;
+    }
+  }
+
+  /// --- Banner Image Masthead --- ///
+
+  .image-masthead {
+    min-height: 400px;
+
+    .background-container.banner-image {
+      background-position: center;
+    }
+
+    // search bar and marketing content layout
+    > .container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    // marketing text positioned dynamically over banner
+    .site-title-container {
+      margin: 1.5rem 0;
+    }
+  }
+
+  /// --- Search Bar --- ///
+
+  // search bar wrapper with blue background and rounded corners
+  .search-bar-wrapper {
+    background-color: $primary-color-blue;
+    border-radius: 6px;
+    padding: 1.5rem 2rem;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+
+    .form-group {
+      margin-bottom: 0;
+    }
+
+    #search-field-header {
+      border: 2px solid $neutral-color-coopers-gray-web-optimized;
+      font-size: 1.25rem;
+      border-radius: 4px 0 0 4px;
+    }
+
+    #search-submit-header {
+      border-color: $neutral-color-coopers-gray-web-optimized !important;
+    }
+
+    // keep the text in the center of the button
+    #advanced-top-button {
+      align-content: center;
+    }
+
+    .input-group-append {
+      border: 2px solid $neutral-color-coopers-gray-web-optimized;
+      border-radius: 0 4px 4px 0;
+    }
+  }
+
+  /// --- Facets --- ///
+
+  .facets-container {
+    padding: 2rem;
+    margin-bottom: 3rem;
+    max-width: 600px;
+
+    .card.facet-limit {
+      margin-bottom: 5px;
+    }
+  }
+
+  /// --- Homepage Text Container --- ///
+
+  .homepage-text-container {
+    padding: 2rem;
+    margin: 2rem;
+    border: 1px solid $primary-color-blue;
+  }
+
+  /// --- Recent Works Section --- ///
+
+  .recently-uploaded-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid $neutral-color-coopers-gray-web-optimized;
+    border-radius: 3px;
+    margin: 2rem;
+    padding: 2rem;
+
+    .recent-doc-fields {
+      overflow: hidden;
+      margin-bottom: 1rem;
+      min-width: 150px;
+      max-width: 200px;
+
+      // container for the work thumbnail image
+      .recent-doc-thumbnail {
+        height: 120px;
+
+        // ensures image covers height and width of container
+        img {
+          width: 110%;
+          height: 110%;
+          margin: -5%;
+          object-fit: cover;
+          object-position: center;
+        }
+      }
+      .recent-doc-title {
+        height: 4rem;
+        padding: 0.75rem 0;
+
+        a {
+          text-decoration: none;
+          color: $neutral-color-coal-web-optimized;
+
+          h3 {
+            font-size: 14px !important;
+          }
+        }
+
+        // hover on title container changes background and link color
+        a:hover {
+          color: $primary-color-blue;
+        }
+      }
+    }
+  }
+
+  /// --- Featured Works and Collections Sections --- ///
+
+  // rendered by index.html.erb
+  .featured-collections-section-container,
+  .featured-works-container {
+    width: 100%;
+    margin-bottom: 3rem;
+
+    // container for all featured items
+    .featured-fields-container,
+    .explore-collections-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    // single featured item card with thumbnail image and title
+    .featured-work,
+    .featured-collection {
+      width: 260px; // fixed width for uniform cards
+      overflow: hidden;
+      border: 1px solid #dce3e8;
+      border-radius: 3px;
+      margin-bottom: 2rem;
+
+      // hover on any part of card changes title background and link color
+      &:hover {
+        .featured-item-title,
+        .featured-collections-item-title {
+          background-color: $neutral-color-coopers-gray-web-optimized;
+
+          a {
+            color: $neutral-color-not-quite-white-web-optimized;
+          }
+        }
+      }
+    }
+
+    // container for the item thumbnail image
+    .featured-item-thumbnail,
+    .featured-collections-item-thumbnail {
+      height: 230px;
+
+      // ensures image covers height and width of container
+      img {
+        width: 110%;
+        margin: -5% 0 0 -5%;
+        object-fit: cover;
+        object-position: center;
+      }
+    }
+
+    // container for item title
+    .featured-item-title,
+    .featured-collections-item-title {
+      background-color: $neutral-color-not-quite-white-web-optimized;
+      height: 5rem;
+      padding: 1rem 0.75rem;
+
+      a {
+        text-decoration: none;
+        color: $neutral-color-coal-web-optimized;
+
+        h3 {
+          font-size: 16px !important;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+
+  .form-control,
+  .btn,
+  nav.breadcrumb,
+  .alert {
+    border-radius: 0;
+  }
+
+  /// --- Responsive Adjustments --- ///
+
+  // bootstrap breakpoint: when the screen is smaller than lg, these styles will be applied
+  @media (max-width: 992px) {
+    .recently-uploaded-container {
+      display: none;
+    }
+  }
+
+  // bootstrap breakpoint: when the screen is smaller than md, these styles will be applied
+  @media (max-width: 768px) {
+    // drops the search bar buttons to a separate line on small screens
+    // rounds the all corners of the search bar input field since only the left side is rounded in full width
+    .search-bar-input-group {
+      #search-field-header {
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+      }
+
+      // ensures the buttons have the full width of the container
+      // rounds all corners of the button container since only the right side is rounded in full width
+      .input-group-append {
+        width: 100%;
+        border-radius: 4px;
+
+        // ensures the buttons take up the full width of the container
+        .btn {
+          flex: 1;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+<% # OVERRIDE: Hyrax v5.2.0 template to remove the render of the /controls partial, removed the background gradient span, and added share your work btn %>
+
+<% content_for(:navbar) do %>
+  <div class="image-masthead">
+    <!-- wvu repository homepage -->
+    <div class="background-container banner-image" title="<%= block_for(name: 'banner_image_text') %>" style="background-image: url('<%= "#{banner_image}?#{Time.now.to_i}" %>')"></div>
+    
+    <!-- wvu container for marketing text and search bar -->
+    <div class="container">
+      <div class="site-title-container">
+        <div class="site-title h1 text-center m-4">
+          <%= render 'hyrax/homepage/marketing' %>
+        </div>
+      </div>
+      <%= render 'themes/wvu_home/catalog/search_form' %>
+    </div>
+  </div>
+<% end %>
+
+<% content_for(:precontainer_content) do %>
+  <%= render 'hyrax/homepage/announcement' if controller_name == 'homepage' || controller_name == 'hyrax_contact_form' || controller_name == 'pages' %>
+<% end %>
+
+<%= render template: 'layouts/hyrax' %>

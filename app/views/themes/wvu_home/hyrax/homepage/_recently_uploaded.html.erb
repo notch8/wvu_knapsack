@@ -1,0 +1,11 @@
+<%# OVERRIDE Hyrax v5.0.0rc2 for theming %>
+
+<% if recent_documents.blank? %>
+  <p><%= t('.no_public') %></p>
+<% else %>
+  <div id="recent_docs">
+    <div class="recent_uploads">
+      <%= render partial: 'recent_document', collection: recent_documents %>
+    </div>
+  </div>
+<% end %>

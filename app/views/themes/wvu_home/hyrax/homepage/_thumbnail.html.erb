@@ -1,0 +1,9 @@
+<%# @param featured [Presenter] work or collection presenter
+    @param link [Symbol] main_app or hyrax
+    @param styles [String] CSS classes for the image
+    @param alt [String] alternative text for the image %>
+
+<%= link_to [link, featured] do %>
+  <%= render_thumbnail_tag(featured, { class: styles, alt: alt }, {suppress_link: true}) %>
+<% end %>
+
