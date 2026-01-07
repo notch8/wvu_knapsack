@@ -27,6 +27,7 @@ jobs:
     with:
       webTarget: hyku-web
       workerTarget: hyku-worker
+      solrTarget: hyku-solr
 
   test:
     needs: build

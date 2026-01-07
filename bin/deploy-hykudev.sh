@@ -11,20 +11,18 @@ set -euo pipefail
 ## 5. git pull origin main (or branch name)
 ## 6. ./bin/deploy_hykudev.sh
 
-echo "Syncing & updating submodules..."
+echo "Updating submodules..."
 git submodule sync --recursive
-git submodule update --init --recursive --remote
+git submodule update --init --recursive
 
 echo "Stopping and cleaning up old containers..."
-dc down --remove-orphans
+docker compose down --remove-orphans
 
 echo "Pulling Docker images..."
-# TAG=latest dc pull solr
-TAG="$(git rev-parse --short=8 HEAD)" dc pull
+TAG="$(git rev-parse --short=8 HEAD)" dotenv -e .env.development docker compose pull
 
 echo "Building and starting containers..."
-# TAG=latest dc up -d solr
-TAG="$(git rev-parse --short=8 HEAD)" dc up -d web
+TAG="$(git rev-parse --short=8 HEAD)" dotenv -e .env.development docker compose up -d web
 
 echo "Deploy complete. Containers are now running image tagged"
 echo ""
