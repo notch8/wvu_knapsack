@@ -1,57 +1,31 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROJECT_ROOT="/home/ansible/wvu_knapsack"
-HYRAX_APP_DIR="$PROJECT_ROOT/hyrax-webapp"
+## Instructions:
+## 0. Alias was already created and persisted at ~/.bashrc:
+##    alias dc='dotenv -e .env.development docker-compose'
+## 1. Connect to WVU VPN via The Windows App
+## 2. Connect via PuTTY to hykudev server: hykudev.lib.wvu.edu with your user name
+## 3. Switch to ansible: sudo su - ansible
+## 4. cd wvu_knapsack
+## 5. git pull origin main (or branch name)
+## 6. ./bin/deploy_hykudev.sh
 
-log() { echo -e "$1"; }
-die() { echo -e "$1" >&2; exit 1; }
-
-# ✅ Make dc deterministic in scripts (do NOT rely on aliases)
-dc() { dotenv -e .env.development docker compose "$@"; }
-
-cd "$PROJECT_ROOT" || die "Project root not found: $PROJECT_ROOT"
-
-BRANCH="${1:-$(git rev-parse --abbrev-ref HEAD)}"
-log "Deploying branch: $BRANCH"
-
-git fetch --all --prune
-
-if git show-ref --verify --quiet "refs/heads/$BRANCH"; then
-  git checkout "$BRANCH"
-elif git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
-  git checkout -b "$BRANCH" "origin/$BRANCH"
-else
-  die "Branch '$BRANCH' not found locally or on origin."
-fi
-
-git pull --ff-only origin "$BRANCH" || die "Failed to pull '$BRANCH' (non-fast-forward?)"
-
-if [ -d "$HYRAX_APP_DIR" ]; then
-  git -C "$HYRAX_APP_DIR" restore Gemfile.lock config/metadata_profiles/m3_profile.yaml 2>/dev/null || true
-fi
-
-log "Updating submodules..."
+echo "Syncing & updating submodules..."
 git submodule sync --recursive
 git submodule update --init --recursive --remote
 
-# --- tags ---
-export SOLR_TAG="latest"
-export APP_TAG="$(git rev-parse --short=8 HEAD)"
-
-log "APP_TAG:  $APP_TAG"
-log "SOLR_TAG: $SOLR_TAG"
-
-log "Restarting containers..."
+echo "Stopping and cleaning up old containers..."
 dc down --remove-orphans
 
-log "Pulling images..."
-dc pull
+echo "Pulling Docker images..."
+TAG=latest dc pull solr
+TAG="$(git rev-parse --short=8 HEAD)" dc pull web worker
 
-log "Starting services..."
+echo "Building and starting containers..."
 dc up -d web
 
-
-log "Deploy complete (TAG: $TAG)"
-log "Admin Tenant:   https://hykudev-admin.lib.wvu.edu"
-log "Default Tenant: https://hykudev.lib.wvu.edu"
+echo "Deploy complete. Containers are now running image tagged"
+echo ""
+echo "Admin Tenant:   https://hykudev-admin.lib.wvu.edu"
+echo "Default Tenant: https://hykudev.lib.wvu.edu"
