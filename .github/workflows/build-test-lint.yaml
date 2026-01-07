@@ -33,7 +33,7 @@ jobs:
     needs: build
     uses: notch8/actions/.github/workflows/test.yaml@add-platform
     with:
-      confdir: "/app/samvera/hyrax-webapp/solr/conf"
+      confdir: '/app/samvera/hyrax-webapp/solr/conf'
       rspec_cmd: "cd .. && gem install semaphore_test_boosters && bundle && rspec_booster --job $CI_NODE_INDEX/$CI_NODE_TOTAL"
 
   lint:
