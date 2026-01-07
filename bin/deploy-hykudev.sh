@@ -18,7 +18,6 @@ die() { echo -e "❌ $1" >&2; exit 1; }
 
 cd "$PROJECT_ROOT" || die "Project root not found: $PROJECT_ROOT"
 
-# Basic prereqs (keep it simple)
 command -v dc >/dev/null 2>&1 || die "'dc' not found. Make sure your alias is loaded (source ~/.bashrc)."
 command -v git >/dev/null 2>&1 || die "git not found on PATH"
 
@@ -27,7 +26,6 @@ log "📌 Deploying branch: $BRANCH"
 
 git fetch --all --prune
 
-# Checkout branch (create local tracking branch if needed)
 if git show-ref --verify --quiet "refs/heads/$BRANCH"; then
   git checkout "$BRANCH"
 elif git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
@@ -37,6 +35,11 @@ else
 fi
 
 git pull --ff-only origin "$BRANCH" || die "Failed to pull '$BRANCH' (non-fast-forward?)"
+
+if [ -d "$HYRAX_APP_DIR" ]; then
+  log "🔄 Restoring known files in hyrax-webapp (pre-submodule update)..."
+  git -C "$HYRAX_APP_DIR" restore Gemfile.lock config/metadata_profiles/m3_profile.yaml 2>/dev/null || true
+fi
 
 log "📦 Updating submodules..."
 git submodule sync --recursive
@@ -48,13 +51,6 @@ log "🔖 TAG: $TAG"
 
 log "🧹 Restarting containers..."
 dc down --remove-orphans
-
-log "🔄 Restoring lock/profile files..."
-cd "$HYRAX_APP_DIR" || die "Expected directory not found: $HYRAX_APP_DIR"
-git restore Gemfile.lock config/metadata_profiles/m3_profile.yaml
-cd "$PROJECT_ROOT"
-
-log "🐳 Pull / build / start..."
 dc pull
 dc up -d web
 
