@@ -35,6 +35,8 @@ log "📦 Updating submodules..."
 git submodule sync --recursive
 git submodule update --init --recursive --remote
 
+dc pull solr
+
 TAG="$(git rev-parse --short=8 HEAD)"
 export TAG
 log "🔖 TAG: $TAG"
