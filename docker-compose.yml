@@ -49,8 +49,9 @@ services:
       file: hyrax-webapp/docker-compose.yml
       service: zoo
 
+
   solr:
-    image: ghcr.io/notch8/wvu_knapsack/solr:${TAG:-latest}
+    image: ghcr.io/samvera/hyku/solr:${TAG:-latest}
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: solr
@@ -79,6 +80,8 @@ services:
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: web
+    ports:
+      - "127.0.0.1:3000:3000"
     # Uncomment command to access container with out starting bin/web. Useful for debugging or updating Gemfile.lock
     # command: sleep infinity
 
