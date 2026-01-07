@@ -31,14 +31,14 @@ jobs:
 
   test:
     needs: build
-    uses: notch8/actions/.github/workflows/test.yaml@1.0.7
+    uses: notch8/actions/.github/workflows/test.yaml@add-platform
     with:
       confdir: "/app/samvera/hyrax-webapp/solr/conf"
       rspec_cmd: "cd .. && gem install semaphore_test_boosters && bundle && rspec_booster --job $CI_NODE_INDEX/$CI_NODE_TOTAL"
 
   lint:
     needs: build
-    uses: notch8/actions/.github/workflows/lint.yaml@1.0.7
+    uses: notch8/actions/.github/workflows/lint.yaml@add-platform
     with:
       webTarget: hyku-web
       workerTarget: hyku-worker
