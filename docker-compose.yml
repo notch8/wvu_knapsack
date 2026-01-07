@@ -51,7 +51,7 @@ services:
 
 
   solr:
-    image: ghcr.io/samvera/hyku/solr:${TAG:-latest}
+    image: ghcr.io/notch8/wvu_knapsack/solr:${TAG:-latest}
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: solr

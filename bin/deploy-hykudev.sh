@@ -19,11 +19,12 @@ echo "Stopping and cleaning up old containers..."
 dc down --remove-orphans
 
 echo "Pulling Docker images..."
-TAG=latest dc pull solr
-TAG="$(git rev-parse --short=8 HEAD)" dc pull web worker
+# TAG=latest dc pull solr
+TAG="$(git rev-parse --short=8 HEAD)" dc pull
 
 echo "Building and starting containers..."
-dc up -d web
+# TAG=latest dc up -d solr
+TAG="$(git rev-parse --short=8 HEAD)" dc up -d web
 
 echo "Deploy complete. Containers are now running image tagged"
 echo ""
