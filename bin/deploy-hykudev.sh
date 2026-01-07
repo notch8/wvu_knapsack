@@ -42,13 +42,11 @@ export APP_TAG="$(git rev-parse --short=8 HEAD)"
 log "APP_TAG:  $APP_TAG"
 log "SOLR_TAG: $SOLR_TAG"
 
-log "🧹 Restarting containers..."
+log "Restarting containers..."
 dc down --remove-orphans
 
 log "Pulling images..."
-dc pull solr
-dc pull web   # add worker/fits/etc if you have them, example:
-# dc pull worker fits
+dc pull
 
 log "Starting services..."
 dc up -d web
