@@ -25,7 +25,6 @@ jobs:
     uses: notch8/actions/.github/workflows/build.yaml@v1.0.8
     secrets: inherit
     with:
-      debug_step: ${{ inputs.debug_step }}
       platforms: "linux/amd64"
       webTarget: hyku-web
       workerTarget: hyku-worker
@@ -42,7 +41,6 @@ jobs:
     needs: build
     uses: notch8/actions/.github/workflows/lint.yaml@v1.0.8
     with:
-      debug_step: ${{ inputs.debug_step }}
       webTarget: hyku-web
       workerTarget: hyku-worker
       rubocop_cmd: "cd .. && bundle && bundle exec rubocop --parallel --format progress --format junit --out rubocop.xml"
