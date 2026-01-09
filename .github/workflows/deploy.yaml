@@ -10,7 +10,7 @@ on:
         type: choice
         options:
           - friends
-      debug_enabled:
+      debug_step:
         type: boolean
         description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
         required: false

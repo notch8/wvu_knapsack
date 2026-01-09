@@ -1,12 +1,6 @@
 name: "Build Solr"
 run-name: Build Solr of ${{ github.ref_name }} by @${{ github.actor }}
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       debug_step:
@@ -24,5 +18,3 @@ jobs:
     with:
       platforms: "linux/amd64"
       solrTarget: hyku-solr
-
-
