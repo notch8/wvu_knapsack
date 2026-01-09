@@ -11,4 +11,14 @@ module BlacklightAdvancedSearch
   end
 end
 
-BlacklightAdvancedSearch::RenderConstraintsOverride.prepend(BlacklightAdvancedSearch::RenderConstraintsOverrideDecorator)
+if defined?(BlacklightAdvancedSearch::RenderConstraintsOverride)
+  # blacklight_advanced_search <= 7 (old hook point)
+  BlacklightAdvancedSearch::RenderConstraintsOverride.prepend(
+    BlacklightAdvancedSearch::RenderConstraintsOverrideDecorator
+  )
+elsif defined?(Blacklight::RenderConstraintsHelperBehavior)
+  # blacklight_advanced_search 8+ (RenderConstraintsOverride removed/renamed)
+  Blacklight::RenderConstraintsHelperBehavior.prepend(
+    BlacklightAdvancedSearch::RenderConstraintsOverrideDecorator
+  )
+end
