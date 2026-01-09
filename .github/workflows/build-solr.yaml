@@ -1,0 +1,28 @@
+name: "Build Solr"
+run-name: Build Solr of ${{ github.ref_name }} by @${{ github.actor }}
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      debug_step:
+        required: false
+        description: 'Pause the selected step to debug using tmate'
+        type: choice
+        default: 'build'
+        options:
+          - build
+
+jobs:
+  build:
+    uses: notch8/actions/.github/workflows/build.yaml@v1.0.8
+    secrets: inherit
+    with:
+      platforms: "linux/amd64"
+      solrTarget: hyku-solr
+
+
