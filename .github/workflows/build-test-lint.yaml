@@ -31,9 +31,8 @@ jobs:
 
   test:
     needs: build
-    uses: notch8/actions/.github/workflows/test.yaml@add-debug-to-test
+    uses: notch8/actions/.github/workflows/test.yaml@v1.0.8
     with:
-      debug_step: ${{ inputs.debug_step }}
       confdir: '/app/samvera/hyrax-webapp/solr/conf'
       rspec_cmd: "cd .. && gem install semaphore_test_boosters && bundle && rspec_booster --job $CI_NODE_INDEX/$CI_NODE_TOTAL"
 

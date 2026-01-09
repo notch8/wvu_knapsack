@@ -122,7 +122,7 @@ services:
         /app/samvera/bin/solrcloud-upload-configset.sh /app/samvera/hyrax-webapp/solr/conf &&
         /app/samvera/bin/solrcloud-assign-configset.sh &&
         SOLR_COLLECTION_NAME=hydra-test /app/samvera/bin/solrcloud-assign-configset.sh &&
-        bundle install &&
+        bundle &&
         /app/samvera/bin/db-migrate-seed.sh
 
   redis:
