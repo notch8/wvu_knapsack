@@ -251,7 +251,7 @@ properties:
     sample_values:
     - Rockefeller, John D., IV (John Davison), 1937-
     view:
-      render_as: faceted
+      render_as: linked
       html_dl: true
   contributor:
     available_on:
@@ -287,7 +287,7 @@ properties:
     sample_values:
     - Pierpont, Francis Harrison, 1814-1899
     view:
-      render_as: faceted
+      render_as: linked
       html_dl: true
   description:
     available_on:
@@ -397,7 +397,7 @@ properties:
     - Metadata
     - Repository
     view:
-      render_as: faceted
+      render_as: linked
       html_dl: true
   label:
     available_on:
@@ -492,7 +492,7 @@ properties:
       - Article
       - Conference Proceeding
     view:
-      render_as: faceted
+      render_as: linked
       html_dl: true
   rights_notes:
     available_on:
@@ -638,7 +638,6 @@ properties:
     sample_values:
     - Any agent, personal or corporate, formally publishing the resource
     view:
-      render_as: faceted
       html_dl: true
   date_created:
     available_on:
@@ -716,7 +715,7 @@ properties:
     sample_values:
     - Topic related to the content of the resource
     view:
-      render_as: faceted
+      render_as: linked
       html_dl: true
   language:
     available_on:
@@ -753,7 +752,7 @@ properties:
     - spa
     - fra
     view:
-      render_as: faceted
+      render_as: linked
       html_dl: true
   identifier:
     available_on:
@@ -1044,7 +1043,7 @@ properties:
     cardinality:
       minimum: 0
       maximum: 1
-    data_type: string
+    data_type: array
     controlled_values:
       format: http://www.w3.org/2001/XMLSchema#string
       sources:
@@ -1304,7 +1303,6 @@ properties:
     sample_values:
     - Select from 32 broad terms in the vocabulary
     view:
-      render_as: faceted
       html_dl: true
   roud_number:
     available_on:
@@ -1392,7 +1390,6 @@ properties:
     sample_values:
     - Use controlled topics assigned in the Cuthbert guide
     view:
-      render_as: faceted
       html_dl: true
   performance_media:
     available_on:
@@ -1420,7 +1417,6 @@ properties:
     sample_values:
     - Use controlled performance media assigned in the Cuthbert guide
     view:
-      render_as: faceted
       html_dl: true
   subject_mesh:
     available_on:
@@ -1448,7 +1444,6 @@ properties:
     sample_values:
     - Medical Subject Headings controlled vocabulary terms
     view:
-      render_as: faceted
       html_dl: true
   interviewer:
     available_on:
@@ -1476,7 +1471,6 @@ properties:
     sample_values:
     - Person conducting the interview
     view:
-      render_as: faceted
       html_dl: true
   interviewee:
     available_on:
@@ -1504,7 +1498,6 @@ properties:
     sample_values:
     - Person being interviewed
     view:
-      render_as: faceted
       html_dl: true
   bulkrax_identifier:
     available_on:
