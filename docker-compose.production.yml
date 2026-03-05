@@ -141,14 +141,14 @@ services:
       - ./data/cache:/app/samvera/hyrax-webapp/tmp/cache
       - .:/app/samvera
 
-  check_volumes:
-    <<: *app
-    env_file:
-      - .env
-      - .env.production
-    extends:
-      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
-      service: check_volumes
+  # check_volumes:
+    # <<: *app
+    # env_file:
+    #   - .env
+    #   - .env.production
+    # extends:
+    #   file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
+    #   service: check_volumes
 
   initialize_app:
     <<: *app
