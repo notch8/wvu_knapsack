@@ -13,43 +13,62 @@ x-app: &app
       APP_PATH: ./hyrax-webapp
   image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
   environment:
-    # This line is what makes the knapsack include use the local code instead of the remote gem
     - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
     - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
     - BUNDLE_BUNDLER_INJECT__GEM_PATH=/app/samvera/bundler.d
   volumes:
-    - ./data/node_modules:/app/samvera/hyrax-webapp/node_modules:cached
-    - ./data/uploads:/app/samvera/hyrax-webapp/public/uploads:cached
-    - ./data/assets:/app/samvera/hyrax-webapp/public/assets:cached
-    - ./data/cache:/app/samvera/hyrax-webapp/tmp/cache:cached
+    - ./data/node_modules:/app/samvera/hyrax-webapp/node_modules
+    - ./data/uploads:/app/samvera/hyrax-webapp/public/uploads
+    - ./data/assets:/app/samvera/hyrax-webapp/public/assets
+    - ./data/cache:/app/samvera/hyrax-webapp/tmp/cache
+    - .:/app/samvera
 
 networks:
   internal:
+    driver: bridge
 
 services:
   zoo:
+    env_file:
+      - .env
+      - .env.production
     extends:
-      file: hyrax-webapp/docker-compose.production.yml
+      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
       service: zoo
     volumes:
       - ./data/zoo:/data
       - ./data/zk:/datalog
 
   solr:
-    platform: linux/amd64
+    container_name: solr
     image: ghcr.io/notch8/wvu_knapsack/solr:${TAG:-latest}
-    extends:
-      file: hyrax-webapp/docker-compose.production.yml
-      service: solr
+    restart: on-failure
+    platform: linux/amd64
+    env_file:
+      - .env
+      - .env.production
+    user: root
+    command: bash -c "sh /scripts/startup.sh hydra_prod"
+    ports:
+      - "8983:8983"
     volumes:
-      - ./data/solr:/var/solr
+      - ./data/solr:/var/solr/data/hydra_prod/data
+      - ./data/logs/dev/:/var/solr/logs
+      - ./solr9-setup:/solr9-setup
+      - ./startup-solr.sh:/scripts/startup.sh
+    healthcheck:
+      test: "curl -f localhost:8983/solr/#/"
+      start_period: 30s
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   fcrepo:
     env_file:
       - .env
       - .env.production
     extends:
-      file: hyrax-webapp/docker-compose.production.yml
+      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
       service: fcrepo
     volumes:
       - ./data/fcrepo:/data
@@ -59,89 +78,77 @@ services:
       - .env
       - .env.production
     extends:
-      file: hyrax-webapp/docker-compose.production.yml
+      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
       service: db
     volumes:
       - ./data/db:/var/lib/postgresql/data
 
-  web:
-    image: ghcr.io/samvera/hyku/web:${TAG:-latest}
-    env_file:
-      - .env
-      - .env.production
-    environment:
-      - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
-      - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
-      - BUNDLE_BUNDLER_INJECT__GEM_PATH=/app/samvera/bundler.d
-      - VIRTUAL_PORT=3000
-      - VIRTUAL_HOST=.hyku.test
-    volumes:
-      - ./data/node_modules:/app/samvera/hyrax-webapp/node_modules:cached
-      - ./data/uploads:/app/samvera/hyrax-webapp/public/uploads:cached
-      - ./data/assets:/app/samvera/hyrax-webapp/public/assets:cached
-      - ./data/cache:/app/samvera/hyrax-webapp/tmp/cache:cached
-    networks:
-      - internal
-    ports:
-      - "3000:3000"
-    expose:
-      - 3000
-    depends_on:
-      db:
-        condition: service_started
-      solr:
-        condition: service_started
-      fcrepo:
-        condition: service_started
-      redis:
-        condition: service_started
-      zoo:
-        condition: service_started
-      worker:
-        condition: service_started
-      initialize_app:
-        condition: service_completed_successfully
-
-  worker:
-    image: ghcr.io/samvera/hyku/worker:${TAG:-latest}
-    env_file:
-      - .env
-      - .env.production
-    environment:
-      - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
-      - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
-      - BUNDLE_BUNDLER_INJECT__GEM_PATH=/app/samvera/bundler.d
-    volumes:
-      - ./data/node_modules:/app/samvera/hyrax-webapp/node_modules:cached
-      - ./data/uploads:/app/samvera/hyrax-webapp/public/uploads:cached
-      - ./data/assets:/app/samvera/hyrax-webapp/public/assets:cached
-      - ./data/cache:/app/samvera/hyrax-webapp/tmp/cache:cached
-      - .:/app/samvera
-    networks:
-      - internal
-    depends_on:
-      initialize_app:
-        condition: service_completed_successfully
-      db:
-        condition: service_started
-      solr:
-        condition: service_started
-      fcrepo:
-        condition: service_started
-      redis:
-        condition: service_started
-      zoo:
-        condition: service_started
-
-  initialize_app:
-    <<: *app
-    extends:
-      file: hyrax-webapp/docker-compose.production.yml
-      service: initialize_app
-
   redis:
+    env_file:
+      - .env
+      - .env.production
     extends:
-      file: hyrax-webapp/docker-compose.production.yml
+      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
       service: redis
     volumes:
       - ./data/redis:/data
+
+  web:
+    <<: *app
+    env_file:
+      - .env
+      - .env.production
+    extends:
+      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
+      service: web
+    environment:
+      - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
+      - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
+      - VIRTUAL_PORT=3000
+    ports:
+      - "3000:3000"
+
+  worker:
+    <<: *app
+    env_file:
+      - .env
+      - .env.production
+    extends:
+      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
+      service: worker
+    build:
+      context: .
+      target: hyku-worker
+      cache_from:
+        - ghcr.io/notch8/wvu_knapsack/base:latest
+        - ghcr.io/notch8/wvu_knapsack/worker:latest
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+        APP_PATH: ./hyrax-webapp
+    image: ghcr.io/notch8/wvu_knapsack/worker:${TAG:-latest}
+    volumes:
+      - ./data/node_modules:/app/samvera/hyrax-webapp/node_modules
+      - ./data/uploads:/app/samvera/hyrax-webapp/public/uploads
+      - ./data/assets:/app/samvera/hyrax-webapp/public/assets
+      - ./data/cache:/app/samvera/hyrax-webapp/tmp/cache
+      - .:/app/samvera
+
+  check_volumes:
+    <<: *app
+    env_file:
+      - .env
+      - .env.production
+    extends:
+      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
+      service: check_volumes
+
+  initialize_app:
+    <<: *app
+    env_file:
+      - .env
+      - .env.production
+    extends:
+      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
+      service: initialize_app
+
+
