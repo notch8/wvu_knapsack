@@ -143,5 +143,8 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
   config.hosts << ".lib.wvu.edu"
+  # Allow localhost.direct subdomains and plain localhost for local production compose testing
+  config.hosts << ".localhost.direct"
+  config.hosts << "localhost"
 
 end
