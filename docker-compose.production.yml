@@ -62,6 +62,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+    networks:
+      internal:
 
   fcrepo:
     env_file:
