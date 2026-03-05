@@ -109,6 +109,9 @@ services:
       - VIRTUAL_PORT=3000
     ports:
       - "3000:3000"
+    entrypoint: ["sh", "-c"]
+    command:
+      - bundle install && ./bin/web
 
   worker:
     <<: *app
@@ -128,6 +131,9 @@ services:
         BUILDKIT_INLINE_CACHE: 1
         APP_PATH: ./hyrax-webapp
     image: ghcr.io/notch8/wvu_knapsack/worker:${TAG:-latest}
+    entrypoint: ["sh", "-c"]
+    command:
+      - bundle install && ./bin/worker
     volumes:
       - ./data/node_modules:/app/samvera/hyrax-webapp/node_modules
       - ./data/uploads:/app/samvera/hyrax-webapp/public/uploads
@@ -152,5 +158,12 @@ services:
     extends:
       file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
       service: initialize_app
+    command:
+      - >
+        solrcloud-upload-configset.sh /app/samvera/hyrax-webapp/solr/conf &&
+        solrcloud-assign-configset.sh &&
+        SOLR_COLLECTION_NAME=hydra-test solrcloud-assign-configset.sh &&
+        bundle install &&
+        db-migrate-seed.sh
 
 

@@ -3,7 +3,7 @@
     "blockUnknown":true,
     "class":"solr.BasicAuthPlugin",
     "credentials":{
-      "solr":"hnuIob32EdmoMMTG9OwMJJtQrtHTf/6CA5ARsZ5IVwA= awzpFXeHgKU2bQznLPtsCTxjjVIJKCWLvaqLc4E88Y0=",
+      "solr":"IV0EHq1OnNrj6gvRCwvFwTrZ1+z1oBbnQdiVC3otuq0= Ndd7LKvVBAaZIF0QAVi1ekCfAJXr1GGfLtRUXhgrF8c=",
       "hydra":"Gsa7H9GLOpegPaIGK/cL+UQx7cRrF1Ci1vJ1waAg/0k= Z7Ys7tk9kWDM84DMj3seFLUl8eK9jlBLE1qDI2uk+2k="},
     "realm":"My Solr users",
     "forwardCredentials":false,
