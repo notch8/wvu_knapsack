@@ -112,6 +112,21 @@ services:
     entrypoint: ["sh", "-c"]
     command:
       - bundle install && ./bin/web
+    depends_on:
+      db:
+        condition: service_started
+      solr:
+        condition: service_healthy
+      fcrepo:
+        condition: service_started
+      redis:
+        condition: service_started
+      zoo:
+        condition: service_started
+      worker:
+        condition: service_started
+      initialize_app:
+        condition: service_completed_successfully
 
   worker:
     <<: *app
@@ -134,6 +149,19 @@ services:
     entrypoint: ["sh", "-c"]
     command:
       - bundle install && ./bin/worker
+    depends_on:
+      initialize_app:
+        condition: service_completed_successfully
+      db:
+        condition: service_started
+      solr:
+        condition: service_healthy
+      fcrepo:
+        condition: service_started
+      redis:
+        condition: service_started
+      zoo:
+        condition: service_started
     volumes:
       - ./data/node_modules:/app/samvera/hyrax-webapp/node_modules
       - ./data/uploads:/app/samvera/hyrax-webapp/public/uploads
@@ -141,14 +169,21 @@ services:
       - ./data/cache:/app/samvera/hyrax-webapp/tmp/cache
       - .:/app/samvera
 
-  # check_volumes:
-    # <<: *app
-    # env_file:
-    #   - .env
-    #   - .env.production
-    # extends:
-    #   file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
-    #   service: check_volumes
+  # check_volumes runs as a no-op stub so that web/worker depends_on constraints
+  # inherited from the submodule via 'extends' are satisfied. The real chown
+  # operations are skipped here because the ./data/* host paths are already
+  # owned correctly on the production host.
+  check_volumes:
+    <<: *app
+    env_file:
+      - .env
+      - .env.production
+    user: root
+    entrypoint: ["sh", "-c"]
+    command:
+      - "echo 'check_volumes skipped in production' && exit 0"
+    networks:
+      - internal
 
   initialize_app:
     <<: *app
