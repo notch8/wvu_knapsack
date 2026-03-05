@@ -142,9 +142,9 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
-  config.hosts << /\.lib\.wvu\.edu\z/
+  config.hosts << /\.lib\.wvu\.edu(:\d+)?\z/
   # Allow localhost.direct subdomains and plain localhost for local production compose testing
-  config.hosts << /\.localhost\.direct\z/
-  config.hosts << "localhost"
+  config.hosts << /\.localhost\.direct(:\d+)?\z/
+  config.hosts << /\Alocalhost(:\d+)?\z/
 
 end
