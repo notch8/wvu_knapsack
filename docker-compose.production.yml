@@ -1,6 +1,10 @@
+# Fully standalone production compose for wvu_knapsack.
+# Does NOT extend or reference hyrax-webapp/docker-compose.production.yml —
+# that file belongs to the submodule and must not be modified.
+# All configuration comes from .env.production (gitignored, see .env.production.example).
+
 x-app: &app
   env_file:
-    - .env
     - .env.production
   build:
     context: .
@@ -22,22 +26,31 @@ x-app: &app
     - ./data/assets:/app/samvera/hyrax-webapp/public/assets
     - ./data/cache:/app/samvera/hyrax-webapp/tmp/cache
     - .:/app/samvera
+  networks:
+    - internal
 
 networks:
   internal:
     driver: bridge
 
 services:
+
   zoo:
-    env_file:
-      - .env
-      - .env.production
-    extends:
-      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
-      service: zoo
+    image: zookeeper:3.6.2
+    restart: on-failure
+    environment:
+      - ZOO_MY_ID=1
+      - ZOO_SERVERS=server.1=zoo:2888:3888;2181
+      - ZOO_4LW_COMMANDS_WHITELIST=mntr,srvr,ruok,conf
     volumes:
       - ./data/zoo:/data
       - ./data/zk:/datalog
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'ruok' | nc -w 2 -q 2 localhost 2181 | grep imok || exit 1"]
+      interval: "10s"
+      timeout: "8s"
 
   solr:
     container_name: solr
@@ -45,7 +58,6 @@ services:
     restart: on-failure
     platform: linux/amd64
     env_file:
-      - .env
       - .env.production
     user: root
     command: bash -c "sh /scripts/startup.sh hydra_prod"
@@ -63,55 +75,65 @@ services:
       timeout: 5s
       retries: 20
     networks:
-      internal:
+      - internal
 
   fcrepo:
+    image: ghcr.io/samvera/fcrepo4:4.7.5
+    restart: on-failure
     env_file:
-      - .env
       - .env.production
-    extends:
-      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
-      service: fcrepo
+    environment:
+      - JAVA_OPTS=${JAVA_OPTS} -Dfcrepo.modeshape.configuration="classpath:/config/jdbc-postgresql/repository.json" -Dfcrepo.postgresql.host=db -Dfcrepo.postgresql.username=${DB_USER} -Dfcrepo.postgresql.password=${DB_PASSWORD} -Dfcrepo.object.directory="/data/objects" -Dfcrepo.binary.directory="/data/fcrepo.binary.directory" -Djava.io.tmpdir="/data/tmp"
+    expose:
+      - 8080
     volumes:
       - ./data/fcrepo:/data
+    networks:
+      - internal
 
   db:
+    image: postgres:11.1
+    restart: on-failure
     env_file:
-      - .env
       - .env.production
-    extends:
-      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
-      service: db
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
     volumes:
       - ./data/db:/var/lib/postgresql/data
+    networks:
+      - internal
 
   redis:
-    env_file:
-      - .env
-      - .env.production
-    extends:
-      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
-      service: redis
+    image: redis:5
+    restart: on-failure
+    command: redis-server
     volumes:
       - ./data/redis:/data
+    networks:
+      - internal
 
-  web:
+  check_volumes:
     <<: *app
-    env_file:
-      - .env
-      - .env.production
-    extends:
-      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
-      service: web
-    environment:
-      - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
-      - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
-      - VIRTUAL_PORT=3000
-    ports:
-      - "3000:3000"
+    user: root
     entrypoint: ["sh", "-c"]
     command:
-      - bundle install && ./bin/web
+      - >
+        chown -R app:app /app/samvera/hyrax-webapp/public/uploads &&
+        chown -R app:app /app/samvera/hyrax-webapp/public/assets &&
+        chown -R app:app /app/samvera/hyrax-webapp/tmp/cache
+
+  initialize_app:
+    <<: *app
+    entrypoint: ["sh", "-c"]
+    command:
+      - >
+        solrcloud-upload-configset.sh /app/samvera/hyrax-webapp/solr/conf &&
+        solrcloud-assign-configset.sh &&
+        SOLR_COLLECTION_NAME=hydra-test solrcloud-assign-configset.sh &&
+        bundle install &&
+        db-migrate-seed.sh
     depends_on:
       db:
         condition: service_started
@@ -122,20 +144,10 @@ services:
       redis:
         condition: service_started
       zoo:
-        condition: service_started
-      worker:
-        condition: service_started
-      initialize_app:
-        condition: service_completed_successfully
+        condition: service_healthy
 
   worker:
     <<: *app
-    env_file:
-      - .env
-      - .env.production
-    extends:
-      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
-      service: worker
     build:
       context: .
       target: hyku-worker
@@ -161,7 +173,7 @@ services:
       redis:
         condition: service_started
       zoo:
-        condition: service_started
+        condition: service_healthy
     volumes:
       - ./data/node_modules:/app/samvera/hyrax-webapp/node_modules
       - ./data/uploads:/app/samvera/hyrax-webapp/public/uploads
@@ -169,36 +181,29 @@ services:
       - ./data/cache:/app/samvera/hyrax-webapp/tmp/cache
       - .:/app/samvera
 
-  # check_volumes runs as a no-op stub so that web/worker depends_on constraints
-  # inherited from the submodule via 'extends' are satisfied. The real chown
-  # operations are skipped here because the ./data/* host paths are already
-  # owned correctly on the production host.
-  check_volumes:
+  web:
     <<: *app
-    env_file:
-      - .env
-      - .env.production
-    user: root
     entrypoint: ["sh", "-c"]
     command:
-      - "echo 'check_volumes skipped in production' && exit 0"
-    networks:
-      - internal
-
-  initialize_app:
-    <<: *app
-    env_file:
-      - .env
-      - .env.production
-    extends:
-      file: ./hyrax-webapp/docker-compose.production.yml  # FIXED PATH
-      service: initialize_app
-    command:
-      - >
-        solrcloud-upload-configset.sh /app/samvera/hyrax-webapp/solr/conf &&
-        solrcloud-assign-configset.sh &&
-        SOLR_COLLECTION_NAME=hydra-test solrcloud-assign-configset.sh &&
-        bundle install &&
-        db-migrate-seed.sh
-
-
+      - bundle install && ./bin/web
+    ports:
+      - "3000:3000"
+    environment:
+      - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
+      - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
+      - VIRTUAL_PORT=3000
+    depends_on:
+      db:
+        condition: service_started
+      solr:
+        condition: service_healthy
+      fcrepo:
+        condition: service_started
+      redis:
+        condition: service_started
+      zoo:
+        condition: service_healthy
+      worker:
+        condition: service_started
+      initialize_app:
+        condition: service_completed_successfully
