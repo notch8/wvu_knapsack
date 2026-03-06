@@ -17,9 +17,17 @@ echo "=== wvu_knapsack production setup ==="
 echo ""
 
 # ------------------------------------------------------------
-# 1. Database
+# 1. Asset precompilation
 # ------------------------------------------------------------
-echo "--- [1/3] Database setup ---"
+echo "--- [1/4] Asset precompilation ---"
+# Idempotent - safe to re-run; existing assets are overwritten in place.
+RAILS_ENV=production bin/rails assets:precompile
+echo ""
+
+# ------------------------------------------------------------
+# 2. Database
+# ------------------------------------------------------------
+echo "--- [2/4] Database setup ---"
 
 # Create the DB if it doesn't exist yet (no-op if already exists)
 bin/rails db:create 2>&1 || true
@@ -44,16 +52,16 @@ bin/rails db:seed
 echo ""
 
 # ------------------------------------------------------------
-# 2. Solr configset
+# 3. Solr configset
 # ------------------------------------------------------------
-echo "--- [2/3] Solr configset ---"
+echo "--- [3/4] Solr configset ---"
 solrcloud-upload-configset.sh /app/samvera/hyrax-webapp/solr/conf || true
 solrcloud-assign-configset.sh || true
 
 echo ""
 
 # ------------------------------------------------------------
-# 3. First repository tenant
+# 4. First repository tenant
 # ------------------------------------------------------------
 # NOTE: The admin host (HYKU_ADMIN_HOST) is intentionally NOT created as an
 # Account record - Hyku routes admin requests separately and its cname is in
@@ -63,7 +71,7 @@ echo ""
 # This step creates the first repository tenant from HYKU_FIRST_TENANT_NAME and
 # HYKU_FIRST_TENANT_CNAME if they are set. Leave them unset to skip this step
 # and create tenants manually via the admin UI.
-echo "--- [3/3] First repository tenant ---"
+echo "--- [4/4] First repository tenant ---"
 
 if [ -z "${HYKU_FIRST_TENANT_NAME:-}" ] || [ -z "${HYKU_FIRST_TENANT_CNAME:-}" ]; then
   echo "HYKU_FIRST_TENANT_NAME or HYKU_FIRST_TENANT_CNAME not set - skipping"

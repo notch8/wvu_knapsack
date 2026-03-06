@@ -207,15 +207,7 @@ docker-compose -f docker-compose.production.yml logs -f initialize_app
 docker-compose -f docker-compose.production.yml logs -f web
 ```
 
-### Step 3: Precompile assets (first run per build)
-
-```bash
-docker-compose -f docker-compose.production.yml exec web bundle exec rails assets:precompile
-```
-
-Assets are stored in `./data/assets/` (bind-mounted) and survive container restarts. Only needed again if gems or asset files change.
-
-### Step 4: Run one-time setup
+### Step 3: Run one-time setup (includes asset precompilation)
 
 ```bash
 docker-compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
@@ -331,15 +323,7 @@ docker-compose -f docker-compose.production.yml logs -f web
 
 Wait for `Listening on http://0.0.0.0:3000` in web logs.
 
-### Step 4: Precompile assets
-
-```bash
-docker-compose -f docker-compose.production.yml exec web bundle exec rails assets:precompile
-```
-
-Only needed once per build (assets are persisted in `./data/assets/`).
-
-### Step 5: Run one-time setup
+### Step 4: Run one-time setup (includes asset precompilation)
 
 ```bash
 docker-compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
@@ -398,11 +382,8 @@ sh down.sh    # stops containers, data is preserved in ./data/
 sh down.sh
 sh up.sh
 
-# Run migrations and re-seed if needed (idempotent)
+# Run migrations, re-seed, and re-precompile assets if needed (all idempotent)
 docker-compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
-
-# Re-precompile only if asset files or gems changed
-docker-compose -f docker-compose.production.yml exec web bundle exec rails assets:precompile
 ```
 
 ### Data persistence
@@ -539,7 +520,7 @@ Okta can be pointed at this URL for automatic SP configuration.
 |---|---|---|
 | 403 Blocked hosts | Host not in Rails allowed list | Verify `HYKU_ADMIN_HOST`/`HYKU_ROOT_HOST` match the request host; check `host_authorization.rb` |
 | Login fails "change was rejected" (422) | CSRF: session cookie has `Secure` flag, not sent over HTTP | Set `DISABLE_FORCE_SSL=true` — triggers `session_store_override.rb` to drop Secure flag |
-| Pages load with no CSS | Assets not precompiled or `RAILS_SERVE_STATIC_FILES` not set | Run `assets:precompile`; ensure `RAILS_SERVE_STATIC_FILES=true` |
+| Pages load with no CSS | Assets not precompiled or `RAILS_SERVE_STATIC_FILES` not set | Re-run `setup.sh` (step 1 is `assets:precompile`); ensure `RAILS_SERVE_STATIC_FILES=true` |
 | Solr not in SolrCloud mode | Wrong startup command | `startup-solr.sh` uses `solr start -f -c -z zoo:2181` — check logs |
 | `solr.xml does not exist` | Fresh bind mount, no `solr.xml` | `startup-solr.sh` seeds it automatically from `/opt/solr/server/solr/solr.xml` |
 | DB `ProtectedEnvironmentError` | `db:schema:load` blocked on existing DB | `setup.sh` detects table count and uses `db:migrate` — re-run setup |
@@ -577,7 +558,6 @@ docker-compose -f docker-compose.production.yml down
 docker-compose -f docker-compose.production.yml ps
 docker-compose -f docker-compose.production.yml logs -f web
 docker-compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
-docker-compose -f docker-compose.production.yml exec web bundle exec rails assets:precompile
 docker-compose -f docker-compose.production.yml exec web bundle exec rails console
 ```
 

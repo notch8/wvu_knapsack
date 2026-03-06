@@ -120,8 +120,7 @@ See [HYKU_BUILD_GUIDE.md § Local Production Smoke Testing](HYKU_BUILD_GUIDE.md)
 ```bash
 cp .env.production.example .env.production   # edit with local values
 docker compose -f docker-compose.production.yml up -d
-docker compose -f docker-compose.production.yml exec web bash -c "RAILS_ENV=production bundle exec rails assets:precompile"
-sh scripts/setup.sh
+sh scripts/setup.sh   # handles assets:precompile, DB, Solr, and first tenant
 # visit http://admin-wvu-knapsack.lvh.me:3000
 ```
 
