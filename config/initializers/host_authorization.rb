@@ -3,6 +3,17 @@
 # so "*.lib.wvu.edu" hostnames (e.g. hyku.lib.wvu.edu) are permitted.
 Rails.application.config.hosts << ".lib.wvu.edu"
 
+# Allow additional hosts via comma-separated HYKU_EXTRA_HOSTS env var.
+# Use this in a gitignored local .env.production for smoke-testing without
+# touching production config. Example for lvh.me (wildcard DNS → 127.0.0.1,
+# no HSTS issues unlike localhost.direct):
+#   HYKU_EXTRA_HOSTS=.lvh.me
+if ENV['HYKU_EXTRA_HOSTS'].present?
+  ENV['HYKU_EXTRA_HOSTS'].split(',').map(&:strip).each do |host|
+    Rails.application.config.hosts << host
+  end
+end
+
 # hyrax-webapp's production.rb hard-codes config.force_ssl = true.
 # On the VM an SSL-terminating reverse proxy sits in front of the app and
 # forwards plain HTTP, so force_ssl must remain on.
