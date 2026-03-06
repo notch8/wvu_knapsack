@@ -1,7 +1,7 @@
-# Allow requests from WVU library production domains.
-# Rails 7.2 HostAuthorization matches Regexp against raw_host_with_port
-# (which includes the port number), so patterns use (:\d+)?\z.
-Rails.application.config.hosts << /\.lib\.wvu\.edu(:\d+)?\z/
+# Allow requests from all WVU library production subdomains.
+# A leading-dot string is matched against request.host (no port) as a suffix,
+# so "*.lib.wvu.edu" hostnames (e.g. hyku.lib.wvu.edu) are permitted.
+Rails.application.config.hosts << ".lib.wvu.edu"
 
 # hyrax-webapp's production.rb hard-codes config.force_ssl = true.
 # On the VM an SSL-terminating reverse proxy sits in front of the app and
