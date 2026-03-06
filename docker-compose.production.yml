@@ -59,21 +59,28 @@ services:
     platform: linux/amd64
     env_file:
       - .env.production
+    environment:
+      - SOLR_ENABLE_CLOUD_MODE=yes
+      - SOLR_CLOUD_BOOTSTRAP=yes
+      - ZK_HOST=zoo:2181
     user: root
-    command: bash -c "sh /scripts/startup.sh hydra_prod"
+    command: bash -c "sh /scripts/startup.sh"
     ports:
       - "8983:8983"
     volumes:
-      - ./data/solr:/var/solr/data/hydra_prod/data
-      - ./data/logs/dev/:/var/solr/logs
+      - ./data/solr:/var/solr
+      - ./data/logs/solr:/var/solr/logs
       - ./solr9-setup:/solr9-setup
       - ./startup-solr.sh:/scripts/startup.sh
     healthcheck:
-      test: "curl -f localhost:8983/solr/#/"
-      start_period: 30s
-      interval: 5s
-      timeout: 5s
-      retries: 20
+      test: "curl -sf http://$$SOLR_ADMIN_USER:$$SOLR_ADMIN_PASSWORD@localhost:8983/solr/admin/collections?action=LIST"
+      start_period: 60s
+      interval: 10s
+      timeout: 10s
+      retries: 12
+    depends_on:
+      zoo:
+        condition: service_healthy
     networks:
       - internal
 
