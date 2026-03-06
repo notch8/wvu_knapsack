@@ -456,6 +456,83 @@ Hyku uses `HYKU_ADMIN_HOST`, `HYKU_DEFAULT_HOST`, and `HYKU_ROOT_HOST` to route 
 
 ---
 
+## Okta SAML Authentication
+
+Hyku supports SAML SSO via the `omniauth-saml` gem. The configuration is **entirely database-driven** — there are no env vars for it. Each tenant (and the superadmin) can have its own identity provider record, created through the admin UI.
+
+### Production admin URL
+
+```
+https://admin-hyku.lib.wvu.edu/identity_providers
+```
+
+> **Note:** The production superadmin interface is at `admin-hyku.lib.wvu.edu`, not `admin-wvu-knapsack.lib.wvu.edu`. Use this URL for any Okta-related admin configuration on the live server.
+
+### How to view or copy the working Okta configuration from the dev VM
+
+SSH into the dev VM and run:
+
+```bash
+docker-compose -f docker-compose.production.yml exec web bundle exec rails runner \
+  "puts IdentityProvider.all.map { |p| { name: p.name, provider: p.provider, options: p.options }.inspect }"
+```
+
+This prints every identity provider row including the full Options JSON, which you can then re-enter in any other environment.
+
+### Setting up a new identity provider
+
+1. Log in at `https://admin-hyku.lib.wvu.edu` (production) or `http://admin-wvu-knapsack.lvh.me:3000` (local smoke test)
+2. Go to **Dashboard → Configuration → Identity Providers → New**
+3. Fill in:
+   - **Name** — `WVU Okta` (or any label)
+   - **Provider** — `saml`
+   - **Options** — paste the JSON blob (see below)
+4. **Save** — the Assertion Consumer Service (ACS) URL is shown on the edit page after saving
+
+### Minimum Options JSON for WVU Okta
+
+```json
+{
+  "idp_metadata_url": "https://wvu.okta.com/app/<app-id>/sso/saml/metadata",
+  "sp_entity_id": "https://admin-hyku.lib.wvu.edu",
+  "name_identifier_format": "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+}
+```
+
+Replace `<app-id>` with the Okta application ID. The `idp_metadata_url` is the source of truth — Hyku auto-fetches the IDP certificate and SSO endpoint from it, so no other Okta-specific keys are required.
+
+### ACS callback URL (register this in Okta)
+
+After saving the identity provider record, the edit page shows the ACS URL(s) — one per tenant domain name. For production it will be:
+
+```
+https://admin-hyku.lib.wvu.edu/users/auth/saml/{record-id}/callback
+```
+
+This URL must be added to the Okta application's **Sign On → SAML Settings → Allowed Callback URLs** (or equivalent). Each environment (dev VM, local smoke test, production) needs its own entry if they point to different Okta apps, or all URLs can be added to a single Okta app.
+
+### Local smoke test notes
+
+For local testing over HTTP, the ACS URL will be:
+
+```
+http://admin-wvu-knapsack.lvh.me:3000/users/auth/saml/{record-id}/callback
+```
+
+Okta may refuse HTTP callback URLs depending on the app settings. Either configure a dev-only Okta app that allows HTTP, or test SAML only against the production/staging environment where HTTPS is available.
+
+### SP metadata endpoint
+
+Hyku exposes SP metadata at:
+
+```
+https://admin-hyku.lib.wvu.edu/users/auth/saml/{record-id}/metadata
+```
+
+Okta can be pointed at this URL for automatic SP configuration.
+
+---
+
 ## Troubleshooting
 
 | Symptom | Cause | Fix |

@@ -7,6 +7,7 @@ This is the [WVU Libraries](https://libraries.wvu.edu) instance of [Hyku](https:
 | **Repository** | https://github.com/wvulibraries/wvu_knapsack |
 | **Hyku submodule** | `./hyrax-webapp` → https://github.com/samvera/hyku |
 | **Upstream knapsack template** | `prime` remote → https://github.com/samvera-labs/hyku_knapsack |
+| **Production admin URL** | https://admin-hyku.lib.wvu.edu |
 | **Production host** | `*.lib.wvu.edu` |
 | **APP_NAME** | `wvu-knapsack` |
 
