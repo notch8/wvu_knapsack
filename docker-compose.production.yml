@@ -122,17 +122,6 @@ services:
     networks:
       - internal
 
-  check_volumes:
-    <<: *app
-    user: root
-    entrypoint: ["sh", "-c"]
-    command:
-      - >
-        chown -R app:app /usr/local/bundle &&
-        chown -R app:app /app/samvera/hyrax-webapp/public/uploads &&
-        chown -R app:app /app/samvera/hyrax-webapp/public/assets &&
-        chown -R app:app /app/samvera/hyrax-webapp/tmp/cache
-
   initialize_app:
     <<: *app
     entrypoint: ["sh", "-c"]
@@ -145,8 +134,6 @@ services:
         RAILS_ENV=production bundle exec rails assets:precompile &&
         db-migrate-seed.sh
     depends_on:
-      check_volumes:
-        condition: service_completed_successfully
       db:
         condition: service_started
       solr:
