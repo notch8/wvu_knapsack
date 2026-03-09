@@ -6,15 +6,6 @@
 x-app: &app
   env_file:
     - .env.production
-  build:
-    context: .
-    target: hyku-web
-    cache_from:
-      - ghcr.io/notch8/wvu_knapsack/base:latest
-      - ghcr.io/notch8/wvu_knapsack:latest
-    args:
-      BUILDKIT_INLINE_CACHE: 1
-      APP_PATH: ./hyrax-webapp
   image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
   pull_policy: always
   environment:
@@ -148,15 +139,6 @@ services:
 
   worker:
     <<: *app
-    build:
-      context: .
-      target: hyku-worker
-      cache_from:
-        - ghcr.io/notch8/wvu_knapsack/base:latest
-        - ghcr.io/notch8/wvu_knapsack/worker:latest
-      args:
-        BUILDKIT_INLINE_CACHE: 1
-        APP_PATH: ./hyrax-webapp
     image: ghcr.io/notch8/wvu_knapsack/worker:${TAG:-latest}
     entrypoint: ["sh", "-c"]
     command:
