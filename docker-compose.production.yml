@@ -16,6 +16,7 @@ x-app: &app
       BUILDKIT_INLINE_CACHE: 1
       APP_PATH: ./hyrax-webapp
   image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
+  pull_policy: always
   environment:
     - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
     - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
