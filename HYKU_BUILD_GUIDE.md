@@ -7,7 +7,7 @@ There are three workflows covered here:
 | Workflow | Who | Script |
 |---|---|---|
 | [Local dev with Stack Car](#1-local-development-stack-car) | Developers | `up.local.sh` / `down.local.sh` |
-| [Local production smoke test](#2-local-production-smoke-testing) | Developers | `docker-compose.production.yml` |
+| [Local production smoke test](#2-local-production-smoke-testing) | Developers | `docker-compose.local.yml` |
 | [VM production deployment](#3-vm-production-deployment) | DevOps | `up.sh` / `down.sh` |
 
 ---
@@ -28,7 +28,8 @@ wvu_knapsack/
 ├── scripts/
 │   └── setup.sh                   ← idempotent one-time setup (DB + Solr + tenant)
 ├── startup-solr.sh                ← custom SolrCloud startup script
-├── docker-compose.production.yml  ← standalone production compose
+├── docker-compose.local.yml       ← local production smoke test (Mac arm64 — pulls GHCR images)
+├── docker-compose.production.yml  ← VM production compose (RHEL amd64 — builds locally)
 ├── .env.production.example        ← committed env template
 ├── .env.production                ← gitignored — your real values go here
 ├── .env.development               ← Stack Car local dev overrides
@@ -153,7 +154,7 @@ sh up.local.sh
 
 ## 2. Local Production Smoke Testing
 
-Use this to validate the production Docker image and config **before** deploying to the VM. It runs the same `docker-compose.production.yml` as the VM but with local DNS and no SSL.
+Use this to validate the production Docker image and config **before** deploying to the VM. It uses `docker-compose.local.yml` which pulls the pre-built arm64 GHCR images — no local build required on Mac.
 
 This workflow does **not** use Stack Car. It runs on port 3000 and uses `lvh.me` for wildcard DNS (`*.lvh.me` → `127.0.0.1`, no HSTS, safe for plain HTTP).
 
@@ -187,30 +188,29 @@ DISABLE_FORCE_SSL=true
 RAILS_SERVE_STATIC_FILES=true
 ```
 
-### Step 2: Build and start
+### Step 2: Start
 
 ```bash
-docker compose -f docker-compose.production.yml build
-docker compose -f docker-compose.production.yml up -d
+docker compose -f docker-compose.local.yml up -d
 ```
 
 Watch startup in order:
 
 ```bash
 # ZooKeeper + Solr (wait for SolrCloud to be healthy)
-docker compose -f docker-compose.production.yml logs -f zoo solr
+docker compose -f docker-compose.local.yml logs -f zoo solr
 
 # initialize_app: Solr configset upload, DB migrate/seed, bundle install (~2 min)
-docker compose -f docker-compose.production.yml logs -f initialize_app
+docker compose -f docker-compose.local.yml logs -f initialize_app
 
 # Web: wait for "Listening on http://0.0.0.0:3000"
-docker compose -f docker-compose.production.yml logs -f web
+docker compose -f docker-compose.local.yml logs -f web
 ```
 
 ### Step 3: Run one-time setup (includes asset precompilation)
 
 ```bash
-docker compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
+docker compose -f docker-compose.local.yml exec web sh /app/samvera/scripts/setup.sh
 ```
 
 This is idempotent — safe to re-run. It handles:
@@ -232,10 +232,10 @@ Login with `INITIAL_ADMIN_EMAIL` / `INITIAL_ADMIN_PASSWORD` (default: `admin@exa
 
 ```bash
 # Stop without removing data
-docker compose -f docker-compose.production.yml down
+docker compose -f docker-compose.local.yml down
 
 # Full reset — removes all data
-docker compose -f docker-compose.production.yml down
+docker compose -f docker-compose.local.yml down
 rm -rf ./data
 ```
 
@@ -243,13 +243,13 @@ rm -rf ./data
 
 **Applying `.env.production` changes:** always use `up -d`, not `restart`:
 ```bash
-docker compose -f docker-compose.production.yml up -d --no-deps web worker
+docker compose -f docker-compose.local.yml up -d --no-deps web worker
 ```
 `restart` reuses the cached environment and does NOT re-read `env_file`.
 
 **Check container status:**
 ```bash
-docker compose -f docker-compose.production.yml ps
+docker compose -f docker-compose.local.yml ps
 ```
 
 ---
@@ -434,7 +434,8 @@ All state is in `./data/` bind mounts. Back up this directory to preserve everyt
 | `.env.development` | Stack Car local dev overrides | ✅ |
 | `config/initializers/host_authorization.rb` | Adds `*.lib.wvu.edu` to Rails allowed hosts; reads `HYKU_EXTRA_HOSTS` | ✅ |
 | `config/initializers/session_store_override.rb` | Drops `Secure` cookie flag when `DISABLE_FORCE_SSL=true` (required for CSRF over HTTP) | ✅ |
-| `docker-compose.production.yml` | Standalone production compose — no `extends`, bind mounts only | ✅ |
+| `docker-compose.local.yml` | Local smoke test compose — pulls arm64 GHCR images, `pull_policy: always` | ✅ |
+| `docker-compose.production.yml` | VM production compose — builds from root Dockerfile, `pull_policy: build` | ✅ |
 | `startup-solr.sh` | Seeds `solr.xml` on fresh volume, starts Solr in SolrCloud mode (`-f -c -z`) | ✅ |
 | `solr-setup/security.json` | Solr ZooKeeper auth (admin: `solr`/`SolrRocks`, app: `hydra`/`m0Nif7rNp3ZpkiKN52NA`) | ✅ |
 | `scripts/setup.sh` | Idempotent DB + Solr + tenant setup | ✅ |
@@ -565,11 +566,22 @@ sc exec bundle exec rspec spec/   # run specs
 sc proxy up                       # start Traefik proxy
 ```
 
-### Production stack (local smoke test or VM)
+### Local production smoke test (Mac arm64)
 
 ```bash
-sh up.sh                          # pull + start (VM)
-sh down.sh                        # stop (VM)
+docker compose -f docker-compose.local.yml up -d
+docker compose -f docker-compose.local.yml down
+docker compose -f docker-compose.local.yml ps
+docker compose -f docker-compose.local.yml logs -f web
+docker compose -f docker-compose.local.yml exec web sh /app/samvera/scripts/setup.sh
+docker compose -f docker-compose.local.yml exec web bundle exec rails console
+```
+
+### VM production deployment
+
+```bash
+sh up.sh                          # git pull + build + start
+sh down.sh                        # stop
 
 # Manual equivalents:
 docker compose -f docker-compose.production.yml up -d
