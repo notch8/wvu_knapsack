@@ -259,7 +259,7 @@ docker-compose -f docker-compose.production.yml ps
 ### Prerequisites
 
 - Ubuntu LTS VM with Docker + Docker Compose installed
-- DNS configured: `admin-wvu-knapsack.lib.wvu.edu` and `*.lib.wvu.edu` → VM IP
+- DNS configured: `admin-hyku.lib.wvu.edu` and `*.lib.wvu.edu` → VM IP
 - SSL-terminating reverse proxy (Nginx or Traefik) in front, forwarding HTTP to port 3000
 - Port 3000 not exposed publicly — only the proxy talks to it
 - `git` access to this repo
@@ -291,8 +291,8 @@ Required changes from the example:
 | `NEGATIVE_CAPTCHA_SECRET` | `openssl rand -hex 32` |
 | `DB_PASSWORD` | Strong random password |
 | `HYKU_ROOT_HOST` | `lib.wvu.edu` |
-| `HYKU_ADMIN_HOST` | `admin-wvu-knapsack.lib.wvu.edu` |
-| `HYKU_DEFAULT_HOST` | `%{tenant}-wvu-knapsack.lib.wvu.edu` |
+| `HYKU_ADMIN_HOST` | `admin-hyku.lib.wvu.edu` |
+| `HYKU_DEFAULT_HOST` | `%{tenant}-hyku.lib.wvu.edu` |
 | `INITIAL_ADMIN_EMAIL` | Real admin email |
 | `INITIAL_ADMIN_PASSWORD` | Strong password (change after first login) |
 | `RAILS_SERVE_STATIC_FILES` | `true` (unless Nginx serves `/assets` directly) |
@@ -323,29 +323,37 @@ docker-compose -f docker-compose.production.yml logs -f web
 
 Wait for `Listening on http://0.0.0.0:3000` in web logs.
 
-### Step 4: Run one-time setup (includes asset precompilation)
+### Step 4: Run one-time setup
 
 ```bash
 docker-compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
 ```
 
-Idempotent — safe to re-run on every update.
+Idempotent — safe to re-run on every update. This handles: asset precompilation, DB migrations, Solr configset, and optional first tenant creation.
 
 To pre-create the first repository tenant instead of using the admin UI, add to `.env.production` before running setup:
 
 ```env
 HYKU_FIRST_TENANT_NAME=wvu
-HYKU_FIRST_TENANT_CNAME=wvu-wvu-knapsack.lib.wvu.edu
+HYKU_FIRST_TENANT_CNAME=wvu-hyku.lib.wvu.edu
 ```
 
 > **Admin host is not a tenant.** `HYKU_ADMIN_HOST` routes to the superadmin interface — never try to create an `Account` record for it. Hyku reserves the admin cname and rejects it with "Domain names cname is reserved."
+
+### Step 5: Verify the stack is up
+
+```bash
+docker-compose -f docker-compose.production.yml ps
+```
+
+All services should show `Up`. Then visit `https://admin-hyku.lib.wvu.edu` — you should see the Hyku splash page.
 
 ### Step 6: Reverse proxy (Nginx example)
 
 ```nginx
 server {
     listen 443 ssl http2;
-    server_name admin-wvu-knapsack.lib.wvu.edu *.lib.wvu.edu;
+    server_name admin-hyku.lib.wvu.edu *.lib.wvu.edu;
 
     ssl_certificate     /etc/ssl/certs/lib.wvu.edu.crt;
     ssl_certificate_key /etc/ssl/private/lib.wvu.edu.key;
@@ -362,7 +370,7 @@ server {
 
 server {
     listen 80;
-    server_name admin-wvu-knapsack.lib.wvu.edu *.lib.wvu.edu;
+    server_name admin-hyku.lib.wvu.edu *.lib.wvu.edu;
     return 301 https://$host$request_uri;
 }
 ```
@@ -398,6 +406,7 @@ All state is in `./data/` bind mounts. Back up this directory to preserve everyt
 | `./data/fcrepo` | Fedora repository objects |
 | `./data/uploads` | User-uploaded files |
 | `./data/assets` | Precompiled asset pipeline output |
+| `./data/bundle` | Bundler gem cache (speeds up container restarts) |
 | `./data/cache` | Rails tmp/cache |
 | `./data/redis` | Redis persistence |
 | `./data/logs/solr` | Solr logs |
@@ -447,7 +456,7 @@ Hyku supports SAML SSO via the `omniauth-saml` gem. The configuration is **entir
 https://admin-hyku.lib.wvu.edu/identity_providers
 ```
 
-> **Note:** The production superadmin interface is at `admin-hyku.lib.wvu.edu`, not `admin-wvu-knapsack.lib.wvu.edu`. Use this URL for any Okta-related admin configuration on the live server.
+> **Note:** The production superadmin interface is at `admin-hyku.lib.wvu.edu`. Use this URL for any Okta-related admin configuration on the live server.
 
 ### How to view or copy the working Okta configuration from the dev VM
 
