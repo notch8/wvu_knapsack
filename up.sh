@@ -33,4 +33,9 @@ mkdir -p \
   ./data/logs/solr
 chown -R 1001:101 ./data/bundle ./data/node_modules ./data/assets ./data/cache
 
+# Remove broken initializer from hyrax-webapp submodule if present.
+# disable_solr.rb has a syntax error that aborts assets:precompile, and
+# we do not want Solr disabled in production regardless.
+rm -f ./hyrax-webapp/config/initializers/disable_solr.rb
+
 docker compose -f docker-compose.production.yml up -d

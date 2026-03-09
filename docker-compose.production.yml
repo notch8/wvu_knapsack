@@ -123,6 +123,7 @@ services:
     entrypoint: ["sh", "-c"]
     command:
       - >
+        rm -f /app/samvera/hyrax-webapp/config/initializers/disable_solr.rb &&
         solrcloud-upload-configset.sh /app/samvera/hyrax-webapp/solr/conf &&
         SOLR_COLLECTION_NAME=hydra-production solrcloud-assign-configset.sh &&
         SOLR_COLLECTION_NAME=hydra-test solrcloud-assign-configset.sh &&
