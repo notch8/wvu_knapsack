@@ -14,4 +14,23 @@ git submodule update --init --recursive
 # file is invisible to submodule git tracking.
 [ -f hyrax-webapp/.env.production ] || touch hyrax-webapp/.env.production
 
+# Ensure bind-mount directories exist and are writable by the container's app
+# user (uid 1001, gid 101). Without this, bundle install fails with
+# "Permission denied @ dir_s_mkdir - /usr/local/bundle" on a fresh clone
+# where the directories are created by root.
+mkdir -p \
+  ./data/bundle \
+  ./data/node_modules \
+  ./data/assets \
+  ./data/cache \
+  ./data/uploads \
+  ./data/db \
+  ./data/solr \
+  ./data/zoo \
+  ./data/zk \
+  ./data/fcrepo \
+  ./data/redis \
+  ./data/logs/solr
+chown -R 1001:101 ./data/bundle ./data/node_modules ./data/assets ./data/cache
+
 docker compose -f docker-compose.production.yml up -d
