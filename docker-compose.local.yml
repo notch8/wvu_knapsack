@@ -1,7 +1,7 @@
-# For local development/testing on Apple Silicon (arm64 Mac).
-# Pulls pre-built arm64 images from GHCR — no local build required on first run.
-# Build blocks included as a fallback if you need to build locally.
+# For local production smoke testing on Apple Silicon (arm64 Mac).
+# Pulled from the last known-working production compose (a5a2bd5).
 # All configuration comes from .env.production (gitignored, see .env.production.example).
+
 x-app: &app
   env_file:
     - .env.production
@@ -15,7 +15,6 @@ x-app: &app
       BUILDKIT_INLINE_CACHE: 1
       APP_PATH: ./hyrax-webapp
   image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
-  pull_policy: always
   environment:
     - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
     - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
