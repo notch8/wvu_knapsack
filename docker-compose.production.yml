@@ -11,7 +11,6 @@ x-app: &app
     target: hyku-web
     args:
       APP_PATH: ./hyrax-webapp
-  image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
   pull_policy: build
   environment:
     - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
@@ -176,6 +175,7 @@ services:
 
   web:
     <<: *app
+    image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
     entrypoint: ["sh", "-c"]
     command:
       - bundle check || bundle install && ./bin/web
