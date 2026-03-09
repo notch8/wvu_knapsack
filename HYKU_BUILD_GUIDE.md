@@ -261,7 +261,12 @@ docker compose -f docker-compose.production.yml ps
 - **Red Hat Enterprise Linux** VM with Docker CE and the Docker Compose v2 plugin installed
   - Install Docker CE from Docker's official RHEL repo (not the RHEL-packaged `podman`)
   - The Compose v2 plugin ships as `docker compose` (space, not hyphen) — `up.sh` / `down.sh` use this form
-  - SELinux is enforcing by default on RHEL; all `./data/` bind mounts in `docker-compose.production.yml` carry the `:z` relabeling flag so containers can read/write them without disabling SELinux
+  - SELinux is enforcing by default on RHEL; after cloning the repo, label the data directory so containers can read/write it:
+    ```bash
+    mkdir -p ./data
+    sudo chcon -Rt svirt_sandbox_file_t ./data
+    ```
+    Run this once before the first `sh up.sh`. It is not needed again unless you `rm -rf ./data` and recreate it.
 - DNS configured: `admin-hyku.lib.wvu.edu` and `*.lib.wvu.edu` → VM IP
 - SSL-terminating reverse proxy (Nginx or Traefik) in front, forwarding HTTP to port 3000
 - Port 3000 not exposed publicly — only the proxy talks to it
