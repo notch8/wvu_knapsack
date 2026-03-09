@@ -19,6 +19,10 @@ echo ""
 # ------------------------------------------------------------
 # 1. Asset precompilation
 # ------------------------------------------------------------
+# NOTE: assets:precompile also runs automatically inside initialize_app before
+# the web container starts. Re-running setup.sh forces a recompile (e.g. after
+# changing asset files). The web container must be restarted afterwards to pick
+# up the new manifest: docker-compose -f docker-compose.production.yml restart web
 echo "--- [1/4] Asset precompilation ---"
 # Idempotent - safe to re-run; existing assets are overwritten in place.
 RAILS_ENV=production bin/rails assets:precompile
