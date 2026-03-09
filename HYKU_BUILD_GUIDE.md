@@ -190,27 +190,27 @@ RAILS_SERVE_STATIC_FILES=true
 ### Step 2: Build and start
 
 ```bash
-docker-compose -f docker-compose.production.yml build
-docker-compose -f docker-compose.production.yml up -d
+docker compose -f docker-compose.production.yml build
+docker compose -f docker-compose.production.yml up -d
 ```
 
 Watch startup in order:
 
 ```bash
 # ZooKeeper + Solr (wait for SolrCloud to be healthy)
-docker-compose -f docker-compose.production.yml logs -f zoo solr
+docker compose -f docker-compose.production.yml logs -f zoo solr
 
 # initialize_app: Solr configset upload, DB migrate/seed, bundle install (~2 min)
-docker-compose -f docker-compose.production.yml logs -f initialize_app
+docker compose -f docker-compose.production.yml logs -f initialize_app
 
 # Web: wait for "Listening on http://0.0.0.0:3000"
-docker-compose -f docker-compose.production.yml logs -f web
+docker compose -f docker-compose.production.yml logs -f web
 ```
 
 ### Step 3: Run one-time setup (includes asset precompilation)
 
 ```bash
-docker-compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
+docker compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
 ```
 
 This is idempotent — safe to re-run. It handles:
@@ -232,10 +232,10 @@ Login with `INITIAL_ADMIN_EMAIL` / `INITIAL_ADMIN_PASSWORD` (default: `admin@exa
 
 ```bash
 # Stop without removing data
-docker-compose -f docker-compose.production.yml down
+docker compose -f docker-compose.production.yml down
 
 # Full reset — removes all data
-docker-compose -f docker-compose.production.yml down
+docker compose -f docker-compose.production.yml down
 rm -rf ./data
 ```
 
@@ -243,13 +243,13 @@ rm -rf ./data
 
 **Applying `.env.production` changes:** always use `up -d`, not `restart`:
 ```bash
-docker-compose -f docker-compose.production.yml up -d --no-deps web worker
+docker compose -f docker-compose.production.yml up -d --no-deps web worker
 ```
 `restart` reuses the cached environment and does NOT re-read `env_file`.
 
 **Check container status:**
 ```bash
-docker-compose -f docker-compose.production.yml ps
+docker compose -f docker-compose.production.yml ps
 ```
 
 ---
@@ -258,11 +258,16 @@ docker-compose -f docker-compose.production.yml ps
 
 ### Prerequisites
 
-- Ubuntu LTS VM with Docker + Docker Compose installed
+- **Red Hat Enterprise Linux** VM with Docker CE and the Docker Compose v2 plugin installed
+  - Install Docker CE from Docker's official RHEL repo (not the RHEL-packaged `podman`)
+  - The Compose v2 plugin ships as `docker compose` (space, not hyphen) — `up.sh` / `down.sh` use this form
+  - SELinux is enforcing by default on RHEL; all `./data/` bind mounts in `docker-compose.production.yml` carry the `:z` relabeling flag so containers can read/write them without disabling SELinux
 - DNS configured: `admin-hyku.lib.wvu.edu` and `*.lib.wvu.edu` → VM IP
 - SSL-terminating reverse proxy (Nginx or Traefik) in front, forwarding HTTP to port 3000
 - Port 3000 not exposed publicly — only the proxy talks to it
 - `git` access to this repo
+
+> **RHEL vs Mac performance note:** The Solr healthcheck allows 300 s for startup. On the native x86_64 RHEL VM the JVM starts in ~30 s, so this timeout will never be hit. The longer window exists because the developer ARM Mac runs the `linux/amd64` Solr image under QEMU emulation, where JVM init takes ~5 minutes.
 
 ### Step 1: Clone with submodules
 
@@ -313,12 +318,12 @@ openssl rand -hex 32   # paste into NEGATIVE_CAPTCHA_SECRET
 sh up.sh
 ```
 
-`up.sh` does: `git pull` → `git submodule update --init --recursive` → ensure `hyrax-webapp/.env.production` exists → `docker-compose -f docker-compose.production.yml up -d`.
+`up.sh` does: `git pull` → `git submodule update --init --recursive` → ensure `hyrax-webapp/.env.production` exists → `docker compose -f docker-compose.production.yml up -d`.
 
 Watch startup:
 ```bash
-docker-compose -f docker-compose.production.yml logs -f initialize_app
-docker-compose -f docker-compose.production.yml logs -f web
+docker compose -f docker-compose.production.yml logs -f initialize_app
+docker compose -f docker-compose.production.yml logs -f web
 ```
 
 Wait for `Listening on http://0.0.0.0:3000` in web logs.
@@ -326,7 +331,7 @@ Wait for `Listening on http://0.0.0.0:3000` in web logs.
 ### Step 4: Run one-time setup
 
 ```bash
-docker-compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
+docker compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
 ```
 
 Idempotent — safe to re-run on every update. This handles: asset precompilation, DB migrations, Solr configset, and optional first tenant creation.
@@ -343,7 +348,7 @@ HYKU_FIRST_TENANT_CNAME=wvu-hyku.lib.wvu.edu
 ### Step 5: Verify the stack is up
 
 ```bash
-docker-compose -f docker-compose.production.yml ps
+docker compose -f docker-compose.production.yml ps
 ```
 
 All services should show `Up`. Then visit `https://admin-hyku.lib.wvu.edu` — you should see the Hyku splash page.
@@ -391,7 +396,7 @@ sh down.sh
 sh up.sh
 
 # Run migrations, re-seed, and re-precompile assets if needed (all idempotent)
-docker-compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
+docker compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
 ```
 
 ### Data persistence
@@ -463,7 +468,7 @@ https://admin-hyku.lib.wvu.edu/identity_providers
 SSH into the dev VM and run:
 
 ```bash
-docker-compose -f docker-compose.production.yml exec web bundle exec rails runner \
+docker compose -f docker-compose.production.yml exec web bundle exec rails runner \
   "puts IdentityProvider.all.map { |p| { name: p.name, provider: p.provider, options: p.options }.inspect }"
 ```
 
@@ -534,7 +539,7 @@ Okta can be pointed at this URL for automatic SP configuration.
 | `solr.xml does not exist` | Fresh bind mount, no `solr.xml` | `startup-solr.sh` seeds it automatically from `/opt/solr/server/solr/solr.xml` |
 | DB `ProtectedEnvironmentError` | `db:schema:load` blocked on existing DB | `setup.sh` detects table count and uses `db:migrate` — re-run setup |
 | "Domain names cname is reserved" | Tried to create `Account` for admin host | Admin host is not a tenant — create repository tenants via admin UI |
-| `restart` doesn't pick up new env | `restart` reuses cached container env | Use `docker-compose up -d` to recreate containers and re-read `env_file` |
+| `restart` doesn't pick up new env | `restart` reuses cached container env | Use `docker compose up -d` to recreate containers and re-read `env_file` |
 | Tenant returns "not found" | DB seeded with wrong domain / APP_NAME | `docker compose down -v` to wipe volumes, then restart and re-setup |
 | Bundle install slow on every start | Gems reinstall into container-local paths | Expected in dev; use pre-built GHCR image on VM to avoid it |
 | `up.local.sh` takes a long time | `--no-cache` rebuild | Normal — use `sc up -d` directly when you don't need a clean rebuild |
@@ -562,12 +567,12 @@ sh up.sh                          # pull + start (VM)
 sh down.sh                        # stop (VM)
 
 # Manual equivalents:
-docker-compose -f docker-compose.production.yml up -d
-docker-compose -f docker-compose.production.yml down
-docker-compose -f docker-compose.production.yml ps
-docker-compose -f docker-compose.production.yml logs -f web
-docker-compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
-docker-compose -f docker-compose.production.yml exec web bundle exec rails console
+docker compose -f docker-compose.production.yml up -d
+docker compose -f docker-compose.production.yml down
+docker compose -f docker-compose.production.yml ps
+docker compose -f docker-compose.production.yml logs -f web
+docker compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
+docker compose -f docker-compose.production.yml exec web bundle exec rails console
 ```
 
 ---

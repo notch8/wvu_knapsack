@@ -11,4 +11,4 @@ git submodule update --init --recursive
 # file is invisible to submodule git tracking.
 [ -f hyrax-webapp/.env.production ] || touch hyrax-webapp/.env.production
 
-docker-compose -f docker-compose.production.yml up -d
+docker compose -f docker-compose.production.yml up -d
