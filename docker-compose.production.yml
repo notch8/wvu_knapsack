@@ -145,6 +145,8 @@ services:
         RAILS_ENV=production bundle exec rails assets:precompile &&
         db-migrate-seed.sh
     depends_on:
+      check_volumes:
+        condition: service_completed_successfully
       db:
         condition: service_started
       solr:
