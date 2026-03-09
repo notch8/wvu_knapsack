@@ -38,4 +38,4 @@ chown -R 1001:101 ./data/bundle ./data/node_modules ./data/assets ./data/cache
 # we do not want Solr disabled in production regardless.
 rm -f ./hyrax-webapp/config/initializers/disable_solr.rb
 
-docker compose -f docker-compose.production.yml up -d
+docker compose --env-file .env.production -f docker-compose.production.yml up -d
