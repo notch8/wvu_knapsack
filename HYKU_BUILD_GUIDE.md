@@ -150,6 +150,17 @@ sh up.local.sh
 | Port 3000 already in use | `lsof -i :3000` — kill the process or stop the production stack |
 | `docker-compose.override.yml` with `sleep infinity` | Remove or rename it — it prevents Puma from starting |
 
+### Nuclear Option — complete wipe and rebuild
+
+Use this when nothing else works: volumes in a bad state, images corrupt, or you just want a guaranteed clean slate. Stack Car uses **named Docker volumes** (not `./data` bind mounts) — this script removes them safely scoped to this project only.
+
+```bash
+sh scripts/cleanup-dev.sh
+
+# Then restart:
+sh up.local.sh
+```
+
 ---
 
 ## 2. Local Production Smoke Testing
@@ -241,27 +252,18 @@ rm -rf ./data
 
 ### Nuclear Option — complete wipe and rebuild
 
-Use this when nothing else works: containers won't start, images are corrupt, the stack is in an unrecoverable state, or you want a guaranteed clean slate.
+Use this when nothing else works: containers won't start, images are corrupt, or you want a guaranteed clean slate. This stack uses **bind mounts in `./data/`** — not named volumes.
 
 ```bash
-# 1. Tear down containers, volumes, and locally built images
 docker compose -f docker-compose.local.yml down --rmi all -v --remove-orphans
-
-# 2. Wipe all bind-mount data (DB, Solr, Fedora, uploads, bundle cache, etc.)
 rm -rf ./data
-
-# 3. Purge the Docker layer / build cache
 docker builder prune -f
-
-# 4. Pull fresh images and start
 docker compose -f docker-compose.local.yml up -d
-
-# 5. Watch initialize_app complete, then run setup
 docker compose -f docker-compose.local.yml logs -f initialize_app
 docker compose -f docker-compose.local.yml exec web sh /app/samvera/scripts/setup.sh
 ```
 
-> **Warning:** Step 2 permanently deletes the database, Solr index, Fedora objects, and all uploaded files. There is no undo.
+> **Warning:** `rm -rf ./data` permanently deletes the database, Solr index, Fedora objects, and all uploaded files. There is no undo.
 
 ### Tips
 
@@ -439,23 +441,15 @@ Use this when the stack is unrecoverable (e.g. postgres initialized with wrong p
 > **Warning:** This permanently destroys the database, Solr index, Fedora objects, and all uploaded files. Coordinate with your team before running on a server that holds real data.
 
 ```bash
-# 1. Tear down containers, volumes, and locally built images
-docker compose --env-file .env.production -f docker-compose.production.yml down --rmi all -v --remove-orphans
-
-# 2. Wipe all bind-mount data
+docker compose --env-file .env.production -f docker-compose.production.yml down --rmi local -v --remove-orphans
 rm -rf ./data
+docker builder prune -f
 
-# 3. Re-apply SELinux label so containers can write to the new data dir
+# Re-apply SELinux label (RHEL only — needed after rm -rf ./data)
 mkdir -p ./data
 sudo chcon -Rt svirt_sandbox_file_t ./data
 
-# 4. Purge the Docker layer / build cache
-docker builder prune -f
-
-# 5. Rebuild images and start
 sh up.sh
-
-# 6. Watch initialize_app, then run setup
 docker compose -f docker-compose.production.yml logs -f initialize_app
 docker compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
 ```
@@ -657,26 +651,20 @@ docker compose -f docker-compose.production.yml exec web sh /app/samvera/scripts
 docker compose -f docker-compose.production.yml exec web bundle exec rails console
 ```
 
-### Nuclear Option (⚠️ destroys all data)
+### Nuclear Option
 
-**Local smoke test:**
 ```bash
-docker compose -f docker-compose.local.yml down --rmi all -v --remove-orphans
-rm -rf ./data
-docker builder prune -f
-docker compose -f docker-compose.local.yml up -d
+# Stack Car dev (named volumes — uses cleanup script)
+sh scripts/cleanup-dev.sh
+
+# Local smoke test (bind mounts in ./data/)
+docker compose -f docker-compose.local.yml down --rmi all -v --remove-orphans && rm -rf ./data && docker builder prune -f
+
+# VM production (bind mounts in ./data/)
+docker compose --env-file .env.production -f docker-compose.production.yml down --rmi local -v --remove-orphans && rm -rf ./data && docker builder prune -f
 ```
 
-**VM production:**
-```bash
-docker compose --env-file .env.production -f docker-compose.production.yml down --rmi all -v --remove-orphans
-rm -rf ./data
-mkdir -p ./data && sudo chcon -Rt svirt_sandbox_file_t ./data
-docker builder prune -f
-sh up.sh
-```
-
-**Postgres-only reset (keep Solr/Fedora data):**
+**Postgres-only reset (VM — keep Solr/Fedora data):**
 ```bash
 sh down.sh && rm -rf ./data/db && sh up.sh
 ```
