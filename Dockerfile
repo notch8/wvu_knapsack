@@ -20,7 +20,9 @@ ENV BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
 RUN bundle install --jobs "$(nproc)"
 ############## END KNAPSACK SPECIFIC CODE ################
 
-RUN RAILS_ENV=production SECRET_KEY_BASE=$(bin/rails secret) DB_ADAPTER=nulldb DB_URL='postgresql://fake' bundle exec rails assets:precompile && yarn install
+# assets:precompile is NOT run here — it runs at container startup via initialize_app
+# against the ./data/assets bind mount. Running it at build time loads all Rails
+# initializers (including broken ones in the submodule) and is redundant.
 CMD ./bin/web
 
 FROM hyku-web AS hyku-worker
