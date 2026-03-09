@@ -74,7 +74,7 @@ services:
       - ./solr-setup:/solr-setup
       - ./startup-solr.sh:/scripts/startup.sh
     healthcheck:
-      test: "curl -sf http://$$SOLR_ADMIN_USER:$$SOLR_ADMIN_PASSWORD@localhost:8983/solr/admin/collections?action=LIST"
+      test: "curl -sf http://solr:SolrRocks@localhost:8983/solr/admin/collections?action=LIST"
       start_period: 300s
       interval: 10s
       timeout: 10s
