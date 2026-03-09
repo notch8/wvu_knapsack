@@ -261,12 +261,14 @@ docker compose -f docker-compose.local.yml ps
 - **Red Hat Enterprise Linux** VM with Docker CE and the Docker Compose v2 plugin installed
   - Install Docker CE from Docker's official RHEL repo (not the RHEL-packaged `podman`)
   - The Compose v2 plugin ships as `docker compose` (space, not hyphen) — `up.sh` / `down.sh` use this form
-  - SELinux is enforcing by default on RHEL; after cloning the repo, label the data directory so containers can read/write it:
+  - SELinux is enforcing by default on RHEL; after cloning the repo, label the data
+    directory so containers can read/write it:
     ```bash
     mkdir -p ./data
     sudo chcon -Rt svirt_sandbox_file_t ./data
     ```
     Run this once before the first `sh up.sh`. It is not needed again unless you `rm -rf ./data` and recreate it.
+    `up.sh` will create all required subdirectories and set their ownership automatically — the only manual step is the `chcon` label above.
 - DNS configured: `admin-hyku.lib.wvu.edu` and `*.lib.wvu.edu` → VM IP
 - SSL-terminating reverse proxy (Nginx or Traefik) in front, forwarding HTTP to port 3000
 - Port 3000 not exposed publicly — only the proxy talks to it
@@ -323,7 +325,9 @@ openssl rand -hex 32   # paste into NEGATIVE_CAPTCHA_SECRET
 sh up.sh
 ```
 
-`up.sh` does: `git pull` → `git submodule update --init --recursive` → ensure `hyrax-webapp/.env.production` exists → `docker compose -f docker-compose.production.yml up -d`.
+`up.sh` does: `git pull` → `git submodule update` → create data directories with correct ownership → `docker compose up -d`.
+
+> **First run takes ~4 minutes.** The GHCR images are arm64-only and cannot run on the amd64 VM. `docker-compose.production.yml` uses `pull_policy: build` — images are built locally from the root Dockerfile on first run. Subsequent runs use Docker's layer cache and are much faster.
 
 Watch startup:
 ```bash
@@ -547,7 +551,8 @@ Okta can be pointed at this URL for automatic SP configuration.
 | "Domain names cname is reserved" | Tried to create `Account` for admin host | Admin host is not a tenant — create repository tenants via admin UI |
 | `restart` doesn't pick up new env | `restart` reuses cached container env | Use `docker compose up -d` to recreate containers and re-read `env_file` |
 | Tenant returns "not found" | DB seeded with wrong domain / APP_NAME | `docker compose down -v` to wipe volumes, then restart and re-setup |
-| Bundle install slow on every start | Gems reinstall into container-local paths | Expected in dev; use pre-built GHCR image on VM to avoid it |
+| `Permission denied @ dir_s_mkdir - /usr/local/bundle` | `./data/bundle` owned by root; container runs as uid 1001 | `sh down.sh && git pull && sh up.sh` — `up.sh` now chowns data dirs automatically |
+| Bundle install slow on every start | Gems reinstall into container-local paths | Expected on first run; `./data/bundle` is cached so subsequent restarts are fast |
 | `up.local.sh` takes a long time | `--no-cache` rebuild | Normal — use `sc up -d` directly when you don't need a clean rebuild |
 
 ---
