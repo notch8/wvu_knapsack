@@ -239,6 +239,30 @@ docker compose -f docker-compose.local.yml down
 rm -rf ./data
 ```
 
+### Nuclear Option — complete wipe and rebuild
+
+Use this when nothing else works: containers won't start, images are corrupt, the stack is in an unrecoverable state, or you want a guaranteed clean slate.
+
+```bash
+# 1. Tear down containers, volumes, and locally built images
+docker compose -f docker-compose.local.yml down --rmi all -v --remove-orphans
+
+# 2. Wipe all bind-mount data (DB, Solr, Fedora, uploads, bundle cache, etc.)
+rm -rf ./data
+
+# 3. Purge the Docker layer / build cache
+docker builder prune -f
+
+# 4. Pull fresh images and start
+docker compose -f docker-compose.local.yml up -d
+
+# 5. Watch initialize_app complete, then run setup
+docker compose -f docker-compose.local.yml logs -f initialize_app
+docker compose -f docker-compose.local.yml exec web sh /app/samvera/scripts/setup.sh
+```
+
+> **Warning:** Step 2 permanently deletes the database, Solr index, Fedora objects, and all uploaded files. There is no undo.
+
 ### Tips
 
 **Applying `.env.production` changes:** always use `up -d`, not `restart`:
@@ -406,6 +430,42 @@ sh up.sh
 
 # Run migrations, re-seed, and re-precompile assets if needed (all idempotent)
 docker compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
+```
+
+### Nuclear Option — complete wipe and rebuild
+
+Use this when the stack is unrecoverable (e.g. postgres initialized with wrong password, Solr index corrupt, image layer cache poisoned).
+
+> **Warning:** This permanently destroys the database, Solr index, Fedora objects, and all uploaded files. Coordinate with your team before running on a server that holds real data.
+
+```bash
+# 1. Tear down containers, volumes, and locally built images
+docker compose --env-file .env.production -f docker-compose.production.yml down --rmi all -v --remove-orphans
+
+# 2. Wipe all bind-mount data
+rm -rf ./data
+
+# 3. Re-apply SELinux label so containers can write to the new data dir
+mkdir -p ./data
+sudo chcon -Rt svirt_sandbox_file_t ./data
+
+# 4. Purge the Docker layer / build cache
+docker builder prune -f
+
+# 5. Rebuild images and start
+sh up.sh
+
+# 6. Watch initialize_app, then run setup
+docker compose -f docker-compose.production.yml logs -f initialize_app
+docker compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
+```
+
+**Postgres-only reset** (when only the DB is poisoned and you want to keep Solr/Fedora data):
+
+```bash
+sh down.sh
+rm -rf ./data/db
+sh up.sh
 ```
 
 ### Data persistence
@@ -595,6 +655,30 @@ docker compose -f docker-compose.production.yml ps
 docker compose -f docker-compose.production.yml logs -f web
 docker compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
 docker compose -f docker-compose.production.yml exec web bundle exec rails console
+```
+
+### Nuclear Option (⚠️ destroys all data)
+
+**Local smoke test:**
+```bash
+docker compose -f docker-compose.local.yml down --rmi all -v --remove-orphans
+rm -rf ./data
+docker builder prune -f
+docker compose -f docker-compose.local.yml up -d
+```
+
+**VM production:**
+```bash
+docker compose --env-file .env.production -f docker-compose.production.yml down --rmi all -v --remove-orphans
+rm -rf ./data
+mkdir -p ./data && sudo chcon -Rt svirt_sandbox_file_t ./data
+docker builder prune -f
+sh up.sh
+```
+
+**Postgres-only reset (keep Solr/Fedora data):**
+```bash
+sh down.sh && rm -rf ./data/db && sh up.sh
 ```
 
 ---
