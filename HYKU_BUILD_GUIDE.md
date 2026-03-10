@@ -255,15 +255,15 @@ rm -rf ./data
 Use this when nothing else works: containers won't start, images are corrupt, or you want a guaranteed clean slate. This stack uses **bind mounts in `./data/`** — not named volumes.
 
 ```bash
-docker compose -f docker-compose.local.yml down --rmi all -v --remove-orphans
-rm -rf ./data
-docker builder prune -f
+sh scripts/cleanup-prod.sh
+
+# Then restart:
 docker compose -f docker-compose.local.yml up -d
 docker compose -f docker-compose.local.yml logs -f initialize_app
 docker compose -f docker-compose.local.yml exec web sh /app/samvera/scripts/setup.sh
 ```
 
-> **Warning:** `rm -rf ./data` permanently deletes the database, Solr index, Fedora objects, and all uploaded files. There is no undo.
+> **Warning:** This permanently deletes the database, Solr index, Fedora objects, and all uploaded files. There is no undo.
 
 ### Tips
 
@@ -441,14 +441,9 @@ Use this when the stack is unrecoverable (e.g. postgres initialized with wrong p
 > **Warning:** This permanently destroys the database, Solr index, Fedora objects, and all uploaded files. Coordinate with your team before running on a server that holds real data.
 
 ```bash
-docker compose --env-file .env.production -f docker-compose.production.yml down --rmi local -v --remove-orphans
-rm -rf ./data
-docker builder prune -f
+sh scripts/cleanup-prod.sh vm
 
-# Re-apply SELinux label (RHEL only — needed after rm -rf ./data)
-mkdir -p ./data
-sudo chcon -Rt svirt_sandbox_file_t ./data
-
+# Then restart:
 sh up.sh
 docker compose -f docker-compose.production.yml logs -f initialize_app
 docker compose -f docker-compose.production.yml exec web sh /app/samvera/scripts/setup.sh
@@ -654,14 +649,14 @@ docker compose -f docker-compose.production.yml exec web bundle exec rails conso
 ### Nuclear Option
 
 ```bash
-# Stack Car dev (named volumes — uses cleanup script)
+# Stack Car dev (named volumes)
 sh scripts/cleanup-dev.sh
 
 # Local smoke test (bind mounts in ./data/)
-docker compose -f docker-compose.local.yml down --rmi all -v --remove-orphans && rm -rf ./data && docker builder prune -f
+sh scripts/cleanup-prod.sh
 
 # VM production (bind mounts in ./data/)
-docker compose --env-file .env.production -f docker-compose.production.yml down --rmi local -v --remove-orphans && rm -rf ./data && docker builder prune -f
+sh scripts/cleanup-prod.sh vm
 ```
 
 **Postgres-only reset (VM — keep Solr/Fedora data):**
