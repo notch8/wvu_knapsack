@@ -30,8 +30,16 @@ wvu_knapsack/
 ├── startup-solr.sh                ← custom SolrCloud startup script
 ├── docker-compose.local.yml       ← local production smoke test (Mac arm64 — pulls GHCR images)
 ├── docker-compose.production.yml  ← VM production compose (RHEL amd64 — builds locally)
-├── .env.production.example        ← committed env template
-├── .env.production                ← gitignored — your real values go here
+├── .env.production.example        ← committed template (web / worker / initialize_app)
+├── .env.db.example                ← committed template (postgres container)
+├── .env.redis.example             ← committed template (redis container)
+├── .env.solr.example              ← committed template (solr container)
+├── .env.fedora.example            ← committed template (fcrepo container)
+├── .env.production                ← gitignored — web/worker/initialize_app vars
+├── .env.db                        ← gitignored — postgres container vars
+├── .env.redis                     ← gitignored — redis container vars
+├── .env.solr                      ← gitignored — solr container vars
+├── .env.fedora                    ← gitignored — fcrepo JAVA_OPTS (contains DB password)
 ├── .env.development               ← Stack Car local dev overrides
 ├── up.local.sh                    ← rebuild + start with Stack Car
 ├── down.local.sh                  ← stop Stack Car stack
@@ -177,13 +185,21 @@ This workflow does **not** use Stack Car. It runs on port 3000 and uses `lvh.me`
 - Stack Car proxy **not** required (but can be running — different port)
 - No DNS changes needed — `lvh.me` is public
 
-### Step 1: Create `.env.production`
+### Step 1: Create env files
+
+Five env files are required — one for the Rails app and one per infrastructure container:
 
 ```bash
 cp .env.production.example .env.production
+cp .env.db.example        .env.db
+cp .env.redis.example     .env.redis
+cp .env.solr.example      .env.solr
+cp .env.fedora.example    .env.fedora
 ```
 
-The example already has sensible defaults. For local smoke testing make sure these are set:
+Each file is gitignored (`.env.*`). The `.example` counterparts are committed so DevOps knows what to create. **If you change `POSTGRES_PASSWORD` in `.env.db` you must also update `DB_PASSWORD` in `.env.production` and the `fcrepo.postgresql.password` value inside `JAVA_OPTS` in `.env.fedora` — all three must match.** Similarly, `REDIS_PASSWORD` in `.env.redis` must match the password embedded in `REDIS_URL` in `.env.production`.
+
+The example already has sensible defaults. For local smoke testing make sure these are set in `.env.production`:
 
 ```env
 # Routing
@@ -314,26 +330,45 @@ If already cloned without `--recurse-submodules`:
 git submodule update --init --recursive
 ```
 
-### Step 2: Create `.env.production`
+### Step 2: Create env files
+
+Five env files are required — one for the Rails app and one per infrastructure container:
 
 ```bash
 cp .env.production.example .env.production
+cp .env.db.example        .env.db
+cp .env.redis.example     .env.redis
+cp .env.solr.example      .env.solr
+cp .env.fedora.example    .env.fedora
+```
+
+Each file is gitignored (`.env.*`). The `.example` counterparts are committed as templates.
+
+> **Passwords must be kept in sync across files.** `POSTGRES_PASSWORD` in `.env.db` must also appear as `DB_PASSWORD` in `.env.production` and as `fcrepo.postgresql.password` inside `JAVA_OPTS` in `.env.fedora`. `REDIS_PASSWORD` in `.env.redis` must match the password embedded in `REDIS_URL` in `.env.production`.
+
+Edit `.env.production` with real values:
+
+```bash
 nano .env.production
 ```
 
 Required changes from the example:
 
-| Variable | VM Value |
-|---|---|
-| `SECRET_KEY_BASE` | `openssl rand -hex 64` |
-| `NEGATIVE_CAPTCHA_SECRET` | `openssl rand -hex 32` |
-| `DB_PASSWORD` | Strong random password |
-| `HYKU_ROOT_HOST` | `lib.wvu.edu` |
-| `HYKU_ADMIN_HOST` | `admin-hyku.lib.wvu.edu` |
-| `HYKU_DEFAULT_HOST` | `%{tenant}-hyku.lib.wvu.edu` |
-| `INITIAL_ADMIN_EMAIL` | Real admin email |
-| `INITIAL_ADMIN_PASSWORD` | Strong password (change after first login) |
-| `RAILS_SERVE_STATIC_FILES` | `true` (unless Nginx serves `/assets` directly) |
+| Variable | File | VM Value |
+|---|---|---|
+| `SECRET_KEY_BASE` | `.env.production` | `openssl rand -hex 64` |
+| `NEGATIVE_CAPTCHA_SECRET` | `.env.production` | `openssl rand -hex 32` |
+| `DB_PASSWORD` | `.env.production` | Strong random password |
+| `POSTGRES_PASSWORD` | `.env.db` | Same strong password as `DB_PASSWORD` |
+| `JAVA_OPTS` (`fcrepo.postgresql.password`) | `.env.fedora` | Same strong password as `DB_PASSWORD` |
+| `REDIS_PASSWORD` | `.env.redis` | Strong random password |
+| `REDIS_URL` (password segment) | `.env.production` | Same strong password as `REDIS_PASSWORD` |
+| `HYKU_ROOT_HOST` | `.env.production` | `.env.production` | `lib.wvu.edu` |
+| `HYKU_ADMIN_HOST` | `.env.production` | `admin-hyku.lib.wvu.edu` |
+| `HYKU_DEFAULT_HOST` | `.env.production` | `%{tenant}-hyku.lib.wvu.edu` |
+| `INITIAL_ADMIN_EMAIL` | `.env.production` | Real admin email |
+| `INITIAL_ADMIN_PASSWORD` | `.env.production` | Strong password (change after first login) |
+| `RAILS_SERVE_STATIC_FILES` | `.env.production` | `true` (unless Nginx serves `/assets` directly) |
 
 **Leave unset / commented out on the VM:**
 - `DISABLE_FORCE_SSL` — do not set this; the SSL proxy handles HTTPS
@@ -482,8 +517,16 @@ All state is in `./data/` bind mounts. Back up this directory to preserve everyt
 
 | File | Purpose | Committed |
 |---|---|---|
-| `.env.production.example` | Template for all env vars | ✅ |
-| `.env.production` | Real values for this deployment | ❌ (gitignored) |
+| `.env.production.example` | Template — web / worker / initialize_app vars | ✅ |
+| `.env.db.example` | Template — postgres container (`POSTGRES_*`) | ✅ |
+| `.env.redis.example` | Template — redis container (`REDIS_PASSWORD`) | ✅ |
+| `.env.solr.example` | Template — solr container (`SOLR_ADMIN_*`, ZooKeeper) | ✅ |
+| `.env.fedora.example` | Template — fcrepo container (`JAVA_OPTS` with DB creds) | ✅ |
+| `.env.production` | Real values — web/worker/initialize_app | ❌ (gitignored) |
+| `.env.db` | Real values — postgres container | ❌ (gitignored) |
+| `.env.redis` | Real values — redis container | ❌ (gitignored) |
+| `.env.solr` | Real values — solr container | ❌ (gitignored) |
+| `.env.fedora` | Real values — fcrepo container | ❌ (gitignored) |
 | `.env.development` | Stack Car local dev overrides | ✅ |
 | `config/initializers/host_authorization.rb` | Adds `*.lib.wvu.edu` to Rails allowed hosts; reads `HYKU_EXTRA_HOSTS` | ✅ |
 | `config/initializers/session_store_override.rb` | Drops `Secure` cookie flag when `DISABLE_FORCE_SSL=true` (required for CSRF over HTTP) | ✅ |
