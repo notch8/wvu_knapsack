@@ -6,7 +6,7 @@ There are three workflows covered here:
 
 | Workflow | Who | Script |
 |---|---|---|
-| [Local dev with Stack Car](#1-local-development-stack-car) | Developers | `up.local.sh` / `down.local.sh` |
+| [Local dev with Stack Car](#1-local-development-stack-car) | Developers | `up.sc.local.sh` / `down.sc.local.sh` |
 | [Local production smoke test](#2-local-production-smoke-testing) | Developers | `docker-compose.local.yml` |
 | [VM production deployment](#3-vm-production-deployment) | DevOps | `up.sh` / `down.sh` |
 
@@ -41,10 +41,12 @@ wvu_knapsack/
 ├── .env.solr                      ← gitignored — solr container vars
 ├── .env.fedora                    ← gitignored — fcrepo JAVA_OPTS (contains DB password)
 ├── .env.development               ← Stack Car local dev overrides
-├── up.local.sh                    ← rebuild + start with Stack Car
-├── down.local.sh                  ← stop Stack Car stack
-├── up.sh                          ← pull + start production stack (VM)
-└── down.sh                        ← stop production stack (VM)
+├── up.sc.local.sh                ← rebuild + start with Stack Car (dev)
+├── down.sc.local.sh              ← stop Stack Car stack
+├── up.prod.local.sh              ← start local production smoke test (Mac arm64)
+├── down.prod.local.sh            ← stop local production smoke test
+├── up.sh                         ← pull + start production stack (VM)
+└── down.sh                       ← stop production stack (VM)
 ```
 
 **APP_NAME convention:** always use hyphens (`wvu-knapsack`), never underscores. DNS hostname labels allow only `[a-z0-9-]` and Rails 7.2 `HostAuthorization` enforces this before consulting the allowed list. The development and production configs both follow this convention.
@@ -94,13 +96,13 @@ sc logs web -f
 
 ```bash
 # Start (rebuilds web + worker from scratch, then sc up -d)
-sh up.local.sh
+sh up.sc.local.sh
 
 # Stop
-sh down.local.sh
+sh down.sc.local.sh
 ```
 
-`up.local.sh` runs `docker compose build --no-cache web worker` then `sc up -d`.
+`up.sc.local.sh` runs `docker compose build --no-cache web worker` then `sc up -d`.
 This ensures a clean build — useful after gem or knapsack code changes.
 
 For quick iteration where you don't need a full rebuild:
@@ -145,7 +147,7 @@ sc down
 docker compose down -v     # -v removes volumes
 git checkout <branch>
 git submodule update --recursive
-sh up.local.sh
+sh up.sc.local.sh
 ```
 
 ### Troubleshooting Stack Car
@@ -166,7 +168,7 @@ Use this when nothing else works: volumes in a bad state, images corrupt, or you
 sh scripts/cleanup-dev.sh
 
 # Then restart:
-sh up.local.sh
+sh up.sc.local.sh
 ```
 
 ---
@@ -655,7 +657,7 @@ Okta can be pointed at this URL for automatic SP configuration.
 | Tenant returns "not found" | DB seeded with wrong domain / APP_NAME | `docker compose down -v` to wipe volumes, then restart and re-setup |
 | `Permission denied @ dir_s_mkdir - /usr/local/bundle` | `./data/bundle` created by root (fresh clone, or prior `--build` run wrote gems as root) | Handled automatically by the `fix_permissions` service in `docker-compose.local.yml`. On the VM, `up.sh` does `chown -R 1001:101 ./data/bundle` before compose up. Manual fix: `sudo chmod -R 777 ./data/bundle` then restart. |
 | Bundle install slow on every start | Gems reinstall into container-local paths | Expected on first run; `./data/bundle` is cached so subsequent restarts are fast |
-| `up.local.sh` takes a long time | `--no-cache` rebuild | Normal — use `sc up -d` directly when you don't need a clean rebuild |
+| `up.sc.local.sh` takes a long time | `--no-cache` rebuild | Normal — use `sc up -d` directly when you don't need a clean rebuild |
 
 ---
 
@@ -664,8 +666,8 @@ Okta can be pointed at this URL for automatic SP configuration.
 ### Stack Car (local dev)
 
 ```bash
-sh up.local.sh                    # clean rebuild + start
-sh down.local.sh                  # stop
+sh up.sc.local.sh                 # clean rebuild + start
+sh down.sc.local.sh               # stop
 sc logs web -f                    # tail web logs
 sc sh                             # shell into web container
 sc exec bundle exec rails console # Rails console
@@ -676,8 +678,8 @@ sc proxy up                       # start Traefik proxy
 ### Local production smoke test (Mac arm64)
 
 ```bash
-docker compose -f docker-compose.local.yml up -d
-docker compose -f docker-compose.local.yml down
+sh up.prod.local.sh
+sh down.prod.local.sh
 docker compose -f docker-compose.local.yml ps
 docker compose -f docker-compose.local.yml logs -f web
 docker compose -f docker-compose.local.yml exec web sh /app/samvera/scripts/setup.sh
