@@ -319,7 +319,7 @@ docker compose -f docker-compose.local.yml ps
 - Port 3000 not exposed publicly — only the proxy talks to it
 - `git` access to this repo
 
-> **RHEL vs Mac performance note:** The Solr healthcheck allows 300 s for startup. On the native x86_64 RHEL VM the JVM starts in ~30 s, so this timeout will never be hit. The longer window exists because the developer ARM Mac runs the `linux/amd64` Solr image under QEMU emulation, where JVM init takes ~5 minutes.
+> **RHEL vs Mac performance note:** The Solr healthcheck allows 600 s start period + 60 retries on the local compose. On the native x86_64 RHEL VM the JVM starts in ~30 s, so this window will never be hit. The longer window exists because developer ARM Macs run the `linux/amd64` Solr image under QEMU emulation, where JVM init is significantly slower. M4 Macs are particularly affected — QEMU emulation of the amd64 JVM on M4 can take 10+ minutes. A native arm64 Solr image is on Notch8's backlog; once available it will eliminate this delay entirely.
 
 ### Step 1: Clone with submodules
 
@@ -643,6 +643,7 @@ Okta can be pointed at this URL for automatic SP configuration.
 | 403 Blocked hosts | Host not in Rails allowed list | Verify `HYKU_ADMIN_HOST`/`HYKU_ROOT_HOST` match the request host; check `host_authorization.rb` |
 | Login fails "change was rejected" (422) | CSRF: session cookie has `Secure` flag, not sent over HTTP | Set `DISABLE_FORCE_SSL=true` — triggers `session_store_override.rb` to drop Secure flag |
 | Pages load with no CSS | Assets not precompiled or `RAILS_SERVE_STATIC_FILES` not set | Re-run `setup.sh` (step 1 is `assets:precompile`); ensure `RAILS_SERVE_STATIC_FILES=true` |
+| Solr unhealthy / dependency failed to start | `linux/amd64` Solr image running under QEMU on Apple Silicon (M1/M2/M3/M4) — JVM init is slow | Wait longer — M4 can take 10+ minutes. Local compose allows up to ~16 min total (`start_period: 600s` + 60 × 10s retries). A native arm64 Solr image is on Notch8's backlog. |
 | Solr not in SolrCloud mode | Wrong startup command | `startup-solr.sh` uses `solr start -f -c -z zoo:2181` — check logs |
 | `solr.xml does not exist` | Fresh bind mount, no `solr.xml` | `startup-solr.sh` seeds it automatically from `/opt/solr/server/solr/solr.xml` |
 | DB `ProtectedEnvironmentError` | `db:schema:load` blocked on existing DB | `setup.sh` detects table count and uses `db:migrate` — re-run setup |

@@ -70,10 +70,10 @@ services:
       - ./startup-solr.sh:/scripts/startup.sh
     healthcheck:
       test: "curl -sf http://$$SOLR_ADMIN_USER:$$SOLR_ADMIN_PASSWORD@localhost:8983/solr/admin/collections?action=LIST"
-      start_period: 300s
+      start_period: 600s
       interval: 10s
       timeout: 10s
-      retries: 30
+      retries: 60
     depends_on:
       zoo:
         condition: service_healthy
