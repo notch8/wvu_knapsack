@@ -118,6 +118,14 @@ services:
     networks:
       - internal
 
+  fits:
+    image: ghcr.io/samvera/fitsservlet:1.6.0
+    restart: on-failure
+    expose:
+      - 8080
+    networks:
+      - internal
+
   initialize_app:
     <<: *app
     entrypoint: ["sh", "-c"]
@@ -165,6 +173,8 @@ services:
         condition: service_healthy
       fcrepo:
         condition: service_started
+      fits:
+        condition: service_started
       redis:
         condition: service_started
       zoo:
@@ -194,6 +204,8 @@ services:
       solr:
         condition: service_healthy
       fcrepo:
+        condition: service_started
+      fits:
         condition: service_started
       redis:
         condition: service_started
