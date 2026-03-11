@@ -227,6 +227,9 @@ Watch startup in order:
 # ZooKeeper + Solr (wait for SolrCloud to be healthy)
 docker compose -f docker-compose.local.yml logs -f zoo solr
 
+# Infrastructure: db, redis, fcrepo, fits start in parallel — check they're all up
+docker compose -f docker-compose.local.yml ps
+
 # initialize_app: Solr configset upload, DB migrate/seed, bundle install (~2 min)
 docker compose -f docker-compose.local.yml logs -f initialize_app
 
@@ -363,7 +366,7 @@ Required changes from the example:
 | `JAVA_OPTS` (`fcrepo.postgresql.password`) | `.env.fedora` | Same strong password as `DB_PASSWORD` |
 | `REDIS_PASSWORD` | `.env.redis` | Strong random password |
 | `REDIS_URL` (password segment) | `.env.production` | Same strong password as `REDIS_PASSWORD` |
-| `HYKU_ROOT_HOST` | `.env.production` | `.env.production` | `lib.wvu.edu` |
+| `HYKU_ROOT_HOST` | `.env.production` | `lib.wvu.edu` |
 | `HYKU_ADMIN_HOST` | `.env.production` | `admin-hyku.lib.wvu.edu` |
 | `HYKU_DEFAULT_HOST` | `.env.production` | `%{tenant}-hyku.lib.wvu.edu` |
 | `INITIAL_ADMIN_EMAIL` | `.env.production` | Real admin email |
@@ -392,6 +395,9 @@ sh up.sh
 
 Watch startup:
 ```bash
+# Check all infrastructure services (db, redis, fcrepo, fits, solr, zoo) are up
+docker compose -f docker-compose.production.yml ps
+
 docker compose -f docker-compose.production.yml logs -f initialize_app
 docker compose -f docker-compose.production.yml logs -f web
 ```
@@ -642,6 +648,7 @@ Okta can be pointed at this URL for automatic SP configuration.
 | DB `ProtectedEnvironmentError` | `db:schema:load` blocked on existing DB | `setup.sh` detects table count and uses `db:migrate` — re-run setup |
 | "Domain names cname is reserved" | Tried to create `Account` for admin host | Admin host is not a tenant — create repository tenants via admin UI |
 | `restart` doesn't pick up new env | `restart` reuses cached container env | Use `docker compose up -d` to recreate containers and re-read `env_file` |
+| File characterization fails / FITS errors | `fits` container not running | `docker compose ps` — check fits is `Up`; `docker compose logs fits` for errors |
 | Tenant returns "not found" | DB seeded with wrong domain / APP_NAME | `docker compose down -v` to wipe volumes, then restart and re-setup |
 | `Permission denied @ dir_s_mkdir - /usr/local/bundle` | `./data/bundle` owned by root; container runs as uid 1001 | `sh down.sh && git pull && sh up.sh` — `up.sh` now chowns data dirs automatically |
 | Bundle install slow on every start | Gems reinstall into container-local paths | Expected on first run; `./data/bundle` is cached so subsequent restarts are fast |
