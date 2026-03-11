@@ -653,7 +653,7 @@ Okta can be pointed at this URL for automatic SP configuration.
 | File characterization fails / FITS errors | `fits` container not running | `docker compose ps` — check fits is `Up`; `docker compose logs fits` for errors |
 | `ValkyrieCreateDerivativesJob` fails with `MiniMagick::Error: magick convert … No such file` | MiniMagick 4.x + IM7: passing `layer: 0` for JPEG/PNG triggers `Image.new` (no tempfile) → `Pathname#sub_ext` produces src == dest → IM7 truncates the file before reading it | Fixed by `config/initializers/derivatives_im7_fix.rb` (committed). Re-run derivatives on affected records: `bundle exec rails runner "FileSet.all.each {|fs| ValkyrieCreateDerivativesJob.perform_later(fs.id)}"` inside the worker container. |
 | Tenant returns "not found" | DB seeded with wrong domain / APP_NAME | `docker compose down -v` to wipe volumes, then restart and re-setup |
-| `Permission denied @ dir_s_mkdir - /usr/local/bundle` | `./data/bundle` owned by root; container runs as uid 1001 | `sh down.sh && git pull && sh up.sh` — `up.sh` now chowns data dirs automatically |
+| `Permission denied @ dir_s_mkdir - /usr/local/bundle` | `./data/bundle` created by root (fresh clone, or prior `--build` run wrote gems as root) | Handled automatically by the `fix_permissions` service in `docker-compose.local.yml`. On the VM, `up.sh` does `chown -R 1001:101 ./data/bundle` before compose up. Manual fix: `sudo chmod -R 777 ./data/bundle` then restart. |
 | Bundle install slow on every start | Gems reinstall into container-local paths | Expected on first run; `./data/bundle` is cached so subsequent restarts are fast |
 | `up.local.sh` takes a long time | `--no-cache` rebuild | Normal — use `sc up -d` directly when you don't need a clean rebuild |
 
