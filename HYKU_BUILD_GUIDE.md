@@ -541,6 +541,7 @@ All state is in `./data/` bind mounts. Back up this directory to preserve everyt
 | `startup-solr.sh` | Seeds `solr.xml` on fresh volume, starts Solr in SolrCloud mode (`-f -c -z`) | ✅ |
 | `solr-setup/security.json` | Solr ZooKeeper auth (admin: `solr`/`SolrRocks`, app: `hydra`/`m0Nif7rNp3ZpkiKN52NA`) | ✅ |
 | `scripts/setup.sh` | Idempotent DB + Solr + tenant setup | ✅ |
+| `config/initializers/derivatives_im7_fix.rb` | Patches `Hyrax::FileSetDerivativesService` — only passes `layer: 0` to hydra-derivatives for TIFF/PDF sources; prevents MiniMagick IM7 src==dest corruption on JPEG/PNG ingest | ✅ |
 
 ### Solr collections
 
@@ -650,6 +651,7 @@ Okta can be pointed at this URL for automatic SP configuration.
 | "Domain names cname is reserved" | Tried to create `Account` for admin host | Admin host is not a tenant — create repository tenants via admin UI |
 | `restart` doesn't pick up new env | `restart` reuses cached container env | Use `docker compose up -d` to recreate containers and re-read `env_file` |
 | File characterization fails / FITS errors | `fits` container not running | `docker compose ps` — check fits is `Up`; `docker compose logs fits` for errors |
+| `ValkyrieCreateDerivativesJob` fails with `MiniMagick::Error: magick convert … No such file` | MiniMagick 4.x + IM7: passing `layer: 0` for JPEG/PNG triggers `Image.new` (no tempfile) → `Pathname#sub_ext` produces src == dest → IM7 truncates the file before reading it | Fixed by `config/initializers/derivatives_im7_fix.rb` (committed). Re-run derivatives on affected records: `bundle exec rails runner "FileSet.all.each {|fs| ValkyrieCreateDerivativesJob.perform_later(fs.id)}"` inside the worker container. |
 | Tenant returns "not found" | DB seeded with wrong domain / APP_NAME | `docker compose down -v` to wipe volumes, then restart and re-setup |
 | `Permission denied @ dir_s_mkdir - /usr/local/bundle` | `./data/bundle` owned by root; container runs as uid 1001 | `sh down.sh && git pull && sh up.sh` — `up.sh` now chowns data dirs automatically |
 | Bundle install slow on every start | Gems reinstall into container-local paths | Expected on first run; `./data/bundle` is cached so subsequent restarts are fast |
