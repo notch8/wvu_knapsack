@@ -37,6 +37,14 @@ docker compose $ENV_FILE_ARGS -f "$COMPOSE_FILE" down --rmi "$RMI_MODE" -v --rem
 echo "==> Wiping ./data bind mounts (DB, Solr, Fedora, uploads, bundle cache, etc.)..."
 rm -rf ./data
 
+# Pre-create ./data/bundle with world-writable permissions so the container's uid 1001
+# can write gems on first run regardless of whether any prior step ran as root.
+# (Docker Desktop creates bind-mount dirs as root:root on first mount; if the image was
+# ever built with --build and bundle install ran as root inside initialize_app, subsequent
+# runs as uid 1001 fail with Gem::FilePermissionError. This prevents that entirely.)
+mkdir -p ./data/bundle
+chmod 777 ./data/bundle
+
 echo "==> Pruning dangling images and build cache..."
 docker image prune -f
 docker builder prune -f
