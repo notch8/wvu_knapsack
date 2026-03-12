@@ -29,7 +29,8 @@ wvu_knapsack/
 ├── .env.production.example # Environment template — copy to .env.production
 ├── scripts/setup.sh        # One-time DB/Solr/tenant setup
 ├── up.sh / down.sh         # VM production start/stop
-├── up.local.sh / down.local.sh  # Local Stack Car dev rebuild/start/stop
+├── up.sc.local.sh / down.sc.local.sh   # Stack Car dev rebuild/start/stop
+├── up.prod.local.sh / down.prod.local.sh # Local production smoke test
 └── HYKU_BUILD_GUIDE.md     # Complete developer and DevOps guide
 ```
 
@@ -83,7 +84,7 @@ sc proxy up
 ### 4. Build and start
 
 ```bash
-sh up.local.sh      # builds web + worker images (--no-cache), then sc up -d
+sh up.sc.local.sh   # builds web + worker images (--no-cache), then sc up -d
 ```
 
 Or step by step:
@@ -108,7 +109,7 @@ Default admin credentials (development): see `hyrax-webapp/.env` or the build gu
 sc sh              # shell into the web container
 sc exec web rails console
 sc logs -f web
-sh down.local.sh   # tear everything down
+sh down.sc.local.sh  # tear everything down
 ```
 
 ---
@@ -119,8 +120,10 @@ See [HYKU_BUILD_GUIDE.md § Local Production Smoke Testing](HYKU_BUILD_GUIDE.md)
 
 ```bash
 cp .env.production.example .env.production   # edit with local values
-docker compose -f docker-compose.production.yml up -d
-sh scripts/setup.sh   # handles assets:precompile, DB, Solr, and first tenant
+cp .env.db.example .env.db && cp .env.redis.example .env.redis
+cp .env.solr.example .env.solr && cp .env.fedora.example .env.fedora
+docker compose -f docker-compose.local.yml up -d
+docker compose -f docker-compose.local.yml exec web sh /app/samvera/scripts/setup.sh
 # visit http://admin-wvu-knapsack.lvh.me:3000
 ```
 

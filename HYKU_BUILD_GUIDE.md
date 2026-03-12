@@ -201,6 +201,8 @@ cp .env.fedora.example    .env.fedora
 
 Each file is gitignored (`.env.*`). The `.example` counterparts are committed so DevOps knows what to create. **If you change `POSTGRES_PASSWORD` in `.env.db` you must also update `DB_PASSWORD` in `.env.production` and the `fcrepo.postgresql.password` value inside `JAVA_OPTS` in `.env.fedora` — all three must match.** Similarly, `REDIS_PASSWORD` in `.env.redis` must match the password embedded in `REDIS_URL` in `.env.production`.
 
+> ⚠️ **Postgres password change requires a data wipe.** `POSTGRES_PASSWORD` is only read by the postgres image during **first initialization of an empty `./data/db`**. Once the cluster exists on disk, changing `.env.db` has no effect — postgres still requires the original password. If you change the password after a prior run, you must wipe `./data/db` (run the cleanup script) so postgres reinitializes with the new password. Rails will otherwise fail to connect with `FATAL: password authentication failed`.
+
 The example already has sensible defaults. For local smoke testing make sure these are set in `.env.production`:
 
 ```env
@@ -303,6 +305,20 @@ docker compose -f docker-compose.local.yml ps
 
 ## 3. VM Production Deployment
 
+### Step 0: Provision the VM with Ansible
+
+The `ansible/` directory contains a playbook that installs Docker, Nginx, SSL certificates, GHCR login, and user accounts on the VM. Run this **from your laptop** before doing anything on the VM itself.
+
+1. Read **`ansible/README.md`** — it documents required files in `ansible/files/` and vault setup.
+2. Edit `ansible/inventory.ini` with the target host and SSH user.
+3. Run:
+
+```bash
+ansible-playbook -i ansible/inventory.ini ansible/playbook.yml --ask-vault-pass -e @ansible/ghcr-token.vault.yml
+```
+
+After the playbook completes, Docker, Nginx, and GHCR login are configured on the VM. Continue with Step 1 on the VM.
+
 ### Prerequisites
 
 - **Red Hat Enterprise Linux** VM with Docker CE and the Docker Compose v2 plugin installed
@@ -335,6 +351,19 @@ If already cloned without `--recurse-submodules`:
 git submodule update --init --recursive
 ```
 
+### Step 1b: Create the required knapsack branch
+
+The bundler shim requires a local branch named `required_for_knapsack_instances` to exist. Create it once per clone:
+
+```bash
+git fetch prime
+git checkout prime/required_for_knapsack_instances
+git switch -c required_for_knapsack_instances
+git checkout main   # return to main
+```
+
+(This is the same step documented in the [README quick start](README.md#2-create-the-required-knapsack-branch).)
+
 ### Step 2: Create env files
 
 Five env files are required — one for the Rails app and one per infrastructure container:
@@ -350,6 +379,8 @@ cp .env.fedora.example    .env.fedora
 Each file is gitignored (`.env.*`). The `.example` counterparts are committed as templates.
 
 > **Passwords must be kept in sync across files.** `POSTGRES_PASSWORD` in `.env.db` must also appear as `DB_PASSWORD` in `.env.production` and as `fcrepo.postgresql.password` inside `JAVA_OPTS` in `.env.fedora`. `REDIS_PASSWORD` in `.env.redis` must match the password embedded in `REDIS_URL` in `.env.production`.
+
+> ⚠️ **Postgres password change requires a data wipe.** `POSTGRES_PASSWORD` is only read during **first initialization of an empty `./data/db`**. Once the cluster exists on disk, changing `.env.db` has no effect — the old password is baked into the cluster. Wipe `./data/db` (via the cleanup script, or `sudo rm -rf ./data/db`) before restarting so postgres reinitializes with the new credentials.
 
 Edit `.env.production` with real values:
 
@@ -655,6 +686,7 @@ Okta can be pointed at this URL for automatic SP configuration.
 | File characterization fails / FITS errors | `fits` container not running | `docker compose ps` — check fits is `Up`; `docker compose logs fits` for errors |
 | `ValkyrieCreateDerivativesJob` fails with `MiniMagick::Error: magick convert … No such file` | MiniMagick 4.x + IM7: passing `layer: 0` for JPEG/PNG triggers `Image.new` (no tempfile) → `Pathname#sub_ext` produces src == dest → IM7 truncates the file before reading it | Fixed by `config/initializers/derivatives_im7_fix.rb` (committed). Re-run derivatives on affected records: `bundle exec rails runner "FileSet.all.each {|fs| ValkyrieCreateDerivativesJob.perform_later(fs.id)}"` inside the worker container. |
 | Tenant returns "not found" | DB seeded with wrong domain / APP_NAME | `docker compose down -v` to wipe volumes, then restart and re-setup |
+| `FATAL: password authentication failed for user "postgres"` after changing `.env.db` | `POSTGRES_PASSWORD` is only read on first init of an empty `./data/db` — changing the env var has no effect once the cluster exists on disk | Wipe the cluster: `sudo rm -rf ./data/db` (or run the cleanup script), then restart. Postgres will reinitialize with the new password. |
 | `Permission denied @ dir_s_mkdir - /usr/local/bundle` | `./data/bundle` created by root (fresh clone, or prior `--build` run wrote gems as root) | Handled automatically by the `fix_permissions` service in `docker-compose.local.yml`. On the VM, `up.sh` does `chown -R 1001:101 ./data/bundle` before compose up. Manual fix: `sudo chmod -R 777 ./data/bundle` then restart. |
 | Bundle install slow on every start | Gems reinstall into container-local paths | Expected on first run; `./data/bundle` is cached so subsequent restarts are fast |
 | `up.sc.local.sh` takes a long time | `--no-cache` rebuild | Normal — use `sc up -d` directly when you don't need a clean rebuild |
