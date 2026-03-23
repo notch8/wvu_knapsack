@@ -5,17 +5,26 @@
 x-app: &app
   env_file:
     - .env.production
-  image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
+  build:
+    context: .
+    target: hyku-web
+    cache_from:
+      - ghcr.io/notch8/wvu_knapsack/base:latest
+      - ghcr.io/notch8/wvu_knapsack:latest
+    args:
+      BUILDKIT_INLINE_CACHE: 1
+      APP_PATH: ./hyrax-webapp
   environment:
     - BUNDLE_LOCAL__HYKU_KNAPSACK=/app/samvera
     - BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
     - BUNDLE_BUNDLER_INJECT__GEM_PATH=/app/samvera/bundler.d
   volumes:
-    - ./data/bundle:/usr/local/bundle
-    - ./data/node_modules:/app/samvera/hyrax-webapp/node_modules
-    - ./data/uploads:/app/samvera/hyrax-webapp/public/uploads
-    - ./data/assets:/app/samvera/hyrax-webapp/public/assets
-    - ./data/cache:/app/samvera/hyrax-webapp/tmp/cache
+    - ./data/bundle:/usr/local/bundle:cached
+    - ./data/node_modules:/app/samvera/hyrax-webapp/node_modules:cached
+    - ./data/uploads:/app/samvera/hyrax-webapp/public/uploads:cached
+    - ./data/assets:/app/samvera/hyrax-webapp/public/assets:cached
+    - ./data/cache:/app/samvera/hyrax-webapp/tmp/cache:cached
+    - ./data/logs/rails:/app/samvera/hyrax-webapp/log:cached
     - .:/app/samvera
   networks:
     - internal
@@ -44,10 +53,9 @@ services:
       timeout: "8s"
 
   solr:
-    container_name: solr
+    # container_name: solr
     image: ghcr.io/notch8/wvu_knapsack/solr:${TAG:-latest}
     restart: on-failure
-    platform: linux/amd64
     env_file:
       - .env.solr
     user: root
@@ -60,11 +68,12 @@ services:
       - ./solr-setup:/solr-setup
       - ./startup-solr.sh:/scripts/startup.sh
     healthcheck:
-      test: "curl -sf http://$$SOLR_ADMIN_USER:$$SOLR_ADMIN_PASSWORD@localhost:8983/solr/admin/collections?action=LIST"
-      start_period: 600s
-      interval: 10s
-      timeout: 10s
-      retries: 60
+      # test: "curl -sf http://$$SOLR_ADMIN_USER:$$SOLR_ADMIN_PASSWORD@localhost:8983/solr/admin/collections?action=LIST"
+      # start_period: 600s
+      # interval: 10s
+      # timeout: 10s
+      # retries: 60
+      test: ["CMD-SHELL", "curl -sf http://localhost:8983/solr/ || exit 1"]
     depends_on:
       zoo:
         condition: service_healthy
@@ -84,6 +93,7 @@ services:
       - internal
 
   db:
+    container_name: db
     image: postgres:11.1
     restart: on-failure
     env_file:
@@ -176,13 +186,7 @@ services:
         condition: service_started
       zoo:
         condition: service_healthy
-    volumes:
-      - ./data/bundle:/usr/local/bundle
-      - ./data/node_modules:/app/samvera/hyrax-webapp/node_modules
-      - ./data/uploads:/app/samvera/hyrax-webapp/public/uploads
-      - ./data/assets:/app/samvera/hyrax-webapp/public/assets
-      - ./data/cache:/app/samvera/hyrax-webapp/tmp/cache
-      - .:/app/samvera
+    # Volumes inherited from x-app anchor for consistency
 
   web:
     <<: *app
