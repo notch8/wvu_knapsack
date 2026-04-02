@@ -6,7 +6,7 @@ git pull
 
 # Ensure the hyrax-webapp submodule is initialised and up to date.
 # This is safe to run repeatedly and is required on a fresh VM clone.
-git submodule update --init --recursive
+# git submodule update --init --recursive
 
 # hyrax-webapp/.env.production must exist because the submodule's docker-compose
 # declares it in env_file. It can be empty — real vars come from .env.production
