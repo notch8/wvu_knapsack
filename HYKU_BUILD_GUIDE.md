@@ -752,3 +752,17 @@ sh down.sh && rm -rf ./data/db && sh up.sh
 ```
 
 ---
+
+## SSO/Identity Provider Configuration Reference
+
+For up-to-date instructions on enabling and configuring SSO (SAML, Okta, etc.) in Hyku, see the official documentation:
+
+- [Hyku Identity Provider: Single Sign-On (SSO) Documentation](https://samvera.atlassian.net/wiki/spaces/hyku/pages/3570663437/Identity+Provider+Single+Sign-On+SSO)
+
+This resource covers:
+- Enabling the Identity Provider feature per tenant (Settings → Features)
+- Creating and editing Identity Provider records in the admin UI
+- Required and optional JSON fields for SAML/Okta
+- Attribute mapping, ACS URLs, and troubleshooting tips
+
+Always refer to this documentation for the latest best practices and UI-driven setup steps.

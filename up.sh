@@ -4,9 +4,16 @@ set -e
 # Pull latest knapsack code before bringing up containers.
 git pull
 
-# Ensure the hyrax-webapp submodule is initialised and up to date.
-# This is safe to run repeatedly and is required on a fresh VM clone.
-# git submodule update --init --recursive
+
+# ---
+# NOTE: The following submodule update command is commented out intentionally.
+# Running 'git submodule update --init --recursive' here would update the hyrax-webapp submodule
+# every time up.sh runs, which is NOT desired. The submodule should remain locked to the commit
+# specified in the parent repo, to avoid unexpected changes. Only run this manually after a fresh clone
+# or when intentionally updating the submodule:
+#   git submodule update --init --recursive
+#   cd hyrax-webapp && git fetch --tags && git checkout <desired-tag-or-branch>
+# ---
 
 # hyrax-webapp/.env.production must exist because the submodule's docker-compose
 # declares it in env_file. It can be empty — real vars come from .env.production
@@ -14,10 +21,13 @@ git pull
 # file is invisible to submodule git tracking.
 [ -f hyrax-webapp/.env.production ] || touch hyrax-webapp/.env.production
 
-# Ensure bind-mount directories exist and are writable by the container's app
-# user (uid 1001, gid 101). Without this, bundle install fails with
-# "Permission denied @ dir_s_mkdir - /usr/local/bundle" on a fresh clone
-# where the directories are created by root.
+
+# ---
+# NOTE: The following mkdir and chown commands are commented out intentionally.
+# Running 'chown -R' on every up.sh run is slow and unnecessary, as it processes all files recursively.
+# Only use these commands after a fresh clone or if you encounter permission errors (e.g.,
+# 'Permission denied @ dir_s_mkdir - /usr/local/bundle').
+#
 # mkdir -p \
 #   ./data/bundle \
 #   ./data/node_modules \
@@ -32,6 +42,7 @@ git pull
 #   ./data/redis \
 #   ./data/logs/solr
 # chown -R 1001:101 ./data/bundle ./data/node_modules ./data/assets ./data/cache
+# ---
 
 # Remove broken initializer from hyrax-webapp submodule if present.
 # disable_solr.rb has a syntax error that aborts assets:precompile, and
