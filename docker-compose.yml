@@ -3,11 +3,11 @@ x-app: &app
     context: .
     target: hyku-web
     cache_from:
-      - ghcr.io/notch8/wvu_knapsack:latest
+      - ghcr.io/wvulibraries/wvu_knapsack:latest
     args:
       BUILDKIT_INLINE_CACHE: 1
       APP_PATH: ./hyrax-webapp
-  image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
+  image: ghcr.io/wvulibraries/wvu_knapsack:${TAG:-latest}
   env_file:
     - .env
     - .env.development
@@ -50,7 +50,7 @@ services:
       service: zoo
 
   solr:
-    image: ghcr.io/notch8/wvu_knapsack/solr:${TAG:-latest}
+    image: ghcr.io/wvulibraries/wvu_knapsack/solr:${TAG:-latest}
     platform: linux/amd64
     extends:
       file: hyrax-webapp/docker-compose.yml
@@ -94,12 +94,12 @@ services:
       context: .
       target: hyku-worker
       cache_from:
-        - ghcr.io/notch8/wvu_knapsack/worker:latest
+        - ghcr.io/wvulibraries/wvu_knapsack/worker:latest
       args:
         BUILDKIT_INLINE_CACHE: 1
         APP_PATH: ./hyrax-webapp
         BASE_TAG: ${BASE_TAG:-latest}
-    image: ghcr.io/notch8/wvu_knapsack/worker:${TAG:-latest}
+    image: ghcr.io/wvulibraries/wvu_knapsack/worker:${TAG:-latest}
     # Uncomment command to access container with out starting bin/worker. Useful for debugging or updating Gemfile.lock
     # command: sleep infinity
     volumes:
