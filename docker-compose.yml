@@ -51,6 +51,7 @@ services:
 
   solr:
     image: ghcr.io/notch8/wvu_knapsack/solr:${TAG:-latest}
+    platform: linux/amd64
     extends:
       file: hyrax-webapp/docker-compose.yml
       service: solr
