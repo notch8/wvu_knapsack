@@ -22,7 +22,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: samvera/hyku
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
 
@@ -50,7 +49,9 @@ jobs:
         env:
           GIT_SHA: ${{ steps.gitsha.outputs.value }}
       - name: Downcase repo
-        run: echo "REPO_LOWER=${REPO,,}" >> $GITHUB_ENV
+        run: |
+          echo "REPO_LOWER=${REPO,,}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=${REPO,,}" >> $GITHUB_ENV
         env:
           REPO: "${{ github.repository }}"
       - name: Set platform from matrix
@@ -81,7 +82,7 @@ jobs:
           platforms: linux/${{ env.PLATFORM_TAG }}
           target: hyku-solr
           cache-from: |
-            type=registry,ref=ghcr.io/samvera/hyku/solr:latest
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/solr:latest
           cache-to: type=inline
           push: true
           tags: |
@@ -95,7 +96,7 @@ jobs:
           platforms: linux/${{ env.PLATFORM_TAG }}
           target: hyku-${{ matrix.component }}
           cache-from: |
-            type=registry,ref=ghcr.io/samvera/hyku/${{ matrix.component }}:latest
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.component }}:latest
           cache-to: type=inline
           push: true
           tags: |
@@ -116,7 +117,9 @@ jobs:
         env:
           GIT_SHA: ${{ steps.gitsha.outputs.value }}
       - name: Downcase repo
-        run: echo "REPO_LOWER=${REPO,,}" >> $GITHUB_ENV
+        run: |
+          echo "REPO_LOWER=${REPO,,}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=${REPO,,}" >> $GITHUB_ENV
         env:
           REPO: "${{ github.repository }}"
       - name: Github Container Login
