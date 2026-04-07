@@ -69,7 +69,7 @@ This branch must exist locally for the bundler shim to work:
 
 ```bash
 git fetch prime
-git checkout required_for_knapsack_instances
+git checkout prime/required_for_knapsack_instances
 git switch -c required_for_knapsack_instances
 git checkout main   # return to main
 ```
