@@ -25,6 +25,7 @@ jobs:
     uses: notch8/actions/.github/workflows/build.yaml@v1.0.8
     secrets: inherit
     with:
+      platforms: linux/amd64,linux/arm64
       webTarget: hyku-web
       workerTarget: hyku-worker
 

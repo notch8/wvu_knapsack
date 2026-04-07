@@ -10,8 +10,8 @@ x-app: &app
     context: .
     target: hyku-web
     cache_from:
-      - ghcr.io/notch8/wvu_knapsack/base:latest
-      - ghcr.io/notch8/wvu_knapsack:latest
+      - ghcr.io/wvulibraries/wvu_knapsack/base:latest
+      - ghcr.io/wvulibraries/wvu_knapsack:latest
     args:
       BUILDKIT_INLINE_CACHE: 1
       APP_PATH: ./hyrax-webapp
@@ -57,7 +57,7 @@ services:
 
   solr:
     container_name: solr
-    image: ghcr.io/notch8/wvu_knapsack/solr:${TAG:-latest}
+    image: ghcr.io/wvulibraries/wvu_knapsack/solr:${TAG:-latest}
     restart: on-failure
     platform: linux/amd64
     env_file:
@@ -160,7 +160,7 @@ services:
       target: hyku-worker
       args:
         APP_PATH: ./hyrax-webapp
-    image: ghcr.io/notch8/wvu_knapsack/worker:${TAG:-latest}
+    image: ghcr.io/wvulibraries/wvu_knapsack/worker:${TAG:-latest}
     entrypoint: ["sh", "-c"]
     command:
       - bundle check || bundle install && ./bin/worker
@@ -183,7 +183,7 @@ services:
 
   web:
     <<: *app
-    image: ghcr.io/notch8/wvu_knapsack:${TAG:-latest}
+    image: ghcr.io/wvulibraries/wvu_knapsack:${TAG:-latest}
     entrypoint: ["sh", "-c"]
     command:
       - bundle check || bundle install && ./bin/web
