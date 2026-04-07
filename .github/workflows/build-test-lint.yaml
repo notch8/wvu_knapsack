@@ -65,6 +65,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+      - name: Satisfy hyku_knapsack git ref for Docker build context
+        run: git branch -f required_for_knapsack_instances HEAD
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Github Container Login
