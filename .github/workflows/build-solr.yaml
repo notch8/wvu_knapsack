@@ -45,4 +45,4 @@ jobs:
           push: true
           tags: |
             ghcr.io/wvulibraries/wvu_knapsack/solr:${{ env.TAG }}
-            ghcr.io/wvulibraries/wvu_knapsack/solr:${{ github.ref_name }}
+            ghcr.io/wvulibraries/wvu_knapsack/solr:latest
