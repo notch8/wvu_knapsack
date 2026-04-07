@@ -7,3 +7,5 @@ set -e
 
 sc down
 
+sc proxy down
+

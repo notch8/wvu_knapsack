@@ -5,6 +5,9 @@
 #
 # Usage:
 #   sh up.sc.local.sh
+
+sc proxy up
+
 set -e
 
 # Ensure submodule is initialised and up to date.

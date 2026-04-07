@@ -29,3 +29,6 @@ notes.txt
 /.cache
 /data
 
+okta-*.json
+
+
